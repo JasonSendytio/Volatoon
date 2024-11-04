@@ -1,4 +1,4 @@
-package com.example.volatoon
+package com.example.volatoon.model
 
 data class User(
     val email: String,

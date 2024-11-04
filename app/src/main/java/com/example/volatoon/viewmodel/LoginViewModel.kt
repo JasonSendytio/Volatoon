@@ -1,9 +1,12 @@
-package com.example.volatoon
+package com.example.volatoon.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.volatoon.model.authData
+import com.example.volatoon.model.User
+import com.example.volatoon.model.apiService
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
@@ -35,7 +38,7 @@ class LoginViewModel : ViewModel() {
                         response.errorBody()!!.charStream(),
                         APIError::class.java
                     );
-                    throw Exception("${errorBody.message}")
+                    throw Exception(errorBody.message)
                 }
 
                 _loginState.value = _loginState.value.copy(

@@ -1,4 +1,4 @@
-package com.example.volatoon
+package com.example.volatoon.model
 
 data class authData(
     val status : Int,

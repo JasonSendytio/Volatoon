@@ -37,6 +37,7 @@ import com.example.volatoon.model.User
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(){
+
     val loginViewModel : LoginViewModel = viewModel()
     val viewState by loginViewModel.loginState
 

@@ -52,7 +52,7 @@ fun LoginScreen(){
     ){
         when{
             viewState.isLogin ->{
-                DashboardScreen()
+//                DashboardScreen()
             }
 
             viewState.loading -> {

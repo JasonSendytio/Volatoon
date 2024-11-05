@@ -2,6 +2,7 @@ package com.example.volatoon.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,15 +14,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,23 +30,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.volatoon.R
 import com.example.volatoon.model.Comic
+import com.example.volatoon.model.DetailComic
 import com.example.volatoon.viewmodel.DashboardViewModel
-import com.example.volatoon.viewmodel.LoginViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun DashboardScreen(
+    navigateToDetail : (String) -> Unit,
+    viewState : DashboardViewModel.ComicsState
 ){
-    val dashboardViewModel : DashboardViewModel = viewModel()
-    val viewState by dashboardViewModel.comicstate
-
     Column (
         modifier = Modifier.fillMaxSize()
             .padding(10.dp),
@@ -151,13 +148,57 @@ fun DashboardScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        Box(
+            modifier = Modifier.fillMaxSize(),
+        ){
+            when {
+                viewState.loading -> {
+                    CircularProgressIndicator(progress = 0.89f, modifier = Modifier.align(Alignment.Center))
+                }
+                viewState.error != null -> {
+                    Text(text = "ERROR OCCURRED ${viewState.error}")
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        // Manga Section
+                        item {
+                            ComicsScreen(title = "Manga", comics = viewState.listManga, navigateToDetail)
+                        }
+
+                        // Manhua Section
+                        item {
+                            ComicsScreen(title = "Manhua", comics = viewState.listManhua, navigateToDetail)
+                        }
+
+                        // Manhwa Section
+                        item {
+                            ComicsScreen(title = "Manhwa", comics = viewState.listManhwa, navigateToDetail)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ComicsScreen(
+    title: String,
+    comics : List<Comic>,
+    navigateToDetail : (String) -> Unit
+){
+    Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
-        ){
-            Text("Featured Comics!",
+        ) {
+            Text(
+                "List $title!",
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 20.sp)
+                fontSize = 20.sp
+            )
 
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
@@ -165,33 +206,12 @@ fun DashboardScreen(
             )
         }
 
-
-        Box(modifier = Modifier.fillMaxSize()){
-            when{
-                viewState.loading -> {
-                    CircularProgressIndicator(progress = 0.89f, modifier = Modifier.align(Alignment.Center))
-                }
-
-                viewState.error != null -> {
-                    Text(text = "ERROR OCCURED ${viewState.error}")
-                }
-
-                else ->{
-//                display state
-                    ComicsScreen(viewState.list)
-                }
+        LazyRow(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(comics) { comic ->
+                ComicItem(comic = comic, navigateToDetail)
             }
-        }
-
-    }
-}
-
-@Composable
-fun ComicsScreen(comics : List<Comic>){
-    LazyHorizontalGrid (GridCells.Fixed(1), modifier = Modifier.fillMaxSize()){
-        items(comics){
-                comic ->
-            ComicItem(comic = comic)
         }
     }
 }
@@ -199,10 +219,11 @@ fun ComicsScreen(comics : List<Comic>){
 
 @Composable
 fun ComicItem(
-    comic : Comic
+    comic : Comic,
+    navigateToDetail : (String) -> Unit
 ){
     Column (
-        modifier = Modifier.fillMaxSize().padding(8.dp),
+        modifier = Modifier.fillMaxSize().padding(8.dp).clickable { navigateToDetail(comic.komik_id) },
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Image(
@@ -215,10 +236,3 @@ fun ComicItem(
         Text(comic.title)
     }
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewDashboardScreen(){
-//    KomikItem()
-//}

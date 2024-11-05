@@ -21,6 +21,15 @@ data class Chapter(
 ) : Parcelable
 
 @Parcelize
+data class DetailChapter(
+    val title : String,
+    val komik_id : String,
+    val prev_chapter_id : String,
+    val next_chapter_id : String,
+    val images : List<String>,
+) : Parcelable
+
+@Parcelize
 data class DetailComic(
     val title : String,
     val alternativeTitle : String,
@@ -33,8 +42,10 @@ data class DetailComic(
     val released : String,
     val author : String,
     val genres : List<String>,
-    val chapterList : List<Chapter>
+    val chapterList : List<Chapter> = emptyList()
 ) : Parcelable
+
+
 
 data class ComicsList(val data : List<Comic>)
 

@@ -27,5 +27,8 @@ interface ComicApiService {
 
     @GET("komik/{komik_id}")
     suspend fun getDetailComic(@Path("komik_id") comicId : String) : DetailComic
+
+    @GET("komik/chapter/{chapter_id}")
+    suspend fun getDetailChapter(@Path("chapter_id") chapterId : String) : DetailChapter
     // this code will execute the api and return the data as Categories List data in our previous data class
 }

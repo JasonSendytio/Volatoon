@@ -2,9 +2,8 @@ package com.example.volatoon.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -26,11 +25,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.volatoon.viewmodel.DashboardViewModel
+import com.example.volatoon.model.Chapter
+import com.example.volatoon.viewmodel.ComicViewModel
 
 @Composable
 fun DetailComicScreen(
-    viewState : DashboardViewModel.DetailComicState
+    viewState : ComicViewModel.DetailComicState,
+    navigateToDetail : (String) -> Unit
 ){
     Column (
         modifier = Modifier
@@ -51,7 +52,13 @@ fun DetailComicScreen(
                 Text(text = "ERROR OCCURRED ${viewState.error}")
             }
 
+            viewState.detailComic == null -> {
+                Text(text = "No comic details available.")
+            }
+
             else -> {
+                val comic = viewState.detailComic
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -60,18 +67,16 @@ fun DetailComicScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    viewState.detailComic?.let {
-                        Text(
-                            it.title,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                    }
+                    Text(
+                        comic.title,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
 
                 Image(
                     painter = rememberAsyncImagePainter(
-                        model = viewState.detailComic?.image
+                        model = comic.image
                     ),
                     contentDescription = null,
                     modifier = Modifier
@@ -95,7 +100,7 @@ fun DetailComicScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            ": ${viewState.detailComic?.title ?: "-"}",
+                            ": ${comic.title}",
                             modifier = Modifier.weight(.7f)
                         )
                     }
@@ -109,7 +114,7 @@ fun DetailComicScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            ": ${viewState.detailComic?.alternativeTitle ?: "-"}",
+                            ": ${comic.alternativeTitle}",
                             modifier = Modifier.weight(.7f)
                         )
                     }
@@ -123,7 +128,7 @@ fun DetailComicScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            ": ${viewState.detailComic?.score ?: "-"}",
+                            ": ${comic.score ?: "-"}",
                             modifier = Modifier.weight(.7f)
                         )
                     }
@@ -137,7 +142,7 @@ fun DetailComicScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            ": ${viewState.detailComic?.status ?: "-"}",
+                            ": ${comic.status ?: "-"}",
                             modifier = Modifier.weight(.7f)
                         )
                     }
@@ -151,7 +156,7 @@ fun DetailComicScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            ": ${viewState.detailComic?.released ?: "-"}",
+                            ": ${comic.released ?: "-"}",
                             modifier = Modifier.weight(.7f)
                         )
                     }
@@ -165,7 +170,7 @@ fun DetailComicScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            ": ${viewState.detailComic?.author ?: "-"}",
+                            ": ${comic.author}",
                             modifier = Modifier.weight(.7f)
                         )
                     }
@@ -191,28 +196,58 @@ fun DetailComicScreen(
                     )
 
                     Text(
-                        "\t\t\t ${viewState.detailComic?.synopsis ?: "-"}",
+                        "\t\t\t ${comic.synopsis}",
                         textAlign = TextAlign.Justify
                     )
 
 
                 }
+
+                Row (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFFA2D7E2))
+                        .padding(8.dp)
+                        .height(30.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text("${comic.title} Chapter List ",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp
+                    )
+                }
+                ListChaptersScreen(comic.chapterList, navigateToDetail)
             }
         }
     }
 }
 
 @Composable
-fun ListChapter(){
+fun ListChaptersScreen(chapters : List<Chapter>, navigateToDetail : (String) -> Unit){
+
+    Column {
+        chapters.forEachIndexed() { index, chapter ->
+            Row {
+                ListChapter(chapter = chapter, index, navigateToDetail)
+            }
+        }
+    }
+}
+
+@Composable
+fun ListChapter(chapter : Chapter, index : Int, navigateToDetail : (String) -> Unit){
     Row (
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFA2D7E2))
-            .height(15.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .background(if (index % 2 == 0) Color(0xFFA2D7E2) else Color(0xFFD9D9D9))
+            .height(30.dp)
+            .clickable { navigateToDetail(chapter.chapter_id) },
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ){
-        Text("Chapter 1124")
-        Text("August 23, 2024")
+        Text(chapter.title)
+        Text(chapter.date)
     }
 }
 

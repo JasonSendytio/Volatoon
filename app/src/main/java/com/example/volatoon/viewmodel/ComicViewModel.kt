@@ -5,22 +5,45 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.volatoon.model.Comic
-import com.example.volatoon.model.ComicApiService
+import com.example.volatoon.model.DetailChapter
 import com.example.volatoon.model.DetailComic
 import com.example.volatoon.model.comicApiService
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-class DashboardViewModel : ViewModel() {
+class ComicViewModel : ViewModel() {
 
     private val _comicstate = mutableStateOf(ComicsState())
     private val _comicDetailState = mutableStateOf(DetailComicState())
+    private val _chapterDetailState = mutableStateOf(DetailChapterState())
 
     val comicstate : State<ComicsState> = _comicstate
     val detailComicState : State<DetailComicState> = _comicDetailState
+    val detailChapterState : State<DetailChapterState> = _chapterDetailState
 
     init {
         fetchComics()
+    }
+
+    fun fetchDetailChapter(chapterId : String){
+        viewModelScope.launch {
+            try {
+                val response = comicApiService.getDetailChapter(chapterId)
+
+                _chapterDetailState.value = _chapterDetailState.value.copy(
+                    loading = false,
+                    detailChapter = response,
+                    error = null
+                )
+
+
+            }catch (e : Exception){
+                _comicDetailState.value = _comicDetailState.value.copy(
+                    loading = false,
+                    error = "error fetching chapter ${e.message}"
+                )
+            }
+        }
     }
 
     fun fetchDetailComic(comicId : String){
@@ -38,7 +61,7 @@ class DashboardViewModel : ViewModel() {
             }catch (e : Exception){
                 _comicDetailState.value = _comicDetailState.value.copy(
                     loading = false,
-                    error = "error fetching ${e.message}"
+                    error = "error fetching detail comic ${e.message}"
                 )
             }
         }
@@ -63,7 +86,7 @@ class DashboardViewModel : ViewModel() {
             }catch (e : Exception){
                 _comicstate.value = _comicstate.value.copy(
                     loading = false,
-                    error = "error fetching ${e.message}"
+                    error = "error fetching comic ${e.message}"
                 )
             }
         }
@@ -80,6 +103,12 @@ class DashboardViewModel : ViewModel() {
     data class DetailComicState(
         val loading : Boolean = true,
         val detailComic : DetailComic? = null,
+        val error : String? = null
+    )
+
+    data class DetailChapterState(
+        val loading : Boolean = true,
+        val detailChapter : DetailChapter? = null,
         val error : String? = null
     )
 

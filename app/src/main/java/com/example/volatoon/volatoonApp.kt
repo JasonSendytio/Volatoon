@@ -17,19 +17,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.volatoon.view.DashboardScreen
+import com.example.volatoon.view.DetailChapterScreen
 import com.example.volatoon.view.DetailComicScreen
 import com.example.volatoon.view.NotificationsScreen
 import com.example.volatoon.view.ProfileScreen
 import com.example.volatoon.view.SearchScreen
 import com.example.volatoon.view.TrendingScreen
-import com.example.volatoon.viewmodel.DashboardViewModel
+import com.example.volatoon.viewmodel.ComicViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VolatoonApp(navController: NavHostController){
 
-    val dashboardViewModel : DashboardViewModel = viewModel()
-    val viewState by dashboardViewModel.comicstate
+    val comicViewModel : ComicViewModel = viewModel()
+    val viewState by comicViewModel.comicstate
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController = navController) }
@@ -62,9 +63,19 @@ fun VolatoonApp(navController: NavHostController){
                 composable("detailcomic/{comicId}") {
                     val comicId = it.arguments?.getString("comicId") ?: ""
 
-                    dashboardViewModel.fetchDetailComic(comicId)
-                    val detailComicState by dashboardViewModel.detailComicState
-                    DetailComicScreen(detailComicState)
+                    comicViewModel.fetchDetailComic(comicId)
+                    val detailComicState by comicViewModel.detailComicState
+                    DetailComicScreen(detailComicState, navigateToDetail = { chapterId ->
+                        navController.navigate(route = "detailchapter/$chapterId")
+                    })
+                }
+
+                composable("detailchapter/{chapterId}") {
+                    val chapterId = it.arguments?.getString("chapterId") ?: ""
+
+                    comicViewModel.fetchDetailChapter(chapterId)
+                    val detailChapterState by comicViewModel.detailChapterState
+                    DetailChapterScreen(detailChapterState)
                 }
             }
         }

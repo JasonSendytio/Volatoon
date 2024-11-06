@@ -59,7 +59,7 @@ fun DashboardScreen(
                 contentDescription = "test"
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Hi, VVolatile!",
+            Text("Hi, Volatile!",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )
@@ -230,6 +230,13 @@ fun ComicItem(
                 .width(119.dp).height(153.dp)
                 .aspectRatio(1f)
         )
-        Text(comic.title)
+        val displayTitle = if (comic.title.length > 20) {
+            comic.title.take(20) + "..."
+        } else {
+            comic.title
+        }
+
+        Text(displayTitle)
+
     }
 }

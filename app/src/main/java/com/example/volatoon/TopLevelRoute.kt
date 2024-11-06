@@ -12,6 +12,6 @@ sealed class TopLevelRoute(val route: String, val icon: ImageVector, val label: 
     object Dashboard : TopLevelRoute("dashboard", Icons.Default.Home, "Home")
     object Trending : TopLevelRoute("trending", Icons.Default.Info, "Trending")
     object Search : TopLevelRoute("search", Icons.Default.Search, "Search")
-    object Notifications : TopLevelRoute("notifications", Icons.Default.Notifications, "Notificatio")
+    object Notifications : TopLevelRoute("notifications", Icons.Default.Notifications, "Notification")
     object Profile : TopLevelRoute("profile", Icons.Default.Person, "Profile")
 }

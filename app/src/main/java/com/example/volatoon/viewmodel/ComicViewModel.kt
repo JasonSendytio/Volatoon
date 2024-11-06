@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.volatoon.model.Comic
 import com.example.volatoon.model.DetailChapter
 import com.example.volatoon.model.DetailComic
+import com.example.volatoon.model.Genre
 import com.example.volatoon.model.comicApiService
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -81,12 +82,14 @@ class ComicViewModel : ViewModel() {
                 val responseManga = comicApiService.getAllManga()
                 val responseManhua = comicApiService.getAllManhua()
                 val responseManhwa = comicApiService.getAllManhwa()
+              //  val responseGenre = comicApiService.getAllGenre()
 
                 _comicstate.value = _comicstate.value.copy(
                     loading = false,
                     listManga = responseManga.data,
                     listManhua = responseManhua.data,
                     listManhwa = responseManhwa.data,
+                   // listGenre = responseGenre.data,
                     error = null
                 )
 
@@ -105,6 +108,7 @@ class ComicViewModel : ViewModel() {
         val listManga : List<Comic> = emptyList(),
         val listManhua : List<Comic> = emptyList(),
         val listManhwa : List<Comic> = emptyList(),
+        //val listGenre : List<Genre> = emptyList(),
         val error : String? = null
     )
 

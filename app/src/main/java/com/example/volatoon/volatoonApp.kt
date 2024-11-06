@@ -1,7 +1,9 @@
 package com.example.volatoon
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -9,7 +11,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -63,19 +67,55 @@ fun VolatoonApp(navController: NavHostController){
                 composable("detailcomic/{comicId}") {
                     val comicId = it.arguments?.getString("comicId") ?: ""
 
-                    comicViewModel.fetchDetailComic(comicId)
                     val detailComicState by comicViewModel.detailComicState
-                    DetailComicScreen(detailComicState, navigateToDetail = { chapterId ->
-                        navController.navigate(route = "detailchapter/$chapterId")
-                    })
+
+                    // Use LaunchedEffect to ensure fetchDetailComic is called only once
+                    LaunchedEffect(comicId) {
+                        comicViewModel.fetchDetailComic(comicId)
+                    }
+
+                    Box(modifier = Modifier.fillMaxSize()){
+                        when {
+                            detailComicState.loading -> {
+                                CircularProgressIndicator(progress = 0.89f, modifier = Modifier.align(Alignment.Center))
+                            }
+                            detailComicState.detailComic != null -> {
+                                DetailComicScreen(detailComicState, navigateToDetail = { chapterId ->
+                                    navController.navigate(route = "detailchapter/$chapterId")
+                                })
+                            }
+
+                            detailComicState.error != null -> {
+                                Text(text = detailComicState.error!!)
+                            }
+                        }
+                    }
                 }
 
                 composable("detailchapter/{chapterId}") {
                     val chapterId = it.arguments?.getString("chapterId") ?: ""
-
-                    comicViewModel.fetchDetailChapter(chapterId)
                     val detailChapterState by comicViewModel.detailChapterState
-                    DetailChapterScreen(detailChapterState)
+
+                    LaunchedEffect(chapterId) {
+                        comicViewModel.fetchDetailChapter(chapterId)
+                    }
+
+                    Box(modifier = Modifier.fillMaxSize()){
+                        when {
+                            detailChapterState.loading -> {
+                                CircularProgressIndicator(progress = 0.89f, modifier = Modifier.align(Alignment.Center))
+                            }
+                            detailChapterState.detailChapter != null -> {
+                                DetailChapterScreen(detailChapterState)
+                            }
+
+                            detailChapterState.error != null -> {
+                                Text(text = detailChapterState.error!!)
+                            }
+                        }
+                    }
+
+
                 }
             }
         }

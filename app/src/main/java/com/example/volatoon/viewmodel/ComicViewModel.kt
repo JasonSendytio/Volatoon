@@ -8,6 +8,7 @@ import com.example.volatoon.model.Comic
 import com.example.volatoon.model.DetailChapter
 import com.example.volatoon.model.DetailComic
 import com.example.volatoon.model.comicApiService
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
@@ -26,6 +27,10 @@ class ComicViewModel : ViewModel() {
     }
 
     fun fetchDetailChapter(chapterId : String){
+        _chapterDetailState.value = _chapterDetailState.value.copy(
+            loading = true,
+        )
+
         viewModelScope.launch {
             try {
                 val response = comicApiService.getDetailChapter(chapterId)
@@ -38,7 +43,7 @@ class ComicViewModel : ViewModel() {
 
 
             }catch (e : Exception){
-                _comicDetailState.value = _comicDetailState.value.copy(
+                _chapterDetailState.value = _chapterDetailState.value.copy(
                     loading = false,
                     error = "error fetching chapter ${e.message}"
                 )
@@ -47,6 +52,10 @@ class ComicViewModel : ViewModel() {
     }
 
     fun fetchDetailComic(comicId : String){
+        _comicDetailState.value = _comicDetailState.value.copy(
+            loading = true,
+        )
+
         viewModelScope.launch {
             try {
                 val response = comicApiService.getDetailComic(comicId)
@@ -56,7 +65,6 @@ class ComicViewModel : ViewModel() {
                     detailComic = response,
                     error = null
                 )
-
 
             }catch (e : Exception){
                 _comicDetailState.value = _comicDetailState.value.copy(

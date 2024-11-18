@@ -46,11 +46,20 @@ data class DetailComic(
 ) : Parcelable
 
 @Parcelize
-data class Genre(
+data class Genres(
     val name : String,
-    val genreId : String
+    val genre_id : String
 ) : Parcelable
 
-data class GenreList(val data : List<Genre>)
+@Parcelize
+data class Genre(
+    val genre_id : Int,
+    val page : Int,
+    val order : String
+) : Parcelable
+
+
+data class GenresList(val genres: List<Genres>)// The one that matches your model
+
 data class ComicsList(val data : List<Comic>)
 

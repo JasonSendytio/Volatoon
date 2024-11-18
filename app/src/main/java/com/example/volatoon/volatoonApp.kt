@@ -18,17 +18,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.example.volatoon.view.DashboardScreen
 import com.example.volatoon.view.DetailChapterScreen
 import com.example.volatoon.view.DetailComicScreen
+import com.example.volatoon.view.DetailGenreScreen
 import com.example.volatoon.view.NotificationsScreen
 import com.example.volatoon.view.ProfileScreen
 import com.example.volatoon.view.SearchScreen
 import com.example.volatoon.view.TrendingScreen
 import com.example.volatoon.viewmodel.ComicViewModel
+import com.example.volatoon.viewmodel.GenreViewModel
 import com.example.volatoon.viewmodel.SearchViewModel
 
 @Composable
@@ -53,12 +57,7 @@ fun VolatoonApp(navController: NavHostController){
                     TrendingScreen()
                 }
 
-                composable(route = TopLevelRoute.Search.route){
-                    SearchScreen(viewState = SearchViewModel(),
-                        navigateToDetail = { comicId ->
-                            navController.navigate(route = "detailcomic/$comicId")
-                        })
-                }
+
 
                 composable(route = TopLevelRoute.Notifications.route){
                     NotificationsScreen()
@@ -66,6 +65,33 @@ fun VolatoonApp(navController: NavHostController){
 
                 composable(route = TopLevelRoute.Profile.route){
                     ProfileScreen()
+                }
+                composable(route = TopLevelRoute.Search.route) {
+                    val genreViewModel: GenreViewModel = viewModel()
+                    val genreState by genreViewModel.genreState
+
+                    SearchScreen(
+                        viewState = SearchViewModel(),
+                        genres = genreState.listGenres,
+                        navigateToDetail = { comicId ->
+                            navController.navigate(route = "detailcomic/$comicId")
+                        },
+                        navigateToGenre = { genreId ->
+                            navController.navigate(route = "genre/$genreId")
+                        }
+                    )
+                }
+                composable(
+                    route = "genre/{genreId}",
+                    arguments = listOf(navArgument("genreId") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val genreId = backStackEntry.arguments?.getString("genreId") ?: ""
+                    DetailGenreScreen(
+                        genreId = genreId,
+                        navigateToDetail = { comicId ->
+                            navController.navigate("detailcomic/$comicId")
+                        }
+                    )
                 }
 
                 composable("detailcomic/{comicId}") {

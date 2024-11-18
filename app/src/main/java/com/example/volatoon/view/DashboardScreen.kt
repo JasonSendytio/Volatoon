@@ -139,7 +139,10 @@ fun DashboardScreen(
                 ),
                 shape = RoundedCornerShape(45.dp)
             ) {
-                Text("Romance")
+                Text(
+                    text = "Romance",
+                    fontSize = 12.sp
+                )
             }
         }
 
@@ -231,7 +234,7 @@ fun ComicItem(
                 .aspectRatio(1f)
         )
         val displayTitle = if (comic.title.length > 20) {
-            comic.title.take(20) + "..."
+            comic.title.take(12) + "..."
         } else {
             comic.title
         }

@@ -26,8 +26,11 @@ interface ComicApiService {
     @GET("komik/manhwa")
     suspend fun getAllManhwa(): ComicsList
 
-    @GET("komik/genre")
-    suspend fun getAllGenre() : GenreList
+    @GET("komik/genres")
+    suspend fun getAllGenres() : List<Genres>
+
+    @GET("komik/genre/{genre_id}")
+    suspend fun getAllGenre(@Path("genre_id") genre_id : Int) : ComicsList
 
     @GET("komik/search")
     suspend fun searchComic(@Query("query") query : String) : ComicsList

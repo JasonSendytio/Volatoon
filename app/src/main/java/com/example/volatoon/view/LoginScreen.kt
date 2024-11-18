@@ -101,7 +101,7 @@ fun LoginScreen(){
                 Text(
                     color = Color(0xFFA2D7E2),
                     modifier = Modifier.padding(5.dp),
-                    text = "Forgot Your Password ?")
+                    text = "Don't have an account? Sign Up Here")
 
                 Button(
                     onClick = { loginViewModel.loginUser(User(email, password))},

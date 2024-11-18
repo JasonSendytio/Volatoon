@@ -7,6 +7,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 
 private val retrofit = Retrofit.Builder().baseUrl("https://api-otaku.vercel.app/api/")
@@ -28,6 +29,8 @@ interface ComicApiService {
     @GET("komik/genre")
     suspend fun getAllGenre() : GenreList
 
+    @GET("komik/search")
+    suspend fun searchComic(@Query("query") query : String) : ComicsList
 
     @GET("komik/{komik_id}")
     suspend fun getDetailComic(@Path("komik_id") comicId : String) : DetailComic

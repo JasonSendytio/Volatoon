@@ -8,6 +8,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,8 +29,8 @@ import com.example.volatoon.view.ProfileScreen
 import com.example.volatoon.view.SearchScreen
 import com.example.volatoon.view.TrendingScreen
 import com.example.volatoon.viewmodel.ComicViewModel
+import com.example.volatoon.viewmodel.SearchViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VolatoonApp(navController: NavHostController){
 
@@ -53,7 +54,10 @@ fun VolatoonApp(navController: NavHostController){
                 }
 
                 composable(route = TopLevelRoute.Search.route){
-                    SearchScreen()
+                    SearchScreen(viewState = SearchViewModel(),
+                        navigateToDetail = { comicId ->
+                            navController.navigate(route = "detailcomic/$comicId")
+                        })
                 }
 
                 composable(route = TopLevelRoute.Notifications.route){
@@ -79,14 +83,15 @@ fun VolatoonApp(navController: NavHostController){
                             detailComicState.loading -> {
                                 CircularProgressIndicator(progress = 0.89f, modifier = Modifier.align(Alignment.Center))
                             }
-                            detailComicState.detailComic != null -> {
-                                DetailComicScreen(detailComicState, navigateToDetail = { chapterId ->
-                                    navController.navigate(route = "detailchapter/$chapterId")
-                                })
-                            }
 
                             detailComicState.error != null -> {
                                 Text(text = detailComicState.error!!)
+                            }
+
+                            else -> {
+                                DetailComicScreen(detailComicState, navigateToDetail = { chapterId ->
+                                    navController.navigate(route = "detailchapter/$chapterId")
+                                })
                             }
                         }
                     }
@@ -103,7 +108,11 @@ fun VolatoonApp(navController: NavHostController){
                     Box(modifier = Modifier.fillMaxSize()){
                         when {
                             detailChapterState.loading -> {
-                                CircularProgressIndicator(progress = 0.89f, modifier = Modifier.align(Alignment.Center))
+                                CircularProgressIndicator(
+                                    progress = { 0.89f },
+                                    modifier = Modifier.align(Alignment.Center),
+                                    trackColor = ProgressIndicatorDefaults.circularDeterminateTrackColor,
+                                )
                             }
                             detailChapterState.detailChapter != null -> {
                                 DetailChapterScreen(detailChapterState)

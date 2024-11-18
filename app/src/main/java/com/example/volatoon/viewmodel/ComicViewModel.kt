@@ -7,9 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.volatoon.model.Comic
 import com.example.volatoon.model.DetailChapter
 import com.example.volatoon.model.DetailComic
-import com.example.volatoon.model.Genre
 import com.example.volatoon.model.comicApiService
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
@@ -102,6 +106,7 @@ class ComicViewModel : ViewModel() {
             }
         }
     }
+
 
     data class ComicsState(
         val loading : Boolean = true,

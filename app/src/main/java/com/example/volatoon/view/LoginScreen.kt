@@ -32,11 +32,16 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.volatoon.viewmodel.LoginViewModel
 import com.example.volatoon.R
+import com.example.volatoon.model.Account
 import com.example.volatoon.model.User
+import com.example.volatoon.utils.DataStoreManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(){
+fun LoginScreen(
+    navigateToDashboard : () -> Unit,
+    dataStoreManager: DataStoreManager
+){
 
     val loginViewModel : LoginViewModel = viewModel()
     val viewState by loginViewModel.loginState
@@ -52,7 +57,7 @@ fun LoginScreen(){
     ){
         when{
             viewState.isLogin ->{
-//                DashboardScreen()
+                navigateToDashboard()
             }
 
             viewState.loading -> {
@@ -104,7 +109,7 @@ fun LoginScreen(){
                     text = "Don't have an account? Sign Up Here")
 
                 Button(
-                    onClick = { loginViewModel.loginUser(User(email, password))},
+                    onClick = { loginViewModel.loginUser(Account(email, password), dataStoreManager)},
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFA2D7E2)
                     ),
@@ -125,5 +130,5 @@ fun LoginScreen(){
 @Preview(showBackground = true)
 @Composable
 fun PreviewLoginScreen(){
-    LoginScreen()
+//    LoginScreen()
 }

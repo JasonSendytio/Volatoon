@@ -15,7 +15,7 @@ val apiService = retrofit.create(ApiService::class.java)
 
 interface ApiService {
     @POST("api/auth/login")
-    suspend fun loginUser(@Body user: User?): Response<authData>
+    suspend fun loginUser(@Body account: Account?): Response<authData>
 
 //    @POST("api/auth/register")
 //    suspend fun registerUser(@Body user: User?): Response<authData>

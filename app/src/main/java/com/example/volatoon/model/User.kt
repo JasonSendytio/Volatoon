@@ -1,7 +1,10 @@
 package com.example.volatoon.model
 
-data class User(
+data class Account(
     val email : String,
     val password : String
-//    val authKey : String
+)
+
+data class User(
+    val userId : String
 )

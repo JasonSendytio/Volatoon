@@ -14,8 +14,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -23,20 +29,39 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.example.volatoon.utils.DataStoreManager
+import com.example.volatoon.utils.DataStoreManager.Companion.USER_ID
+import com.example.volatoon.utils.USER_DATASTORE
 import com.example.volatoon.view.DashboardScreen
 import com.example.volatoon.view.DetailChapterScreen
 import com.example.volatoon.view.DetailComicScreen
 import com.example.volatoon.view.DetailGenreScreen
+import com.example.volatoon.view.LoginScreen
 import com.example.volatoon.view.NotificationsScreen
 import com.example.volatoon.view.ProfileScreen
+import com.example.volatoon.view.RegisterScreen
 import com.example.volatoon.view.SearchScreen
 import com.example.volatoon.view.TrendingScreen
 import com.example.volatoon.viewmodel.ComicViewModel
 import com.example.volatoon.viewmodel.GenreViewModel
 import com.example.volatoon.viewmodel.SearchViewModel
+import kotlinx.coroutines.flow.first
 
 @Composable
-fun VolatoonApp(navController: NavHostController){
+fun VolatoonApp(
+    navController: NavHostController,
+    preferenceDataStore : DataStore<Preferences>,
+    dataStoreManager: DataStoreManager
+){
+    var isLogin by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val onLoginSuccess = {isLogin = true}
+
+    LaunchedEffect (key1 = Unit){
+        checkRegisterState(preferenceDataStore){it->
+            isLogin = it
+        }
+    }
 
     val comicViewModel : ComicViewModel = viewModel()
     val viewState by comicViewModel.comicstate
@@ -45,7 +70,24 @@ fun VolatoonApp(navController: NavHostController){
         bottomBar = { BottomNavigationBar(navController = navController) }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)){
-            NavHost(navController = navController, startDestination = TopLevelRoute.Dashboard.route){
+            NavHost(
+                navController = navController,
+                startDestination = if (isLogin) TopLevelRoute.Dashboard.route else "login"
+            ){
+                composable(
+                    route = "register",
+                ) {
+                   RegisterScreen()
+                }
+
+                composable(
+                    route = "login",
+                ) {
+                    LoginScreen(navigateToDashboard = {
+                        navController.navigate(route = TopLevelRoute.Dashboard.route)},
+                        dataStoreManager)
+                }
+
                 composable(route = TopLevelRoute.Dashboard.route){
                     DashboardScreen(viewState = viewState,
                         navigateToDetail = { comicId ->
@@ -56,8 +98,6 @@ fun VolatoonApp(navController: NavHostController){
                 composable(route = TopLevelRoute.Trending.route){
                     TrendingScreen()
                 }
-
-
 
                 composable(route = TopLevelRoute.Notifications.route){
                     NotificationsScreen()
@@ -149,8 +189,6 @@ fun VolatoonApp(navController: NavHostController){
                             }
                         }
                     }
-
-
                 }
             }
         }
@@ -158,6 +196,13 @@ fun VolatoonApp(navController: NavHostController){
 
 
 
+}
+
+suspend fun checkRegisterState(preferenceDataStore: DataStore<Preferences>, onResult: (Boolean) -> Unit) {
+    val preferences = preferenceDataStore.data.first()
+    val userId = preferences[USER_ID]
+    val isLogin = userId != null
+    onResult(isLogin)
 }
 
 @Composable

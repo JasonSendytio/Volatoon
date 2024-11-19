@@ -2,16 +2,19 @@ package com.example.volatoon.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.datastore.dataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.volatoon.model.Account
 import com.example.volatoon.model.authData
 import com.example.volatoon.model.User
 import com.example.volatoon.model.apiService
+import com.example.volatoon.utils.DataStoreManager
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(): ViewModel(){
 
     data class LoginState(
         val isLogin : Boolean = false,
@@ -28,12 +31,12 @@ class LoginViewModel : ViewModel() {
         val message : String,
     )
 
-    open fun loginUser(userData : User){
+    open fun loginUser(accountData : Account, dataStoreManager : DataStoreManager){
         viewModelScope.launch {
             try {
-                val response = apiService.loginUser(userData)
+                val response = apiService.loginUser(accountData)
 
-                if(response.code() == 401){
+                if(response.code() != 200){
                     val errorBody : APIError = Gson().fromJson(
                         response.errorBody()!!.charStream(),
                         APIError::class.java
@@ -48,6 +51,7 @@ class LoginViewModel : ViewModel() {
                     error = null
                 )
 
+                dataStoreManager.saveToDataStore(response.body()!!.token)
 
             }catch (e : Exception){
                 _loginState.value = _loginState.value.copy(

@@ -30,7 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.volatoon.utils.DataStoreManager
-import com.example.volatoon.utils.DataStoreManager.Companion.USER_ID
+import com.example.volatoon.utils.DataStoreManager.Companion.AUTH_TOKEN
 import com.example.volatoon.utils.USER_DATASTORE
 import com.example.volatoon.view.DashboardScreen
 import com.example.volatoon.view.DetailChapterScreen
@@ -44,8 +44,10 @@ import com.example.volatoon.view.SearchScreen
 import com.example.volatoon.view.TrendingScreen
 import com.example.volatoon.viewmodel.ComicViewModel
 import com.example.volatoon.viewmodel.GenreViewModel
+import com.example.volatoon.viewmodel.ProfileViewModel
 import com.example.volatoon.viewmodel.SearchViewModel
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @Composable
 fun VolatoonApp(
@@ -55,7 +57,6 @@ fun VolatoonApp(
 ){
     var isLogin by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val onLoginSuccess = {isLogin = true}
 
     LaunchedEffect (key1 = Unit){
         checkRegisterState(preferenceDataStore){it->
@@ -64,7 +65,16 @@ fun VolatoonApp(
     }
 
     val comicViewModel : ComicViewModel = viewModel()
+    val profileViewModel : ProfileViewModel = viewModel()
+
     val viewState by comicViewModel.comicstate
+
+    val onLogOut = {
+        isLogin = false
+        scope.launch{
+            dataStoreManager.clearDataStore()
+        }
+    }
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController = navController) }
@@ -104,7 +114,13 @@ fun VolatoonApp(
                 }
 
                 composable(route = TopLevelRoute.Profile.route){
-                    ProfileScreen()
+                    val profileResState by profileViewModel.profileResState
+
+                    LaunchedEffect(dataStoreManager) {
+                        profileViewModel.fetchUserData(dataStoreManager)
+                    }
+
+                    ProfileScreen(onLogOut, profileResState)
                 }
                 composable(route = TopLevelRoute.Search.route) {
                     val genreViewModel: GenreViewModel = viewModel()
@@ -200,7 +216,7 @@ fun VolatoonApp(
 
 suspend fun checkRegisterState(preferenceDataStore: DataStore<Preferences>, onResult: (Boolean) -> Unit) {
     val preferences = preferenceDataStore.data.first()
-    val userId = preferences[USER_ID]
+    val userId = preferences[AUTH_TOKEN]
     val isLogin = userId != null
     onResult(isLogin)
 }

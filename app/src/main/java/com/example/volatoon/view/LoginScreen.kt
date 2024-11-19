@@ -33,7 +33,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.volatoon.viewmodel.LoginViewModel
 import com.example.volatoon.R
 import com.example.volatoon.model.Account
-import com.example.volatoon.model.User
 import com.example.volatoon.utils.DataStoreManager
 
 @OptIn(ExperimentalMaterial3Api::class)

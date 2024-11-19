@@ -7,14 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.volatoon.model.Account
 import com.example.volatoon.model.authData
-import com.example.volatoon.model.User
 import com.example.volatoon.model.apiService
 import com.example.volatoon.utils.DataStoreManager
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
 
-class LoginViewModel(): ViewModel(){
+class LoginViewModel: ViewModel(){
 
     data class LoginState(
         val isLogin : Boolean = false,
@@ -31,7 +30,7 @@ class LoginViewModel(): ViewModel(){
         val message : String,
     )
 
-    open fun loginUser(accountData : Account, dataStoreManager : DataStoreManager){
+    fun loginUser(accountData : Account, dataStoreManager : DataStoreManager){
         viewModelScope.launch {
             try {
                 val response = apiService.loginUser(accountData)

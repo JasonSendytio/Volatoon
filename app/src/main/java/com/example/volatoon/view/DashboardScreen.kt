@@ -40,6 +40,7 @@ import com.example.volatoon.viewmodel.ComicViewModel
 @Composable
 fun DashboardScreen(
     navigateToDetail : (String) -> Unit,
+    navigateToGenre: (String) -> Unit,
     viewState : ComicViewModel.ComicsState
 ){
     Column (
@@ -84,7 +85,7 @@ fun DashboardScreen(
                     color = Color.Black,
                     shape = RoundedCornerShape(50.dp) // Adjust corner radius as needed
                 ),
-                onClick = {},
+                onClick = {navigateToGenre("all")},
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF04FFFB), // Sets the background color to #04FFFB
                     contentColor = Color.Black // Sets the text color to black
@@ -100,7 +101,7 @@ fun DashboardScreen(
                     color = Color.Black,
                     shape = RoundedCornerShape(50.dp) // Adjust corner radius as needed
                 ),
-                onClick = {},
+                onClick = {navigateToGenre("6")},
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White, // Sets the background color to #04FFFB
                     contentColor = Color.Black // Sets the text color to black
@@ -132,7 +133,7 @@ fun DashboardScreen(
                     color = Color.Black,
                     shape = RoundedCornerShape(50.dp) // Adjust corner radius as needed
                 ),
-                onClick = {},
+                onClick = {navigateToGenre("12")},
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White, // Sets the background color to #04FFFB
                     contentColor = Color.Black // Sets the text color to black

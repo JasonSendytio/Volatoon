@@ -34,6 +34,7 @@ import com.example.volatoon.view.TrendingScreen
 import com.example.volatoon.viewmodel.ComicViewModel
 import com.example.volatoon.viewmodel.GenreViewModel
 import com.example.volatoon.viewmodel.SearchViewModel
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun VolatoonApp(navController: NavHostController){
@@ -50,7 +51,11 @@ fun VolatoonApp(navController: NavHostController){
                     DashboardScreen(viewState = viewState,
                         navigateToDetail = { comicId ->
                          navController.navigate(route = "detailcomic/$comicId")
-                    })
+                    },
+                        navigateToGenre = { genreId ->
+                            navController.navigate("genre/$genreId")
+                        })
+
                 }
 
                 composable(route = TopLevelRoute.Trending.route){
@@ -73,6 +78,8 @@ fun VolatoonApp(navController: NavHostController){
                     SearchScreen(
                         viewState = SearchViewModel(),
                         genres = genreState.listGenres,
+                        context = LocalContext.current, // Add this line
+
                         navigateToDetail = { comicId ->
                             navController.navigate(route = "detailcomic/$comicId")
                         },
@@ -176,7 +183,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 icon = {
                     Icon(imageVector = item.icon, contentDescription = "${item.label} icon")
                        },
-                label = { Text(item.label) },
+                label = { item.LabelText() },
                 selected = navController.currentBackStackEntryAsState().value?.destination?.route == item.route,
                 onClick = {
                     navController.navigate(item.route) {

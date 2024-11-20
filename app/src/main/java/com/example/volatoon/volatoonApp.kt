@@ -14,8 +14,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -23,30 +29,79 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.example.volatoon.utils.DataStoreManager
+import com.example.volatoon.utils.DataStoreManager.Companion.AUTH_TOKEN
+import com.example.volatoon.utils.USER_DATASTORE
 import com.example.volatoon.view.DashboardScreen
 import com.example.volatoon.view.DetailChapterScreen
 import com.example.volatoon.view.DetailComicScreen
 import com.example.volatoon.view.DetailGenreScreen
+import com.example.volatoon.view.LoginScreen
 import com.example.volatoon.view.NotificationsScreen
 import com.example.volatoon.view.ProfileScreen
+import com.example.volatoon.view.RegisterScreen
 import com.example.volatoon.view.SearchScreen
 import com.example.volatoon.view.TrendingScreen
 import com.example.volatoon.viewmodel.ComicViewModel
 import com.example.volatoon.viewmodel.GenreViewModel
+import com.example.volatoon.viewmodel.ProfileViewModel
 import com.example.volatoon.viewmodel.SearchViewModel
+<<<<<<< HEAD
 import androidx.compose.ui.platform.LocalContext
+=======
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+>>>>>>> 2887c4ec1ea7255cc4ade578133e696f76e23e47
 
 @Composable
-fun VolatoonApp(navController: NavHostController){
+fun VolatoonApp(
+    navController: NavHostController,
+    preferenceDataStore : DataStore<Preferences>,
+    dataStoreManager: DataStoreManager
+){
+    var isLogin by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect (key1 = Unit){
+        checkRegisterState(preferenceDataStore){it->
+            isLogin = it
+        }
+    }
 
     val comicViewModel : ComicViewModel = viewModel()
+    val profileViewModel : ProfileViewModel = viewModel()
+
     val viewState by comicViewModel.comicstate
+
+    val onLogOut = {
+        isLogin = false
+        scope.launch{
+            dataStoreManager.clearDataStore()
+        }
+    }
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController = navController) }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)){
-            NavHost(navController = navController, startDestination = TopLevelRoute.Dashboard.route){
+            NavHost(
+                navController = navController,
+                startDestination = if (isLogin) TopLevelRoute.Dashboard.route else "login"
+            ){
+                composable(
+                    route = "register",
+                ) {
+                   RegisterScreen()
+                }
+
+                composable(
+                    route = "login",
+                ) {
+                    LoginScreen(navigateToDashboard = {
+                        navController.navigate(route = TopLevelRoute.Dashboard.route)},
+                        dataStoreManager)
+                }
+
                 composable(route = TopLevelRoute.Dashboard.route){
                     DashboardScreen(viewState = viewState,
                         navigateToDetail = { comicId ->
@@ -62,14 +117,18 @@ fun VolatoonApp(navController: NavHostController){
                     TrendingScreen()
                 }
 
-
-
                 composable(route = TopLevelRoute.Notifications.route){
                     NotificationsScreen()
                 }
 
                 composable(route = TopLevelRoute.Profile.route){
-                    ProfileScreen()
+                    val profileResState by profileViewModel.profileResState
+
+                    LaunchedEffect(dataStoreManager) {
+                        profileViewModel.fetchUserData(dataStoreManager)
+                    }
+
+                    ProfileScreen(onLogOut, profileResState)
                 }
                 composable(route = TopLevelRoute.Search.route) {
                     val genreViewModel: GenreViewModel = viewModel()
@@ -156,8 +215,6 @@ fun VolatoonApp(navController: NavHostController){
                             }
                         }
                     }
-
-
                 }
             }
         }
@@ -165,6 +222,13 @@ fun VolatoonApp(navController: NavHostController){
 
 
 
+}
+
+suspend fun checkRegisterState(preferenceDataStore: DataStore<Preferences>, onResult: (Boolean) -> Unit) {
+    val preferences = preferenceDataStore.data.first()
+    val userId = preferences[AUTH_TOKEN]
+    val isLogin = userId != null
+    onResult(isLogin)
 }
 
 @Composable

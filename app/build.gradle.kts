@@ -51,8 +51,7 @@ android {
 }
 
 dependencies {
-
-    implementation("androidx.datastore:datastore-preferences-core:1.1.1")
+    implementation("com.auth0.android:jwtdecode:2.0.2")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation ("androidx.navigation:navigation-compose:2.8.4")
 

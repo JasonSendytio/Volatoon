@@ -8,9 +8,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.volatoon.ui.theme.VolatoonTheme
+import com.example.volatoon.utils.DataStoreManager
+import com.example.volatoon.utils.preferenceDataStore
 import com.example.volatoon.view.LoginScreen
 
 class MainActivity : ComponentActivity() {
@@ -25,7 +28,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    VolatoonApp(navController)
+                    val dataStoreContext = LocalContext.current
+                    val dataStoreManager = DataStoreManager(dataStoreContext)
+
+                    VolatoonApp(navController, preferenceDataStore, dataStoreManager)
                 }
             }
         }

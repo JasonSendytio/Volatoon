@@ -55,11 +55,13 @@ data class Genres(
 data class Genre(
     val genre_id : Int,
     val page : Int,
-    val order : String
+    val order : String,
 ) : Parcelable
 
-
 data class GenresList(val genres: List<Genres>)// The one that matches your model
+data class ComicsList(val data : List<Comic>,
+                      val prevPage: Boolean,
+                      val nextPage: Boolean)
 
-data class ComicsList(val data : List<Comic>)
+
 

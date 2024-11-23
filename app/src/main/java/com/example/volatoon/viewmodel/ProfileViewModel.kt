@@ -10,6 +10,7 @@ import com.example.volatoon.model.apiService
 import com.example.volatoon.utils.DataStoreManager
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import java.lang.Exception
 
 class ProfileViewModel: ViewModel() {
@@ -45,7 +46,7 @@ class ProfileViewModel: ViewModel() {
 
     data class ProfileResState(
         val loading : Boolean = true,
-        val profileDataRes : ProfileResponse? = null,
+        val profileDataRes : Response<ProfileResponse>? = null,
         val error : String? = null
     )
 

@@ -58,6 +58,13 @@ data class Genre(
     val order : String,
 ) : Parcelable
 
+data class ComicBookmark(
+    val bookmark_id : String,
+    val user_id : String,
+    val komik_id: String,
+    val createdAt : String,
+)
+
 data class GenresList(val genres: List<Genres>)// The one that matches your model
 data class ComicsList(val data : List<Comic>,
                       val prevPage: Boolean,

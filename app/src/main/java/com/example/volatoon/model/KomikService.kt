@@ -34,12 +34,12 @@ interface ComicApiService {
         @Path("genre_id") genreId: Int,
         @Query("page") page: Int = 1
     ): ComicsList
+
     @GET("komik/search")
     suspend fun searchComic(@Query("query") query : String) : ComicsList
 
     @GET("komik/{komik_id}")
     suspend fun getDetailComic(@Path("komik_id") comicId : String) : DetailComic
-
 
     @GET("komik/chapter/{chapter_id}")
     suspend fun getDetailChapter(@Path("chapter_id") chapterId : String) : DetailChapter

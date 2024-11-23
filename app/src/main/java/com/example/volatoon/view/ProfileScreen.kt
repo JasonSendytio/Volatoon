@@ -24,6 +24,7 @@ import kotlinx.coroutines.Job
 @Composable
 fun ProfileScreen(
     onLogOut :  () -> Job,
+    onNavigateToBookmark : () -> Unit,
     viewState : ProfileViewModel.ProfileResState
 ){
     Column (
@@ -56,11 +57,18 @@ fun ProfileScreen(
             }
 
             else -> {
+
                 Text("Profile Screen")
 
-                Text("FullName :  ${viewState.profileDataRes.userData.fullName}")
-                Text("Username : ${viewState.profileDataRes.userData.userName}")
-                Text("Email : ${viewState.profileDataRes.userData.email}")
+                Text("FullName :  ${viewState.profileDataRes.body()?.userData?.fullName}")
+                Text("Username : ${viewState.profileDataRes.body()?.userData?.userName}")
+                Text("Email : ${viewState.profileDataRes.body()?.userData?.email}")
+
+                Button(
+                    onClick = {onNavigateToBookmark()}
+                ) {
+                    Text("Bookmark", color = Color.Yellow)
+                }
 
                 Button(
                     onClick = {onLogOut()}

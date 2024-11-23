@@ -77,7 +77,7 @@ fun DetailChapterScreen(
                             painter = rememberAsyncImagePainter(model = chapterImg),
                             contentDescription = null,
                             modifier = Modifier
-                                .wrapContentSize()
+                                .fillMaxSize()
                                 .aspectRatio(1f)
                         )
                     }

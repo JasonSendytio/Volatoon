@@ -46,12 +46,11 @@ import com.example.volatoon.viewmodel.ComicViewModel
 import com.example.volatoon.viewmodel.GenreViewModel
 import com.example.volatoon.viewmodel.ProfileViewModel
 import com.example.volatoon.viewmodel.SearchViewModel
-<<<<<<< HEAD
 import androidx.compose.ui.platform.LocalContext
-=======
+import com.example.volatoon.view.BookmarkScreen
+import com.example.volatoon.viewmodel.BookmarkViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
->>>>>>> 2887c4ec1ea7255cc4ade578133e696f76e23e47
 
 @Composable
 fun VolatoonApp(
@@ -70,6 +69,7 @@ fun VolatoonApp(
 
     val comicViewModel : ComicViewModel = viewModel()
     val profileViewModel : ProfileViewModel = viewModel()
+    val bookmarkViewModel : BookmarkViewModel = viewModel()
 
     val viewState by comicViewModel.comicstate
 
@@ -128,8 +128,32 @@ fun VolatoonApp(
                         profileViewModel.fetchUserData(dataStoreManager)
                     }
 
-                    ProfileScreen(onLogOut, profileResState)
+                    ProfileScreen(
+                        onLogOut,
+                        onNavigateToBookmark = {
+                            navController.navigate(route = "bookmark")
+                        },
+                        profileResState,
+                    )
                 }
+
+                composable(
+                    route = "bookmark",
+                ) {
+                    val bookmarkState by bookmarkViewModel.bookmarkstate
+
+                    LaunchedEffect(dataStoreManager) {
+                        bookmarkViewModel.fetchUserBookmark(dataStoreManager)
+                    }
+
+                    BookmarkScreen (
+                        viewState = bookmarkState,
+                        navigateToDetail = { comicId ->
+                            navController.navigate(route = "detailcomic/$comicId")
+                        }
+                    )
+                }
+
                 composable(route = TopLevelRoute.Search.route) {
                     val genreViewModel: GenreViewModel = viewModel()
                     val genreState by genreViewModel.genreState
@@ -137,7 +161,7 @@ fun VolatoonApp(
                     SearchScreen(
                         viewState = SearchViewModel(),
                         genres = genreState.listGenres,
-                        context = LocalContext.current, // Add this line
+//                        context = LocalContext.current, // Add this line
 
                         navigateToDetail = { comicId ->
                             navController.navigate(route = "detailcomic/$comicId")
@@ -147,6 +171,7 @@ fun VolatoonApp(
                         }
                     )
                 }
+
                 composable(
                     route = "genre/{genreId}",
                     arguments = listOf(navArgument("genreId") { type = NavType.StringType })

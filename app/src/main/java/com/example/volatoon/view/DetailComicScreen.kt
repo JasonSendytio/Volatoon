@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,8 +44,8 @@ fun DetailComicScreen(
         when {
             viewState.loading -> {
                 CircularProgressIndicator(
-                    progress = 0.89f,
-                    modifier =  Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                 )
             }
 
@@ -109,7 +110,7 @@ fun DetailComicScreen(
                         modifier = Modifier.padding(5.dp)
                     ) {
                         Text(
-                            "alternateTitle",
+                            "Other Title",
                             modifier = Modifier.weight(.3f),
                             fontWeight = FontWeight.Bold
                         )
@@ -123,7 +124,7 @@ fun DetailComicScreen(
                         modifier = Modifier.padding(5.dp)
                     ) {
                         Text(
-                            "score",
+                            "Score",
                             modifier = Modifier.weight(.3f),
                             fontWeight = FontWeight.Bold
                         )
@@ -137,7 +138,7 @@ fun DetailComicScreen(
                         modifier = Modifier.padding(5.dp)
                     ) {
                         Text(
-                            "status",
+                            "Status",
                             modifier = Modifier.weight(.3f),
                             fontWeight = FontWeight.Bold
                         )
@@ -151,7 +152,7 @@ fun DetailComicScreen(
                         modifier = Modifier.padding(5.dp)
                     ) {
                         Text(
-                            "released",
+                            "Released",
                             modifier = Modifier.weight(.3f),
                             fontWeight = FontWeight.Bold
                         )
@@ -165,7 +166,7 @@ fun DetailComicScreen(
                         modifier = Modifier.padding(5.dp)
                     ) {
                         Text(
-                            "author",
+                            "Author",
                             modifier = Modifier.weight(.3f),
                             fontWeight = FontWeight.Bold
                         )

@@ -1,6 +1,7 @@
 package com.example.volatoon
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
@@ -20,7 +21,7 @@ sealed class TopLevelRoute(
     object Dashboard : TopLevelRoute("dashboard", Icons.Default.Home, "Home")
     object Trending : TopLevelRoute("trending", Icons.Default.Info, "Trending")
     object Search : TopLevelRoute("search", Icons.Default.Search, "Search")
-    object Notifications : TopLevelRoute("notifications", Icons.Default.Notifications, "Notifications") // Changed from "Notification" to "Notifications"
+    object Notifications : TopLevelRoute("activity", Icons.Default.Favorite, "Activity") // Changed from "Notification" to "Notifications"
     object Profile : TopLevelRoute("profile", Icons.Default.Person, "Profile")
 
     @Composable

@@ -37,6 +37,7 @@
     import androidx.compose.ui.Alignment
     import androidx.compose.foundation.lazy.items
     import androidx.compose.material3.CircularProgressIndicator
+    import androidx.compose.material3.ProgressIndicatorDefaults
     import androidx.compose.ui.Modifier
     import androidx.compose.ui.graphics.Color
     import androidx.compose.ui.text.font.FontWeight
@@ -92,8 +93,8 @@
                 when {
                     comicsState.loading -> {
                         CircularProgressIndicator(
-                            progress = 0.89f,
-                            modifier =  Modifier.align(Alignment.CenterHorizontally)
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                         )
                     }
 

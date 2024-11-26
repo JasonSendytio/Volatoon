@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -31,13 +30,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.utils.DataStoreManager.Companion.AUTH_TOKEN
-import com.example.volatoon.utils.USER_DATASTORE
 import com.example.volatoon.view.DashboardScreen
 import com.example.volatoon.view.DetailChapterScreen
 import com.example.volatoon.view.DetailComicScreen
 import com.example.volatoon.view.DetailGenreScreen
 import com.example.volatoon.view.LoginScreen
-import com.example.volatoon.view.NotificationsScreen
+import com.example.volatoon.view.UserActivityScreen
 import com.example.volatoon.view.ProfileScreen
 import com.example.volatoon.view.RegisterScreen
 import com.example.volatoon.view.SearchScreen
@@ -46,8 +44,8 @@ import com.example.volatoon.viewmodel.ComicViewModel
 import com.example.volatoon.viewmodel.GenreViewModel
 import com.example.volatoon.viewmodel.ProfileViewModel
 import com.example.volatoon.viewmodel.SearchViewModel
-import androidx.compose.ui.platform.LocalContext
 import com.example.volatoon.view.BookmarkScreen
+import com.example.volatoon.view.HistoryScreen
 import com.example.volatoon.viewmodel.BookmarkViewModel
 import com.example.volatoon.viewmodel.LoginViewModel
 import com.example.volatoon.viewmodel.RegisterViewModel
@@ -134,7 +132,7 @@ fun VolatoonApp(
                 }
 
                 composable(route = TopLevelRoute.Notifications.route){
-                    NotificationsScreen()
+                    UserActivityScreen()
                 }
 
                 composable(route = TopLevelRoute.Profile.route){
@@ -169,6 +167,24 @@ fun VolatoonApp(
                         }
                     )
                 }
+
+//                composable(
+//                    route = "history"
+//                ) {
+////                    val historyState by historyViewModel.historystate
+////
+////                    LaunchedEffect(dataStoreManager) {
+////
+////                    }
+//
+//                    HistoryScreen(
+////                        viewState = historyState,
+//                        navigateToDetail = { comicId ->
+//                            navController.navigate(route = "detailcomic/$comicId")
+//                        }
+//                    )
+//
+//                }
 
                 composable(route = TopLevelRoute.Search.route) {
                     val genreViewModel: GenreViewModel = viewModel()

@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,8 +46,8 @@ fun DetailChapterScreen(
         when {
             viewState.loading -> {
                 CircularProgressIndicator(
-                    progress = 0.89f,
-                    modifier =  Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                 )
             }
 

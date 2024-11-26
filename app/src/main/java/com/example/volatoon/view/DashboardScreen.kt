@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -154,7 +156,10 @@ fun DashboardScreen(
         ){
             when {
                 viewState.loading -> {
-                    CircularProgressIndicator(progress = 0.89f, modifier = Modifier.align(Alignment.Center))
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                    )
                 }
                 viewState.error != null -> {
                     Text(text = "ERROR OCCURRED ${viewState.error}")
@@ -224,23 +229,34 @@ fun ComicItem(
     navigateToDetail : (String) -> Unit
 ){
     Column (
-        modifier = Modifier.fillMaxSize().padding(8.dp).clickable { navigateToDetail(comic.komik_id) },
+        modifier = Modifier
+            .width(125.dp)
+            .height(200.dp)
+            .padding(2.dp)
+            .clickable { navigateToDetail(comic.komik_id) },
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Image(
             painter = rememberAsyncImagePainter(model = comic.image),
             contentDescription = null,
             modifier = Modifier
-                .width(119.dp).height(153.dp)
+                .width(125.dp).height(120.dp)
                 .aspectRatio(1f)
         )
-        val displayTitle = if (comic.title.length > 20) {
-            comic.title.take(12) + "..."
-        } else {
-            comic.title
-        }
-
-        Text(displayTitle)
-
+//        val displayTitle = if (comic.title.length > 20) {
+//            comic.title.take(12) + "..."
+//        } else {
+//            comic.title
+//        }
+//
+//        Text(displayTitle)
+        Text(
+            modifier = Modifier
+                .weight(0.1f, fill = false),
+            text = comic.title,
+            maxLines = 3,
+            fontSize = 12.sp,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }

@@ -232,7 +232,9 @@ fun VolatoonApp(
                                 )
                             }
                             detailChapterState.detailChapter != null -> {
-                                DetailChapterScreen(detailChapterState)
+                                DetailChapterScreen(detailChapterState, navigateToOtherChapter = { chapterId ->
+                                    navController.navigate(route = "detailchapter/$chapterId")
+                                })
                             }
 
                             detailChapterState.error != null -> {
@@ -276,7 +278,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 selected = navController.currentBackStackEntryAsState().value?.destination?.route == item.route,
                 onClick = {
                     navController.navigate(item.route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        popUpTo(navController.graph.startDestinationId) { saveState = false }
                         launchSingleTop = true
                         restoreState = true
                     }

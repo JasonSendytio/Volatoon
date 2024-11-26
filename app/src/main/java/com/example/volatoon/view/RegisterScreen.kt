@@ -1,6 +1,9 @@
 package com.example.volatoon.view
 
+import android.provider.ContactsContract.Data
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,8 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -23,73 +29,129 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.volatoon.R
+import com.example.volatoon.model.Account
+import com.example.volatoon.model.RegisterData
+import com.example.volatoon.utils.DataStoreManager
+import com.example.volatoon.viewmodel.LoginViewModel
+import com.example.volatoon.viewmodel.RegisterViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(){
-    var text by remember { mutableStateOf("") }
+fun RegisterScreen(
+    navigateToLogin : () -> Unit,
+    dataStoreManager : DataStoreManager,
+    viewModel: RegisterViewModel,
+    loginViewModel : LoginViewModel,
+    navigateToDashboard : () -> Unit
+){
+    var userName by remember { mutableStateOf("") }
+    var fullName by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        Image(
-            painter = painterResource(id = R.drawable.logo),
-            modifier = Modifier
-                .height(220.dp)
-                .width(220.dp),
-            contentDescription = null)
-        Text(
-            style = TextStyle(fontWeight = FontWeight.Bold),
-            color = Color.Black,
-            fontSize = 35.sp,
-            text = "Register")
-        Spacer(modifier = Modifier.height(10.dp))
+        val viewState = viewModel.registerState.value
+        val loginState = loginViewModel.loginState.value
 
-        OutlinedTextField(
-            value = text,
-            modifier = Modifier.padding(10.dp).fillMaxWidth(),
-            onValueChange = {text = it},
-            label = { Text("Name") })
+        when {
+            viewState.isRegister -> {
+                loginViewModel.loginUser(Account(email, password), dataStoreManager)
 
-        OutlinedTextField(
-            value = text,
-            onValueChange = {text = it},
-            modifier = Modifier.padding(10.dp).fillMaxWidth(),
-            label = { Text("Email") })
+                if(loginState.isLogin){
+                    navigateToDashboard()
+                }
+            }
 
-        OutlinedTextField(
-            value = text,
-            onValueChange = {text = it},
-            modifier = Modifier.padding(10.dp).fillMaxWidth(),
-            label = { Text("Password") })
+            viewState.loading -> {
+                CircularProgressIndicator(progress = 0.89f)
+            }
 
-        OutlinedTextField(
-            value = text,
-            onValueChange = {text = it},
-            modifier = Modifier.padding(10.dp).fillMaxWidth(),
-            label = { Text("Confirm Password") })
+            else -> {
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    modifier = Modifier
+                        .height(220.dp)
+                        .width(220.dp),
+                    contentDescription = null)
+                Text(
+                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    color = Color.Black,
+                    fontSize = 35.sp,
+                    text = "Register")
 
-        Text(
-            color = Color(0xFFA2D7E2),
-            modifier = Modifier.padding(5.dp),
-            text = "Already have an account ?")
+                if(viewState.error != null) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        style = TextStyle(fontWeight = FontWeight.SemiBold, fontStyle = FontStyle.Italic),
+                        color = Color.Red,
+                        fontSize = 20.sp,
+                        text = "${viewState.error}")
+                }
 
-        Button(
-            onClick = {},
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFA2D7E2)
-            ),
-            modifier = Modifier.fillMaxWidth().padding(5.dp)
-        ){
-            Text(text = "Register")
+                Spacer(modifier = Modifier.height(10.dp))
+
+                OutlinedTextField(
+                    value = userName,
+                    modifier = Modifier.padding(10.dp).fillMaxWidth(),
+                    onValueChange = {userName = it},
+                    label = { Text("Username") })
+
+                OutlinedTextField(
+                    value = fullName,
+                    modifier = Modifier.padding(10.dp).fillMaxWidth(),
+                    onValueChange = {fullName = it},
+                    label = { Text("Fullname") })
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = {email = it},
+                    modifier = Modifier.padding(10.dp).fillMaxWidth(),
+                    label = { Text("Email") })
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = {password = it},
+                    modifier = Modifier.padding(10.dp).fillMaxWidth(),
+                    label = { Text("Password") })
+
+                OutlinedTextField(
+                    value = confirmPassword,
+                    onValueChange = {confirmPassword = it},
+                    modifier = Modifier.padding(10.dp).fillMaxWidth(),
+                    label = { Text("Confirm Password") })
+
+                Text(
+                    color = Color(0xFFA2D7E2),
+                    modifier = Modifier.padding(5.dp)
+                        .clickable { navigateToLogin() },
+                    text = "Already have an account ?")
+
+                Button(
+                    onClick = {
+                        viewModel.registerUser(RegisterData(fullName, userName, email, password), dataStoreManager)
+                              },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFA2D7E2)
+                    ),
+                    modifier = Modifier.fillMaxWidth().padding(5.dp)
+                ){
+                    Text(text = "Register")
+                }
+            }
         }
     }
 }
@@ -97,5 +159,5 @@ fun RegisterScreen(){
 @Preview(showBackground = true)
 @Composable
 fun PreviewRegisterScreen(){
-    RegisterScreen()
+//    RegisterScreen()
 }

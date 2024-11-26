@@ -49,6 +49,8 @@ import com.example.volatoon.viewmodel.SearchViewModel
 import androidx.compose.ui.platform.LocalContext
 import com.example.volatoon.view.BookmarkScreen
 import com.example.volatoon.viewmodel.BookmarkViewModel
+import com.example.volatoon.viewmodel.LoginViewModel
+import com.example.volatoon.viewmodel.RegisterViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -69,6 +71,8 @@ fun VolatoonApp(
 
     val comicViewModel : ComicViewModel = viewModel()
     val profileViewModel : ProfileViewModel = viewModel()
+    val registerViewModel : RegisterViewModel = viewModel()
+    val loginViewModel : LoginViewModel = viewModel()
     val bookmarkViewModel : BookmarkViewModel = viewModel()
 
     val viewState by comicViewModel.comicstate
@@ -81,7 +85,7 @@ fun VolatoonApp(
     }
 
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = navController) }
+        bottomBar = { if(isLogin) BottomNavigationBar(navController = navController) }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)){
             NavHost(
@@ -91,15 +95,27 @@ fun VolatoonApp(
                 composable(
                     route = "register",
                 ) {
-                   RegisterScreen()
+                   RegisterScreen(navigateToLogin = {
+                       navController.navigate(route = "login")
+                   },
+                       dataStoreManager,
+                       registerViewModel,
+                       loginViewModel,
+                       navigateToDashboard = {
+                           navController.navigate(route = TopLevelRoute.Dashboard.route) },
+                       )
                 }
 
                 composable(
                     route = "login",
                 ) {
-                    LoginScreen(navigateToDashboard = {
-                        navController.navigate(route = TopLevelRoute.Dashboard.route)},
-                        dataStoreManager)
+                    LoginScreen(
+                        navigateToDashboard = {
+                        navController.navigate(route = TopLevelRoute.Dashboard.route) },
+                        dataStoreManager,
+                        navigateToRegister = {
+                            navController.navigate(route = "register")
+                        })
                 }
 
                 composable(route = TopLevelRoute.Dashboard.route){

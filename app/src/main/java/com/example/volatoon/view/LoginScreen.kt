@@ -1,6 +1,7 @@
 package com.example.volatoon.view
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,7 +40,8 @@ import com.example.volatoon.utils.DataStoreManager
 @Composable
 fun LoginScreen(
     navigateToDashboard : () -> Unit,
-    dataStoreManager: DataStoreManager
+    dataStoreManager: DataStoreManager,
+    navigateToRegister : () -> Unit
 ){
 
     val loginViewModel : LoginViewModel = viewModel()
@@ -104,8 +106,12 @@ fun LoginScreen(
 
                 Text(
                     color = Color(0xFFA2D7E2),
-                    modifier = Modifier.padding(5.dp),
-                    text = "Don't have an account? Sign Up Here")
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .clickable { navigateToRegister() },
+                    text = "Don't have an account? Sign Up Here",
+
+                )
 
                 Button(
                     onClick = { loginViewModel.loginUser(Account(email, password), dataStoreManager)},

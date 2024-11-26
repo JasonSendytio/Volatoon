@@ -21,6 +21,9 @@ interface ApiService {
     @POST("api/auth/login")
     suspend fun loginUser(@Body account: Account?): Response<authData>
 
+    @POST("api/auth/register")
+    suspend fun registerUser(@Body account: RegisterData?): Response<authData>
+
     @GET("api/profile")
     suspend fun getProfile(@Header("Authorization") token: String) : Response<ProfileResponse>
 

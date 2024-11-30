@@ -1,0 +1,81 @@
+name: Build and Release APK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+
+    - name: Build with Gradle
+      run: ./gradlew assembleRelease
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: app-release.apk
+        path: app/build/outputs/apk/release/app-release.apk
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Read version from update.json
+      id: read_version
+      run: |
+        VERSION=$(jq -r '.version' update.json)
+        DESCRIPTION=$(jq -r '.description' update.json)
+        if [[ -z "$VERSION" || -z "$DESCRIPTION" ]]; then
+          echo "Invalid update.json format. Skipping release."
+          exit 0
+        fi
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        echo "DESCRIPTION=$DESCRIPTION" >> $GITHUB_ENV
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ env.VERSION }}
+        release_name: Release v${{ env.VERSION }}
+        body: ${{ env.DESCRIPTION }}
+        draft: false
+        prerelease: false
+
+    - name: Upload APK to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: app/build/outputs/apk/release/app-release.apk
+        asset_name: app-release.apk
+        asset_content_type: application/zip
+
+    - name: Update version in update.json
+      run: |
+        VERSION=$(jq -r '.version' update.json)
+        NEW_VERSION=$(echo $VERSION | awk -F. -v OFS=. '{$NF++;print}')
+        jq --arg new_version "$NEW_VERSION" '.version = $new_version' update.json > tmp.$$.json && mv tmp.$$.json update.json
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        git add update.json
+        git commit -m "Update version to $NEW_VERSION"
+        git push origin main

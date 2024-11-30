@@ -41,7 +41,30 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("chapter_id") chapterId : String
     ) : bookmarkResponseData
+    // Add these new endpoints
+    @GET("api/comments/{komikId}") // Changed from chapterId to komikId
+    suspend fun getComments(
+        @Path("komikId") komikId: String,
+        @Header("Authorization") token: String
+    ): CommentResponse
 
+    @POST("api/comments")
+    suspend fun postComment(
+        @Body commentRequest: CommentRequest,
+        @Header("Authorization") token: String
+    ): CommentResponse
+
+    @DELETE("api/comments/{commentId}")
+    suspend fun deleteComment(
+        @Path("commentId") commentId: String,
+        @Header("Authorization") token: String
+    ): CommentResponse
+
+    @POST("api/comments/{commentId}/like")
+    suspend fun likeComment(
+        @Path("commentId") commentId: String,
+        @Header("Authorization") token: String
+    ): CommentResponse
 //    @POST("api/auth/register")
 //    suspend fun registerUser(@Body user: User?): Response<authData>
     // this code will execute the api and return the data as Categories List data in our previous data class

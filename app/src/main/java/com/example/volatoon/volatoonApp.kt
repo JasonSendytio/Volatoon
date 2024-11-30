@@ -49,6 +49,8 @@ import com.example.volatoon.view.HistoryScreen
 import com.example.volatoon.viewmodel.BookmarkViewModel
 import com.example.volatoon.viewmodel.LoginViewModel
 import com.example.volatoon.viewmodel.RegisterViewModel
+import com.example.volatoon.viewmodel.CommentViewModel
+
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -263,10 +265,18 @@ fun VolatoonApp(
                                     trackColor = ProgressIndicatorDefaults.circularDeterminateTrackColor,
                                 )
                             }
+
                             detailChapterState.detailChapter != null -> {
-                                DetailChapterScreen(detailChapterState, navigateToOtherChapter = { chapterId ->
-                                    navController.navigate(route = "detailchapter/$chapterId")
-                                })
+                                val commentViewModel: CommentViewModel = viewModel()
+
+                                DetailChapterScreen(
+                                    viewState = detailChapterState,
+                                    navigateToOtherChapter = { chapterId ->
+                                        navController.navigate(route = "detailchapter/$chapterId")
+                                    },
+                                    commentViewModel = commentViewModel,  // Add this
+                                    dataStoreManager = dataStoreManager  // Add this
+                                )
                             }
 
                             detailChapterState.error != null -> {

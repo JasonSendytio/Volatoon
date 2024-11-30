@@ -1,11 +1,4 @@
 {
     "version": "1.0.0",
-    "description": "Initial release of Volatoon",
-    "changelog": [
-        "First stable version",
-        "Basic functionality implemented"
-    ],
-    "minimumSupportedVersion": "1.0.0",
-    "downloadUrl": "",
-    "updateRequired": false
+    "description": "Rilis pertama Volatoon"
 }

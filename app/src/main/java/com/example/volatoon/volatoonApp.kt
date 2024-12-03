@@ -133,8 +133,8 @@ fun VolatoonApp(
                     TrendingScreen()
                 }
 
-                composable(route = TopLevelRoute.Notifications.route){
-                    UserActivityScreen()
+                composable(route = TopLevelRoute.UserActivity.route){
+                    UserActivityScreen(navController)
                 }
 
                 composable(route = TopLevelRoute.Profile.route){
@@ -281,9 +281,6 @@ fun VolatoonApp(
             }
         }
     }
-
-
-
 }
 
 suspend fun checkRegisterState(preferenceDataStore: DataStore<Preferences>, onResult: (Boolean) -> Unit) {
@@ -299,7 +296,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         TopLevelRoute.Dashboard,
         TopLevelRoute.Trending,
         TopLevelRoute.Search,
-        TopLevelRoute.Notifications,
+        TopLevelRoute.UserActivity,
         TopLevelRoute.Profile
     )
 

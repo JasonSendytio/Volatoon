@@ -170,23 +170,16 @@ fun VolatoonApp(
                     )
                 }
 
-//                composable(
-//                    route = "history"
-//                ) {
-////                    val historyState by historyViewModel.historystate
-////
-////                    LaunchedEffect(dataStoreManager) {
-////
-////                    }
-//
-//                    HistoryScreen(
-////                        viewState = historyState,
-//                        navigateToDetail = { comicId ->
-//                            navController.navigate(route = "detailcomic/$comicId")
-//                        }
-//                    )
-//
-//                }
+                composable(
+                    route = "history"
+                ) {
+                    HistoryScreen(
+                        dataStoreManager,
+                        navigateToDetail = { comicId ->
+                            navController.navigate(route = "detailcomic/$comicId")
+                        }
+                    )
+                }
 
                 composable(route = TopLevelRoute.Search.route) {
                     val genreViewModel: GenreViewModel = viewModel()

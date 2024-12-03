@@ -55,6 +55,7 @@ fun UserActivityScreen(){
         Row(
             modifier = Modifier
                 .padding(top = 16.dp)
+                .clickable {  }
         ) {
             Text("History >")
         }

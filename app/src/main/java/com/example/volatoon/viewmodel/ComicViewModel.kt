@@ -39,10 +39,17 @@ class ComicViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = comicApiService.getDetailChapter(chapterId)
-
+                val detailChapter = DetailChapter(
+                    title = response.title,
+                    komik_id = response.komik_id,
+                    chapter_id = chapterId,
+                    prev_chapter_id = response.prev_chapter_id ?: " ",
+                    next_chapter_id = response.next_chapter_id ?: " ",
+                    images = response.images
+                )
                 _chapterDetailState.value = _chapterDetailState.value.copy(
                     loading = false,
-                    detailChapter = response,
+                    detailChapter = detailChapter,
                     error = null
                 )
 

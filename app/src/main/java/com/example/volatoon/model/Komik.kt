@@ -24,6 +24,7 @@ data class Chapter(
 data class DetailChapter(
     val title : String,
     val komik_id : String,
+    val chapter_id: String,
     val prev_chapter_id : String,
     val next_chapter_id : String,
     val images : List<String>,

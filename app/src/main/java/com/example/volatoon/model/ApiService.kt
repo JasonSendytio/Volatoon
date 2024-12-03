@@ -7,11 +7,12 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
 
 
-private val retrofit = Retrofit.Builder().baseUrl("https://volatoon.vercel.app/")
+private val retrofit = Retrofit.Builder().baseUrl("https://volatoon-api.vercel.app/")
     .addConverterFactory(GsonConverterFactory.create())
     .build()
 
@@ -26,6 +27,7 @@ interface ApiService {
 
     @GET("api/profile")
     suspend fun getProfile(@Header("Authorization") token: String) : Response<ProfileResponse>
+
 
     @POST("api/bookmark")
     suspend fun postBookmark(
@@ -42,29 +44,37 @@ interface ApiService {
         @Path("chapter_id") chapterId : String
     ) : bookmarkResponseData
     // Add these new endpoints
-    @GET("api/comments/{komikId}") // Changed from chapterId to komikId
+    @Headers("Content-Type: application/json")
+
+    @GET("api/comments/{chapterId}")
     suspend fun getComments(
-        @Path("komikId") komikId: String,
+        @Path("chapterId") chapterId: String,
         @Header("Authorization") token: String
-    ): CommentResponse
+    ): Response<CommentResponse>
+
+    @Headers("Content-Type: application/json")
 
     @POST("api/comments")
     suspend fun postComment(
         @Body commentRequest: CommentRequest,
         @Header("Authorization") token: String
-    ): CommentResponse
+    ): Response<CommentResponse>
+
+    @Headers("Content-Type: application/json")
 
     @DELETE("api/comments/{commentId}")
     suspend fun deleteComment(
         @Path("commentId") commentId: String,
         @Header("Authorization") token: String
-    ): CommentResponse
+    ): Response<CommentResponse>
+
+    @Headers("Content-Type: application/json")
 
     @POST("api/comments/{commentId}/like")
     suspend fun likeComment(
         @Path("commentId") commentId: String,
         @Header("Authorization") token: String
-    ): CommentResponse
+    ): Response<CommentResponse>
 //    @POST("api/auth/register")
 //    suspend fun registerUser(@Body user: User?): Response<authData>
     // this code will execute the api and return the data as Categories List data in our previous data class

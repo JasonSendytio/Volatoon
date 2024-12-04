@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 fun ProfileScreen (
     onLogOut: () -> Job,
     onNavigateToBookmark: () -> Unit,
+    onNavigateToPremium: () -> Unit,
     viewState: ProfileViewModel.ProfileResState
 ) {
     Column(
@@ -67,15 +68,14 @@ fun ProfileScreen (
                 )
 
                 UserQuote(
-                    quote = "Aku ingin mencintaimu dengan sederhana " +
-                            "dengan isyarat yang tak sempat disampaikan " +
-                            "awan kepada hujan yang menjadikannya tiada"
+                    quote = viewState.profileDataRes.body()?.userData?.status ?: "Belum ada status"
                 )
 
 
                 ProfileActions(
                     onNavigateToBookmark = onNavigateToBookmark,
-                    onLogOut = onLogOut
+                    onLogOut = onLogOut,
+                    onNavigateToPremium = onNavigateToPremium
                 )
             }
         }
@@ -135,14 +135,15 @@ fun UserQuote(quote: String) {
 @Composable
 fun ProfileActions(
     onNavigateToBookmark: () -> Unit,
-    onLogOut: () -> Job
+    onLogOut: () -> Job,
+    onNavigateToPremium: () -> Unit
 ) {
     Column(
         modifier = Modifier.padding(top = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = { /* Navigate to Premium */ },
+            onClick = { onNavigateToPremium() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
@@ -183,7 +184,7 @@ fun ProfileActions(
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White
+                containerColor = Color.Cyan
             )
         ) {
             Text("Logout", color = Color.Red)

@@ -46,6 +46,7 @@ import com.example.volatoon.viewmodel.ProfileViewModel
 import com.example.volatoon.viewmodel.SearchViewModel
 import com.example.volatoon.view.BookmarkScreen
 import com.example.volatoon.view.HistoryScreen
+import com.example.volatoon.view.VolatoonPremiumScreen
 import com.example.volatoon.viewmodel.BookmarkViewModel
 import com.example.volatoon.viewmodel.LoginViewModel
 import com.example.volatoon.viewmodel.RegisterViewModel
@@ -149,6 +150,9 @@ fun VolatoonApp(
                         onNavigateToBookmark = {
                             navController.navigate(route = "bookmark")
                         },
+                        onNavigateToPremium = {
+                            navController.navigate(route = "premium")
+                        },
                         profileResState,
                     )
                 }
@@ -168,6 +172,13 @@ fun VolatoonApp(
                             navController.navigate(route = "detailcomic/$comicId")
                         }
                     )
+                }
+
+
+                composable(
+                    route = "premium"
+                ) {
+                    VolatoonPremiumScreen()
                 }
 
                 composable(

@@ -54,8 +54,8 @@ fun RegisterScreen(
     var userName by remember { mutableStateOf("") }
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+    var password = remember { mutableStateOf("") }
+    var confirmPassword = remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -69,7 +69,7 @@ fun RegisterScreen(
 
         when {
             viewState.isRegister -> {
-                loginViewModel.loginUser(Account(email, password), dataStoreManager)
+                loginViewModel.loginUser(Account(email, password.value), dataStoreManager)
 
                 if(loginState.isLogin){
                     navigateToDashboard()
@@ -122,17 +122,20 @@ fun RegisterScreen(
                     modifier = Modifier.padding(10.dp).fillMaxWidth(),
                     label = { Text("Email") })
 
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = {password = it},
-                    modifier = Modifier.padding(10.dp).fillMaxWidth(),
-                    label = { Text("Password") })
+                PasswordTextField("Password", password)
+                PasswordTextField("Confirm Password", confirmPassword)
 
-                OutlinedTextField(
-                    value = confirmPassword,
-                    onValueChange = {confirmPassword = it},
-                    modifier = Modifier.padding(10.dp).fillMaxWidth(),
-                    label = { Text("Confirm Password") })
+//                OutlinedTextField(
+//                    value = password,
+//                    onValueChange = {password = it},
+//                    modifier = Modifier.padding(10.dp).fillMaxWidth(),
+//                    label = { Text("Password") })
+//
+//                OutlinedTextField(
+//                    value = confirmPassword,
+//                    onValueChange = {confirmPassword = it},
+//                    modifier = Modifier.padding(10.dp).fillMaxWidth(),
+//                    label = { Text("Confirm Password") })
 
                 Text(
                     color = Color(0xFFA2D7E2),
@@ -142,7 +145,7 @@ fun RegisterScreen(
 
                 Button(
                     onClick = {
-                        viewModel.registerUser(RegisterData(fullName, userName, email, password), dataStoreManager)
+                        viewModel.registerUser(RegisterData(fullName, userName, email, password.value), dataStoreManager)
                               },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFA2D7E2)

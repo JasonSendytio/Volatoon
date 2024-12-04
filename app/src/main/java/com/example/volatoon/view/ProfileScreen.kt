@@ -66,7 +66,6 @@ fun ProfileScreen (
                     userName = viewState.profileDataRes.body()?.userData?.userName ?: "N/A"
                 )
 
-
                 UserQuote(
                     quote = "Aku ingin mencintaimu dengan sederhana " +
                             "dengan isyarat yang tak sempat disampaikan " +

@@ -19,7 +19,8 @@ data class Auth(
 data class Profile(
     val fullName : String,
     val userName : String,
-    val email : String
+    val email : String,
+    val status : String
 )
 
 data class ProfileResponse(

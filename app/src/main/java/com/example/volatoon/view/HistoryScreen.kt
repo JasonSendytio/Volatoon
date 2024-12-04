@@ -12,13 +12,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,18 +27,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.volatoon.R
-import com.example.volatoon.viewmodel.GenreViewModel
+import com.example.volatoon.utils.DataStoreManager
+import com.example.volatoon.viewmodel.HistoryViewModel
 
 @Composable
 fun HistoryScreen(
-
+    dataStoreManager: DataStoreManager,
+    navigateToDetail: (String) -> Unit
 ){
+    val viewModel: HistoryViewModel = viewModel()
+    val viewState by viewModel.historyState
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -55,29 +59,38 @@ fun HistoryScreen(
         )
 
         when {
-//            viewState.loading && viewState.genreComics.isEmpty() -> {
-//                CircularProgressIndicator(
-//                    modifier = Modifier.align(Alignment.CenterHorizontally)
-//                )
-//            }
-//
-//            viewState.error != null -> {
-//                Text(
-//                    text = "Error: ${viewState.error}",
-//                    color = Color.Red,
-//                    modifier = Modifier.align(Alignment.CenterHorizontally)
-//                )
-//            }
+            viewState.loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
+
+            viewState.error != null -> {
+                Text(
+                    text = "Error: ${viewState.error}",
+                    color = Color.Red,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
+
+            viewState.responseData == null -> {
+                Text(
+                    text = "No history",
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
 
             else -> {
+                val listHistory = viewState.responseData!!.data ?: emptyList()
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(5) { comic ->
+                    items(items = listHistory) { comic ->
+                        val responseComicDetail = viewModel.fetchComicDetail(comic.komik_id)
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-//                                .clickable { navigateToDetail(comic.komik_id) }
+                                .clickable { navigateToDetail(comic.komik_id) }
                                 .padding(4.dp)
                         ) {
                             Row(
@@ -125,53 +138,20 @@ fun HistoryScreen(
                                         color = MaterialTheme.colorScheme.secondary
                                     )
                                 }
+                                Icon(
+                                    tint = Color.Black,
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Clear",
+                                    modifier = Modifier
+                                        .clickable {
+                                             viewModel.deleteHistory(dataStoreManager, comic.history_id)
+                                        }
+                                )
                             }
                         }
                     }
-
-                    // Pagination Controls
-//                    item {
-//                        Row(
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .padding(vertical = 8.dp),
-//                            horizontalArrangement = Arrangement.SpaceBetween
-//                        ) {
-//                            if (viewState.hasPreviousPage) {
-//                                Button(
-//                                    onClick = { genreViewModel.loadPreviousPage() },
-//                                    enabled = !viewState.loading
-//                                ) {
-//                                    Text("Previous")
-//                                }
-//                            }
-//
-//                            if (viewState.hasNextPage) {
-//                                Button(
-//                                    onClick = { genreViewModel.loadNextPage() },
-//                                    enabled = !viewState.loading
-//                                ) {
-//                                    Text("Next")
-//                                }
-//                            }
-//                        }
-//
-//                        if (viewState.loading) {
-//                            CircularProgressIndicator(
-//                                modifier = Modifier
-//                                    .align(Alignment.CenterHorizontally)
-//                                    .padding(8.dp)
-//                            )
-//                        }
-//                    }
                 }
             }
         }
     }
-}
-
-@Preview (showBackground = true)
-@Composable
-fun PreviewHistoryScreen(){
-    HistoryScreen()
 }

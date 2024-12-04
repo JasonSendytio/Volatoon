@@ -21,7 +21,7 @@ sealed class TopLevelRoute(
     object Dashboard : TopLevelRoute("dashboard", Icons.Default.Home, "Home")
     object Trending : TopLevelRoute("trending", Icons.Default.Info, "Trending")
     object Search : TopLevelRoute("search", Icons.Default.Search, "Search")
-    object Notifications : TopLevelRoute("activity", Icons.Default.Favorite, "Activity") // Changed from "Notification" to "Notifications"
+    object UserActivity : TopLevelRoute("activity", Icons.Default.Favorite, "Activity") // Changed from "Notification" to "Notifications"
     object Profile : TopLevelRoute("profile", Icons.Default.Person, "Profile")
 
     @Composable

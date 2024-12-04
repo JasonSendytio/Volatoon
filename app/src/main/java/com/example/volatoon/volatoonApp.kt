@@ -133,8 +133,8 @@ fun VolatoonApp(
                     TrendingScreen()
                 }
 
-                composable(route = TopLevelRoute.Notifications.route){
-                    UserActivityScreen()
+                composable(route = TopLevelRoute.UserActivity.route){
+                    UserActivityScreen(navController)
                 }
 
                 composable(route = TopLevelRoute.Profile.route){
@@ -170,23 +170,16 @@ fun VolatoonApp(
                     )
                 }
 
-//                composable(
-//                    route = "history"
-//                ) {
-////                    val historyState by historyViewModel.historystate
-////
-////                    LaunchedEffect(dataStoreManager) {
-////
-////                    }
-//
-//                    HistoryScreen(
-////                        viewState = historyState,
-//                        navigateToDetail = { comicId ->
-//                            navController.navigate(route = "detailcomic/$comicId")
-//                        }
-//                    )
-//
-//                }
+                composable(
+                    route = "history"
+                ) {
+                    HistoryScreen(
+                        dataStoreManager,
+                        navigateToDetail = { comicId ->
+                            navController.navigate(route = "detailcomic/$comicId")
+                        }
+                    )
+                }
 
                 composable(route = TopLevelRoute.Search.route) {
                     val genreViewModel: GenreViewModel = viewModel()
@@ -288,9 +281,6 @@ fun VolatoonApp(
             }
         }
     }
-
-
-
 }
 
 suspend fun checkRegisterState(preferenceDataStore: DataStore<Preferences>, onResult: (Boolean) -> Unit) {
@@ -306,7 +296,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         TopLevelRoute.Dashboard,
         TopLevelRoute.Trending,
         TopLevelRoute.Search,
-        TopLevelRoute.Notifications,
+        TopLevelRoute.UserActivity,
         TopLevelRoute.Profile
     )
 

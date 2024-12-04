@@ -75,6 +75,16 @@ interface ApiService {
         @Path("commentId") commentId: String,
         @Header("Authorization") token: String
     ): Response<CommentResponse>
+
+    @GET("api/history")
+    suspend fun getHistory(@Header("Authorization") token: String): HistoryResponseData
+
+    @DELETE("api/history/{historyId}")
+    suspend fun deleteHistory(
+        @Header("Authorization") token: String,
+        @Path("historyId") historyId: String
+    ): HistoryResponseData
+
 //    @POST("api/auth/register")
 //    suspend fun registerUser(@Body user: User?): Response<authData>
     // this code will execute the api and return the data as Categories List data in our previous data class

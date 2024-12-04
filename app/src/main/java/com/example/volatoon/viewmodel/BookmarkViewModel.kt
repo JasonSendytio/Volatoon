@@ -32,7 +32,7 @@ class BookmarkViewModel : ViewModel(){
                         responseData = response,
                         error = null
                     )
-                    Log.i("fetch bookmark", response.toString())
+                    Log.i("fetch bookmark", response.message)
 
                 } catch (e : Exception){
                     _bookmarkstate.value = _bookmarkstate.value.copy(

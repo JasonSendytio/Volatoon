@@ -78,6 +78,12 @@ interface ApiService {
     @GET("api/history")
     suspend fun getHistory(@Header("Authorization") token: String): HistoryResponseData
 
+    @POST("api/history")
+    suspend fun postHistory(
+        @Header("Authorization") token: String,
+        @Body komikId: String?
+    ): HistoryResponseData
+
     @DELETE("api/history/{historyId}")
     suspend fun deleteHistory(
         @Header("Authorization") token: String,

@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +37,7 @@ import com.example.volatoon.model.ComicBookmark
 import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.viewmodel.BookmarkViewModel
 import com.example.volatoon.viewmodel.ComicViewModel
+import com.example.volatoon.viewmodel.HistoryViewModel
 
 @Composable
 fun DetailComicScreen(
@@ -44,8 +46,13 @@ fun DetailComicScreen(
     navigateToDetail : (String) -> Unit,
     dataStoreManager: DataStoreManager,
     bookmarkViewModel: BookmarkViewModel,
+    historyViewModel: HistoryViewModel,
     comicId : String
 ){
+    LaunchedEffect(Unit) {
+        historyViewModel.addHistory(dataStoreManager, comicId)
+    }
+
     Column (
         modifier = Modifier
             .fillMaxSize()

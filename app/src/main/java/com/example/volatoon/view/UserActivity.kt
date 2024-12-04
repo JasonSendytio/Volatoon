@@ -18,7 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.volatoon.R
@@ -28,6 +30,7 @@ import com.example.volatoon.viewmodel.ComicViewModel
 @Composable
 
 fun UserActivityScreen(
+
     navController: NavController
 ){
     val navigateToDetail: (String) -> Unit = {
@@ -44,11 +47,18 @@ fun UserActivityScreen(
         Row(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Notifications >")
+            Text(
+                text = "Notifications >",
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .fillMaxWidth()
+            )
         }
         LazyColumn {
-            items(5) {
-                Text("Notification")
+            items(2) {
+                Text("New Notification")
             }
         }
 
@@ -59,7 +69,14 @@ fun UserActivityScreen(
                     navController.navigate("history")
                 }
         ) {
-            Text("History >")
+            Text(
+                text = "History >",
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .fillMaxWidth()
+            )
         }
         LazyRow(
             modifier = Modifier.fillMaxWidth()
@@ -68,7 +85,7 @@ fun UserActivityScreen(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-//                            .clickable { navigateToDetail(comic.komik_id) }
+//                        .clickable { navigateToDetail(comic.komik_id) }
                         .padding(4.dp)
                 ) {
                     Column(
@@ -112,8 +129,18 @@ fun UserActivityScreen(
         Row(
             modifier = Modifier
                 .padding(top = 16.dp)
+                .clickable {
+                    navController.navigate("bookmark")
+                }
         ){
-            Text("Bookmarks >")
+            Text(
+                text = "Bookmarks >",
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .fillMaxWidth()
+            )
         }
         LazyRow(
             modifier = Modifier.fillMaxWidth()

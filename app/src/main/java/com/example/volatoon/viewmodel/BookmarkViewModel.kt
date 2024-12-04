@@ -1,6 +1,7 @@
 package com.example.volatoon.viewmodel
 
 import androidx.compose.runtime.State
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,12 +32,14 @@ class BookmarkViewModel : ViewModel(){
                         responseData = response,
                         error = null
                     )
+                    Log.i("fetch bookmark", response.toString())
 
                 } catch (e : Exception){
                     _bookmarkstate.value = _bookmarkstate.value.copy(
                         loading = false,
                         error = "error fetching profile ${e.message}"
                     )
+                    Log.e("fetch bookmark", e.message.toString())
                 }
             }
         }
@@ -58,12 +61,14 @@ class BookmarkViewModel : ViewModel(){
                         loading = false,
                         error = null
                     )
+                    Log.i("add bookmark", response.toString())
 
                 } catch (e : Exception){
                     _addBookmarkstate.value = _addBookmarkstate.value.copy(
                         loading = false,
                         error = "error fetching profile ${e.message}"
                     )
+                    Log.e("add bookmark", e.message.toString())
                 }
             }
         }

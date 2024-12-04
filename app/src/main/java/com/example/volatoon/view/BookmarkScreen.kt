@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.volatoon.R
 import com.example.volatoon.model.ComicBookmark
@@ -51,7 +52,15 @@ fun BookmarkScreen(
 //            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        Text("bookmark screen ")
+        Text(
+            text = "All Bookmark",
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .fillMaxWidth()
+        )
+
         when {
             viewState.loading -> {
                 CircularProgressIndicator(
@@ -65,13 +74,17 @@ fun BookmarkScreen(
             }
 
             viewState.responseData == null -> {
-                Text(text = "No bookmarks available.")
+                Text(text = "No bookmark")
             }
 
             else -> {
                 Spacer(modifier = Modifier.height(8.dp))
+                val bookmarkList = viewState.responseData.data
+                if (bookmarkList.isEmpty()) {
+                    Text(text = "No bookmark")
+                }
                 LazyColumn ( modifier = Modifier.fillMaxSize()){
-                    items(items = viewState.responseData.data) { bookmark ->
+                    items(items = bookmarkList) { bookmark ->
                         BookmarkItem(comicBookmark = bookmark, navigateToDetail)
                     }
                 }

@@ -51,6 +51,7 @@ import com.example.volatoon.viewmodel.BookmarkViewModel
 import com.example.volatoon.viewmodel.LoginViewModel
 import com.example.volatoon.viewmodel.RegisterViewModel
 import com.example.volatoon.viewmodel.CommentViewModel
+import com.example.volatoon.viewmodel.HistoryViewModel
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -75,6 +76,7 @@ fun VolatoonApp(
     val registerViewModel : RegisterViewModel = viewModel()
     val loginViewModel : LoginViewModel = viewModel()
     val bookmarkViewModel : BookmarkViewModel = viewModel()
+    val historyViewModel : HistoryViewModel = viewModel()
 
     val viewState by comicViewModel.comicstate
 
@@ -237,7 +239,10 @@ fun VolatoonApp(
                     Box(modifier = Modifier.fillMaxSize()){
                         when {
                             detailComicState.loading -> {
-                                CircularProgressIndicator(progress = 0.89f, modifier = Modifier.align(Alignment.Center))
+                                CircularProgressIndicator(
+                                    modifier = Modifier.align(Alignment.Center),
+                                    trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                                )
                             }
 
                             detailComicState.error != null -> {
@@ -253,6 +258,7 @@ fun VolatoonApp(
                                 },
                                     dataStoreManager,
                                     bookmarkViewModel,
+                                    historyViewModel,
                                     comicId
                                     )
                             }

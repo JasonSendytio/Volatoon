@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +43,11 @@ fun HistoryScreen(
 ){
     val viewModel: HistoryViewModel = viewModel()
     val viewState by viewModel.historyState
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchHistory(dataStoreManager)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -50,7 +56,7 @@ fun HistoryScreen(
     ) {
         // Title Section
         Text(
-            text = "All history",
+            text = "All History",
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp,
             modifier = Modifier
@@ -81,12 +87,18 @@ fun HistoryScreen(
             }
 
             else -> {
-                val listHistory = viewState.responseData!!.data ?: emptyList()
+                val listHistory = viewState.responseData?.data ?: emptyList()
+                if (listHistory.isEmpty()) {
+                    Text(
+                        text = "No history",
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(items = listHistory) { comic ->
-                        val responseComicDetail = viewModel.fetchComicDetail(comic.komik_id)
+                        val comicDetail = viewModel.fetchComicDetail(comic.komik_id)
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -114,7 +126,7 @@ fun HistoryScreen(
                                         .weight(1f)
                                 ) {
                                     Text(
-                                        text = "comic.title",
+                                        text = comic.history_id,
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
                                         maxLines = 2,

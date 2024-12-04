@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +15,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,12 +32,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.volatoon.model.Chapter
+import com.example.volatoon.model.ComicBookmark
+import com.example.volatoon.utils.DataStoreManager
+import com.example.volatoon.viewmodel.BookmarkViewModel
 import com.example.volatoon.viewmodel.ComicViewModel
 
 @Composable
 fun DetailComicScreen(
+    addBookmarkState: BookmarkViewModel.AddBookmarkState,
     viewState : ComicViewModel.DetailComicState,
-    navigateToDetail : (String) -> Unit
+    navigateToDetail : (String) -> Unit,
+    dataStoreManager: DataStoreManager,
+    bookmarkViewModel: BookmarkViewModel,
+    comicId : String
 ){
     Column (
         modifier = Modifier
@@ -57,6 +69,13 @@ fun DetailComicScreen(
                 Text(text = "No comic details available.")
             }
 
+            addBookmarkState.loading ->{
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                )
+            }
+
             else -> {
                 val comic = viewState.detailComic
 
@@ -73,6 +92,17 @@ fun DetailComicScreen(
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        tint = Color.Black,
+                        imageVector = Icons.Default.FavoriteBorder,
+                        contentDescription = "Add to Bookmark",
+                        modifier = Modifier
+                            .clickable {
+                                bookmarkViewModel.addUserBookmark(dataStoreManager, comicId = comicId)
+                            }
+                    )
+
                 }
 
                 Image(

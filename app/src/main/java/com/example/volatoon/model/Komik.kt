@@ -61,9 +61,10 @@ data class Genre(
 
 data class ComicBookmark(
     val bookmark_id : String,
-    val user_id : String,
+    val userId : String,
     val komik_id: String,
     val createdAt : String,
+    val comicDetails : DetailComic
 )
 
 data class ComicHistory(

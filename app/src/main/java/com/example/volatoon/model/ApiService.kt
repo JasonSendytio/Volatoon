@@ -28,21 +28,20 @@ interface ApiService {
     @GET("api/profile")
     suspend fun getProfile(@Header("Authorization") token: String) : Response<ProfileResponse>
 
-
     @POST("api/bookmark")
     suspend fun postBookmark(
         @Header("Authorization") token: String,
-        @Body comicId: String?
-    ): bookmarkResponseData
+        @Body komikId: String?
+    ): BookmarkResponseData
 
     @GET("api/bookmark")
-    suspend fun fetchBookmark(@Header("Authorization") token: String): bookmarkResponseData
+    suspend fun fetchBookmark(@Header("Authorization") token: String): BookmarkResponseData
 
     @DELETE("api/bookmark/{bookmarkId}")
     suspend fun deleteBookmark(
         @Header("Authorization") token: String,
         @Path("chapter_id") chapterId : String
-    ) : bookmarkResponseData
+    ) : BookmarkResponseData
     // Add these new endpoints
     @Headers("Content-Type: application/json")
 

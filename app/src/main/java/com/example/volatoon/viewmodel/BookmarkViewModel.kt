@@ -5,17 +5,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.volatoon.model.apiService
-import com.example.volatoon.model.bookmarkResponseData
+import com.example.volatoon.model.BookmarkResponseData
 import com.example.volatoon.utils.DataStoreManager
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import java.lang.Exception
 
 class BookmarkViewModel : ViewModel(){
     private val _bookmarkstate = mutableStateOf(BookmarkState())
     val bookmarkstate : State<BookmarkState> = _bookmarkstate
 
+    private val _addBookmarkstate = mutableStateOf(AddBookmarkState())
+    val addBookmarkstate : State<AddBookmarkState> = _addBookmarkstate
 
     fun fetchUserBookmark(dataStoreManager : DataStoreManager){
         viewModelScope.launch {
@@ -42,6 +43,10 @@ class BookmarkViewModel : ViewModel(){
     }
 
     fun addUserBookmark(dataStoreManager : DataStoreManager, comicId : String){
+        _addBookmarkstate.value = _addBookmarkstate.value.copy(
+            loading = true
+        )
+
         viewModelScope.launch {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
             if (token != null) {
@@ -49,14 +54,13 @@ class BookmarkViewModel : ViewModel(){
                     val bearerToken = "Bearer $token"
                     val response = apiService.postBookmark(bearerToken, comicId)
 
-                    _bookmarkstate.value = _bookmarkstate.value.copy(
+                    _addBookmarkstate.value = _addBookmarkstate.value.copy(
                         loading = false,
-                        responseData = response,
                         error = null
                     )
 
                 } catch (e : Exception){
-                    _bookmarkstate.value = _bookmarkstate.value.copy(
+                    _addBookmarkstate.value = _addBookmarkstate.value.copy(
                         loading = false,
                         error = "error fetching profile ${e.message}"
                     )
@@ -73,11 +77,11 @@ class BookmarkViewModel : ViewModel(){
                     val bearerToken = "Bearer $token"
                     val response = apiService.deleteBookmark(bearerToken, comicId)
 
-                    _bookmarkstate.value = _bookmarkstate.value.copy(
-                        loading = false,
-                        responseData = response,
-                        error = null
-                    )
+//                    _bookmarkstate.value = _bookmarkstate.value.copy(
+//                        loading = false,
+//                        responseData = response,
+//                        error = null
+//                    )
 
                 } catch (e : Exception){
                     _bookmarkstate.value = _bookmarkstate.value.copy(
@@ -89,9 +93,14 @@ class BookmarkViewModel : ViewModel(){
         }
     }
 
+    data class AddBookmarkState(
+        val loading : Boolean = false,
+        val error : String? = null
+    )
+
     data class BookmarkState(
         val loading : Boolean = true,
-        val responseData: bookmarkResponseData? = null,
+        val responseData: BookmarkResponseData? = null,
         val error : String? = null
     )
 }

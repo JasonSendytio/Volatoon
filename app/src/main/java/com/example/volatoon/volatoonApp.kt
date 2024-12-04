@@ -216,6 +216,7 @@ fun VolatoonApp(
                     val comicId = it.arguments?.getString("comicId") ?: ""
 
                     val detailComicState by comicViewModel.detailComicState
+                    val addBookmarkState by bookmarkViewModel.addBookmarkstate
 
                     // Use LaunchedEffect to ensure fetchDetailComic is called only once
                     LaunchedEffect(comicId) {
@@ -233,9 +234,16 @@ fun VolatoonApp(
                             }
 
                             else -> {
-                                DetailComicScreen(detailComicState, navigateToDetail = { chapterId ->
+                                DetailComicScreen(
+                                    addBookmarkState,
+                                    detailComicState,
+                                    navigateToDetail = { chapterId ->
                                     navController.navigate(route = "detailchapter/$chapterId")
-                                })
+                                },
+                                    dataStoreManager,
+                                    bookmarkViewModel,
+                                    comicId
+                                    )
                             }
                         }
                     }

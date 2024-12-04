@@ -12,7 +12,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 
-private val retrofit = Retrofit.Builder().baseUrl("https://volatoon-api.vercel.app/")
+private val retrofit = Retrofit.Builder().baseUrl("https://volatoon.vercel.app/")
     .addConverterFactory(GsonConverterFactory.create())
     .build()
 

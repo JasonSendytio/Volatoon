@@ -1,8 +1,8 @@
 package com.example.volatoon.view
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,12 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Card
@@ -26,33 +22,41 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.volatoon.R
 import com.example.volatoon.model.ComicBookmark
 import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.viewmodel.BookmarkViewModel
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun BookmarkScreen(
     bookmarkViewModel: BookmarkViewModel,
-    dataStoreManager: DataStoreManager,
     viewState : BookmarkViewModel.BookmarkState,
+    dataStoreManager: DataStoreManager,
     navigateToDetail : (String) -> Unit
 ){
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        bookmarkViewModel.toastMessage.collect { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     Column (
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp),
-//            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text(
@@ -101,9 +105,8 @@ fun BookmarkItem(
     bookmarkViewModel: BookmarkViewModel,
     dataStoreManager: DataStoreManager,
     comicBookmark: ComicBookmark,
-    navigateToDetail : (String) -> Unit
-    ){
-//    Text("adas")
+    navigateToDetail : (String) -> Unit,
+){
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -147,13 +150,23 @@ fun BookmarkItem(
                     modifier = Modifier.padding(bottom = 2.dp)
                 )
                 Text(
+                    text = "Author : ${comicBookmark.comicDetails.genres.joinToString(", ")}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(bottom = 2.dp)
+                )
+                Text(
+                    text = "Status : ${comicBookmark.comicDetails.status}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(bottom = 2.dp)
+                )
+                Text(
                     text = "Score: ${comicBookmark.comicDetails.score}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(bottom = 2.dp)
                 )
                 Text(
-                    text = "Last chapter read: {}",
+                    text = "Added at: ${formatAddedAt(comicBookmark.createdAt)}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.secondary
                 )
@@ -164,10 +177,15 @@ fun BookmarkItem(
                 contentDescription = "Clear",
                 modifier = Modifier
                     .clickable {
-                        bookmarkViewModel.deleteUserBookmark(dataStoreManager, bookmarkId = comicBookmark.bookmark_id)
+                        bookmarkViewModel.deleteUserBookmark(dataStoreManager, comicBookmark.bookmark_id)
                     }
             )
         }
     }
+}
 
+fun formatAddedAt(createdAt: String): String {
+    val zonedDateTime = ZonedDateTime.parse(createdAt, DateTimeFormatter.ISO_DATE_TIME)
+    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm:ss")
+    return zonedDateTime.format(formatter)
 }

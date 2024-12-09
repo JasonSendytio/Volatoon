@@ -81,14 +81,14 @@ interface ApiService {
     @POST("api/history")
     suspend fun postHistory(
         @Header("Authorization") token: String,
-        @Body komikId: String?
-    ): HistoryResponseData
+        @Body komikId: HistoryRequest?
+    ): HistoryAPIData
 
     @DELETE("api/history/{historyId}")
     suspend fun deleteHistory(
         @Header("Authorization") token: String,
         @Path("historyId") historyId: String
-    ): HistoryResponseData
+    ): HistoryAPIData
 
 //    @POST("api/auth/register")
 //    suspend fun registerUser(@Body user: User?): Response<authData>

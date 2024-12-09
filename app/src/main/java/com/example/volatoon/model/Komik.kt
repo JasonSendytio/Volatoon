@@ -69,10 +69,11 @@ data class ComicBookmark(
 
 data class ComicHistory(
     val history_id : String,
-    val user_id : String,
+    val userId : String,
     val komik_id: String,
     val createdAt : String,
     val chapter : String,
+    val comicDetails: DetailComic
 )
 
 data class GenresList(val genres: List<Genres>)// The one that matches your model

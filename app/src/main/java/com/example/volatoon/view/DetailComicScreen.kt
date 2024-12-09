@@ -1,5 +1,6 @@
 package com.example.volatoon.view
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,28 +17,30 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.volatoon.model.Chapter
-import com.example.volatoon.model.ComicBookmark
 import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.viewmodel.BookmarkViewModel
 import com.example.volatoon.viewmodel.ComicViewModel
-import com.example.volatoon.viewmodel.HistoryViewModel
 
 @Composable
 fun DetailComicScreen(
@@ -46,13 +49,9 @@ fun DetailComicScreen(
     navigateToDetail : (String) -> Unit,
     dataStoreManager: DataStoreManager,
     bookmarkViewModel: BookmarkViewModel,
-    historyViewModel: HistoryViewModel,
-    comicId : String
+    comicId : String,
+    bookmarkId : String?
 ){
-    LaunchedEffect(Unit) {
-        historyViewModel.addHistory(dataStoreManager, comicId)
-    }
-
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -94,22 +93,20 @@ fun DetailComicScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val isBookmarked = bookmarkViewModel.isBookmarked(comicId)
                     Text(
                         comic.title,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Icon(
-                        tint = Color.Black,
-                        imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = "Add to Bookmark",
-                        modifier = Modifier
-                            .clickable {
-                                bookmarkViewModel.addUserBookmark(dataStoreManager, comicId = comicId)
-                            }
+                    BookmarkIcon(
+                        bookmarkViewModel = bookmarkViewModel,
+                        dataStoreManager = dataStoreManager,
+                        comicId = comicId,
+                        isInitiallyBookmarked = isBookmarked,
+                        initialBookmarkId = bookmarkId
                     )
-
                 }
 
                 Image(
@@ -222,7 +219,7 @@ fun DetailComicScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            ": Action, Comedy, Fantasy",
+                            ": ${comic.genres.joinToString(", ")}",
                             modifier = Modifier.weight(.7f)
                         )
                     }
@@ -289,8 +286,47 @@ fun ListChapter(chapter : Chapter, index : Int, navigateToDetail : (String) -> U
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewDetailComicScreen(){
-//    DetailComicScreen()
-//}
+@Composable
+fun BookmarkIcon(
+    bookmarkViewModel: BookmarkViewModel,
+    dataStoreManager: DataStoreManager,
+    comicId: String,
+    isInitiallyBookmarked: Boolean,
+    initialBookmarkId: String?
+) {
+    var isBookmarked by remember { mutableStateOf(isInitiallyBookmarked) }
+    var bookmarkId by remember { mutableStateOf(initialBookmarkId) }
+
+    val context = LocalContext.current
+
+    Icon(
+        tint = Color.Black,
+        imageVector = if (isBookmarked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+        contentDescription = if (isBookmarked) "Remove from bookmark" else "Add to bookmark",
+        modifier = Modifier
+            .clickable {
+                if (isBookmarked) {
+                    bookmarkId?.let {
+                        bookmarkViewModel.deleteUserBookmark(dataStoreManager, it)
+                        isBookmarked = false
+                        bookmarkId = null
+                        Toast.makeText(context, "Removed from bookmarks", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    bookmarkViewModel.addUserBookmark(dataStoreManager, comicId)
+                    isBookmarked = true
+                    Toast.makeText(context, "Added to bookmarks", Toast.LENGTH_SHORT).show()
+                }
+            }
+    )
+
+    // Observe changes from the ViewModel for bookmark updates
+//    LaunchedEffect(Unit) {
+//        bookmarkViewModel.bookmarkstate.collect { state ->
+//            val addedBookmark = state.responseData?.data?.find { it.komik_id == comicId }
+//            if (addedBookmark != null) {
+//                bookmarkId = addedBookmark.bookmark_id // Update the ID if available
+//            }
+//        }
+//    }
+}

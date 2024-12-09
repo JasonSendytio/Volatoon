@@ -1,5 +1,6 @@
 package com.example.volatoon
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -137,7 +138,22 @@ fun VolatoonApp(
                 }
 
                 composable(route = TopLevelRoute.UserActivity.route){
-                    UserActivityScreen(navController)
+                    val bookmarkState by bookmarkViewModel.bookmarkstate
+                    val historyState by historyViewModel.historyState
+
+                    LaunchedEffect(dataStoreManager) {
+                        bookmarkViewModel.fetchUserBookmark(dataStoreManager)
+                        historyViewModel.fetchHistory(dataStoreManager)
+                    }
+
+                    UserActivityScreen(
+                        bookmarkViewState = bookmarkState,
+                        historyViewState = historyState,
+                        navController,
+                        navigateToDetail = { comicId ->
+                            navController.navigate(route = "detailcomic/$comicId")
+                        }
+                    )
                 }
 
                 composable(route = TopLevelRoute.Profile.route){
@@ -170,14 +186,13 @@ fun VolatoonApp(
 
                     BookmarkScreen (
                         bookmarkViewModel,
-                        dataStoreManager,
                         viewState = bookmarkState,
+                        dataStoreManager,
                         navigateToDetail = { comicId ->
                             navController.navigate(route = "detailcomic/$comicId")
                         }
                     )
                 }
-
 
                 composable(
                     route = "premium"
@@ -188,7 +203,14 @@ fun VolatoonApp(
                 composable(
                     route = "history"
                 ) {
+                    val historyState by historyViewModel.historyState
+
+                    LaunchedEffect(dataStoreManager) {
+                        historyViewModel.fetchHistory(dataStoreManager)
+                    }
                     HistoryScreen(
+                        historyViewModel,
+                        viewState = historyState,
                         dataStoreManager,
                         navigateToDetail = { comicId ->
                             navController.navigate(route = "detailcomic/$comicId")
@@ -227,15 +249,32 @@ fun VolatoonApp(
                     )
                 }
 
-                composable("detailcomic/{comicId}") {
+                composable("detailcomic/{comicId}") { it ->
                     val comicId = it.arguments?.getString("comicId") ?: ""
 
                     val detailComicState by comicViewModel.detailComicState
                     val addBookmarkState by bookmarkViewModel.addBookmarkstate
+                    val historyState by historyViewModel.historyState
 
                     // Use LaunchedEffect to ensure fetchDetailComic is called only once
                     LaunchedEffect(comicId) {
                         comicViewModel.fetchDetailComic(comicId)
+                        historyViewModel.fetchHistory(dataStoreManager)
+                        bookmarkViewModel.fetchUserBookmark(dataStoreManager)
+
+                        val historyList = historyState.responseData?.data
+                        val isComicInHistory = historyList?.any { it.komik_id == comicId }
+                        if (isComicInHistory != null && !isComicInHistory) {
+                            historyViewModel.addHistory(dataStoreManager, comicId)
+                        }
+                        if (isComicInHistory != null && isComicInHistory) {
+                            Log.i("add history", "comic already exist")
+                        }
+                    }
+
+                    val bookmarkId = remember(bookmarkViewModel.bookmarkstate.value) {
+                        val bookmarkList = bookmarkViewModel.bookmarkstate.value.responseData?.data
+                        bookmarkList?.find { it.komik_id == comicId }?.bookmark_id
                     }
 
                     Box(modifier = Modifier.fillMaxSize()){
@@ -260,9 +299,9 @@ fun VolatoonApp(
                                 },
                                     dataStoreManager,
                                     bookmarkViewModel,
-                                    historyViewModel,
-                                    comicId
-                                    )
+                                    comicId,
+                                    bookmarkId = bookmarkId
+                                )
                             }
                         }
                     }

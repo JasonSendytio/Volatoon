@@ -20,34 +20,27 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
-import com.example.volatoon.R
+import com.example.volatoon.model.ComicHistory
 import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.viewmodel.HistoryViewModel
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun HistoryScreen(
+    historyViewModel: HistoryViewModel,
+    viewState: HistoryViewModel.HistoryState,
     dataStoreManager: DataStoreManager,
     navigateToDetail: (String) -> Unit
 ){
-    val viewModel: HistoryViewModel = viewModel()
-    val viewState by viewModel.historyState
-
-    LaunchedEffect(Unit) {
-        viewModel.fetchHistory(dataStoreManager)
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -87,83 +80,115 @@ fun HistoryScreen(
             }
 
             else -> {
-                val listHistory = viewState.responseData?.data ?: emptyList()
-                if (listHistory.isEmpty()) {
+                val historyList = viewState.responseData.data
+                if (historyList.isEmpty()) {
                     Text(
                         text = "No history",
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                 }
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(items = listHistory) { comic ->
-                        val comicDetail = viewModel.fetchComicDetail(comic.komik_id)
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { navigateToDetail(comic.komik_id) }
-                                .padding(4.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp)
-                            ) {
-                                // Comic Image
-                                Image(
-                                    painter = painterResource(R.drawable.comic_thumbnail),
-                                    contentDescription = "Comic Cover - ",
-                                    modifier = Modifier
-                                        .width(120.dp)
-                                        .height(150.dp)
-                                )
-
-                                // Comic Details
-                                Column(
-                                    modifier = Modifier
-                                        .padding(start = 16.dp)
-                                        .weight(1f)
-                                ) {
-                                    Text(
-                                        text = comic.history_id,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        maxLines = 2,
-                                        overflow = TextOverflow.Ellipsis,
-                                        modifier = Modifier.padding(bottom = 4.dp)
-                                    )
-                                    Text(
-                                        text = "Type: {}",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        modifier = Modifier.padding(bottom = 2.dp)
-                                    )
-                                    Text(
-                                        text = "Score: {}",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.padding(bottom = 2.dp)
-                                    )
-                                    Text(
-                                        text = "Last chapter read: {}",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.secondary
-                                    )
-                                }
-                                Icon(
-                                    tint = Color.Black,
-                                    imageVector = Icons.Default.Clear,
-                                    contentDescription = "Clear",
-                                    modifier = Modifier
-                                        .clickable {
-                                             viewModel.deleteHistory(dataStoreManager, comic.history_id)
-                                        }
-                                )
-                            }
+                if (historyList.isNotEmpty()) {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        val sortedHistoryList = historyList.sortedByDescending {
+                            ZonedDateTime.parse(it.createdAt)
+                        }
+                        items(items = sortedHistoryList) { comic ->
+                            HistoryItem(
+                                historyViewModel = historyViewModel,
+                                comicHistory = comic,
+                                dataStoreManager = dataStoreManager,
+                                navigateToDetail = navigateToDetail
+                            )
                         }
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun HistoryItem(
+    historyViewModel: HistoryViewModel,
+    comicHistory: ComicHistory,
+    dataStoreManager: DataStoreManager,
+    navigateToDetail: (String) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { navigateToDetail(comicHistory.komik_id) }
+            .padding(4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            // Comic Image
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = comicHistory.comicDetails.image
+                ),
+                contentDescription = "Comic Cover - ",
+                modifier = Modifier
+                    .width(120.dp)
+                    .height(150.dp)
+            )
+
+            // Comic Details
+            Column(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .weight(1f)
+            ) {
+                Text(
+                    text = comicHistory.comicDetails.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                Text(
+                    text = "Type: ${comicHistory.comicDetails.type}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(bottom = 2.dp)
+                )
+                Text(
+                    text = "Genre: ${comicHistory.comicDetails.genres.joinToString(", ")}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 2.dp)
+                )
+                Text(
+                    text = "Last chapter read: ${comicHistory.chapter}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = "Last read: ${formatCreatedAt((comicHistory.createdAt))}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
+            Icon(
+                tint = Color.Black,
+                imageVector = Icons.Default.Clear,
+                contentDescription = "Clear",
+                modifier = Modifier
+                    .clickable {
+                        historyViewModel.deleteHistory(dataStoreManager, comicHistory.history_id)
+                    }
+            )
+        }
+    }
+}
+
+fun formatCreatedAt(createdAt: String): String {
+    val zonedDateTime = ZonedDateTime.parse(createdAt, DateTimeFormatter.ISO_DATE_TIME)
+    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm:ss") // Example: 09 Dec 2024, 19:27:45
+    return zonedDateTime.format(formatter)
 }

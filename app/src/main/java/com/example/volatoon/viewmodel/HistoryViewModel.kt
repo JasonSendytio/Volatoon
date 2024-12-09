@@ -5,10 +5,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.volatoon.model.DetailComic
+import com.example.volatoon.model.HistoryRequest
 import com.example.volatoon.model.HistoryResponseData
 import com.example.volatoon.model.apiService
-import com.example.volatoon.model.comicApiService
 import com.example.volatoon.utils.DataStoreManager
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -20,28 +19,29 @@ class HistoryViewModel: ViewModel() {
         val error : String? = null
     )
 
-    data class DetailComicState(
-        val loading : Boolean = true,
-        val detailComic : DetailComic? = null,
-        val error : String? = null
-    )
-
     private val _historyState = mutableStateOf(HistoryState())
     val historyState : State<HistoryState> = _historyState
-    private val _comicDetail = mutableStateOf(DetailComicState())
-    val comicDetail : State<DetailComicState> = _comicDetail
 
     fun fetchHistory(dataStoreManager: DataStoreManager) {
+        _historyState.value = _historyState.value.copy(
+            loading = true
+        )
         viewModelScope.launch {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
             if (token != null) {
                 try {
-                    val responseHistory = apiService.getHistory("Bearer $token")
+                    if (_historyState.value.error != null) {
+                        _historyState.value = _historyState.value.copy(
+                            error = null
+                        )
+                    }
+                    Log.i("fetch history", "in progress")
+                    val response = apiService.getHistory("Bearer $token")
                     _historyState.value = _historyState.value.copy(
-                        responseData = responseHistory,
+                        responseData = response,
                         loading = false
                     )
-                    Log.i("fetch history", responseHistory.toString())
+                    Log.i("fetch history", response.message)
                 }
                 catch (e: Exception) {
                     _historyState.value = _historyState.value.copy(
@@ -59,12 +59,10 @@ class HistoryViewModel: ViewModel() {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
             if (token != null) {
                 try {
-                    val response = apiService.postHistory("Bearer $token", komikId = comicId)
+                    val response = apiService.postHistory("Bearer $token", komikId = HistoryRequest(comicId))
                     Log.i("add history", response.toString())
-                    Log.i("add history", comicId)
                 } catch (e: Exception) {
                     Log.e("add history", e.message.toString())
-                    Log.e("add history", comicId)
                 }
             }
         }
@@ -75,38 +73,16 @@ class HistoryViewModel: ViewModel() {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
             if (token != null) {
                 try {
-                    val response = apiService.deleteHistory("Bearer $token", historyId = historyId)
-                    _historyState.value = historyState.value.copy(
-                        responseData = response,
-                        loading = false
-                    )
+                    val response = apiService.deleteHistory("Bearer $token", historyId)
+                    Log.i("delete history", response.toString())
                 }
                 catch (e: Exception) {
                     _historyState.value = historyState.value.copy(
                         error = e.message,
                         loading = false
                     )
+                    Log.e("delete history", e.toString())
                 }
-            }
-        }
-    }
-
-    fun fetchComicDetail(comicId: String) {
-        viewModelScope.launch {
-            try {
-                val response = comicApiService.getDetailComic(comicId)
-                _comicDetail.value = comicDetail.value.copy(
-                    detailComic = response,
-                    loading = false
-                )
-                Log.i("fetch comic detail", response.toString())
-            }
-            catch (e: Exception) {
-                _comicDetail.value = comicDetail.value.copy(
-                    error = e.message,
-                    loading = false
-                )
-                Log.e("fetch comic detail", e.message.toString())
             }
         }
     }

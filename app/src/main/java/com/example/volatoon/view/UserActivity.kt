@@ -3,8 +3,10 @@ package com.example.volatoon.view
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,31 +14,32 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.volatoon.R
-import com.example.volatoon.model.DetailComic
-import com.example.volatoon.viewmodel.ComicViewModel
+import com.example.volatoon.model.ComicBookmark
+import com.example.volatoon.model.ComicHistory
+import com.example.volatoon.viewmodel.BookmarkViewModel
+import com.example.volatoon.viewmodel.HistoryViewModel
+import java.time.ZonedDateTime
 
 @Composable
-
 fun UserActivityScreen(
-
-    navController: NavController
-){
-    val navigateToDetail: (String) -> Unit = {
-        navController.navigate("detail/$it")
-    }
-
+    bookmarkViewState: BookmarkViewModel.BookmarkState,
+    historyViewState: HistoryViewModel.HistoryState,
+    navController: NavController,
+    navigateToDetail: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -61,6 +64,7 @@ fun UserActivityScreen(
                 Text("New Notification")
             }
         }
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row(
             modifier = Modifier
@@ -78,61 +82,52 @@ fun UserActivityScreen(
                     .fillMaxWidth()
             )
         }
-        LazyRow(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(5) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-//                        .clickable { navigateToDetail(comic.komik_id) }
-                        .padding(4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.comic_thumbnail),
-                            contentDescription = "Comic Cover - ",
-                            modifier = Modifier
-                                .width(100.dp)
-                                .height(150.dp)
+        Box(modifier = Modifier.height(200.dp).fillMaxWidth()) {
+            when {
+                historyViewState.loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                    )
+                }
+                historyViewState.error != null -> {
+                    Text(text = "Error: ${historyViewState.error}")
+                }
+                historyViewState.responseData == null -> {
+                    Text(text = "No history")
+                }
+                else -> {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    val historyList = historyViewState.responseData.data
+                    if (historyList.isEmpty()){
+                        Text(
+                            text = "No history"
                         )
-
-                        // Comic Details
-                        Column(
-//                            modifier = Modifier.fillMaxWidth().padding(8.dp)
-//                                .clickable { navigateToDetail(comic.komik_id) },
-//                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-//                            Image(
-//                                painter = rememberAsyncImagePainter(model = comic.image),
-//                                contentDescription = null,
-//                                modifier = Modifier
-//                                    .width(119.dp).height(153.dp)
-//                                    .aspectRatio(1f)
-//                            )
-//                            val displayTitle = if (comic.title.length > 20) {
-//                                comic.title.take(12) + "..."
-//                            } else {
-//                                comic.title
-//                            }
-                            Text("Comic Title")
+                    }
+                    if (historyList.isNotEmpty()) {
+                        val sortedHistoryList = historyList.sortedByDescending {
+                            ZonedDateTime.parse(it.createdAt)
+                        }
+                        LazyRow(modifier = Modifier.fillMaxSize()) {
+                            items(items = sortedHistoryList) { history ->
+                                HistoryItemPreview(
+                                    comicHistory = history,
+                                    navigateToDetail
+                                )
+                            }
                         }
                     }
                 }
             }
         }
+
         Row(
             modifier = Modifier
                 .padding(top = 16.dp)
                 .clickable {
                     navController.navigate("bookmark")
                 }
-        ){
+        ) {
             Text(
                 text = "Bookmarks >",
                 fontWeight = FontWeight.Bold,
@@ -142,49 +137,42 @@ fun UserActivityScreen(
                     .fillMaxWidth()
             )
         }
-        LazyRow(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(5) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-//                            .clickable { navigateToDetail(comic.komik_id) }
-                        .padding(4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.comic_thumbnail),
-                            contentDescription = "Comic Cover - ",
-                            modifier = Modifier
-                                .width(100.dp)
-                                .height(150.dp)
-                        )
+        Box(modifier = Modifier.height(200.dp).fillMaxWidth()) {
+            when {
+                bookmarkViewState.loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                    )
+                }
 
-                        // Comic Details
-                        Column(
-                            modifier = Modifier.fillMaxWidth().padding(8.dp)
-//                                .clickable { navigateToDetail(comic.komik_id) },
-//                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-//                            Image(
-//                                painter = rememberAsyncImagePainter(model = comic.image),
-//                                contentDescription = null,
-//                                modifier = Modifier
-//                                    .width(119.dp).height(153.dp)
-//                                    .aspectRatio(1f)
-//                            )
-//                            val displayTitle = if (comic.title.length > 20) {
-//                                comic.title.take(12) + "..."
-//                            } else {
-//                                comic.title
-//                            }
-                            Text("Comic Title")
+                bookmarkViewState.error != null -> {
+                    Text(text = "Error: ${bookmarkViewState.error}")
+                }
+
+                bookmarkViewState.responseData == null -> {
+                    Text(
+                        text = "No bookmark",
+                        modifier = Modifier.padding(16.dp))
+                }
+
+                else -> {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    val bookmarkList = bookmarkViewState.responseData.data
+                    if (bookmarkList.isEmpty()) {
+                        Text(text = "No bookmark")
+                    }
+                    if (bookmarkList.isNotEmpty()) {
+                        val sortedBookmarkList = bookmarkList.sortedByDescending {
+                            ZonedDateTime.parse(it.createdAt)
+                        }
+                        LazyRow(modifier = Modifier.fillMaxSize()) {
+                            items(items = sortedBookmarkList) { bookmark ->
+                                BookmarkItemPreview(
+                                    comicBookmark = bookmark,
+                                    navigateToDetail
+                                )
+                            }
                         }
                     }
                 }
@@ -193,8 +181,70 @@ fun UserActivityScreen(
     }
 }
 
-//@Preview (showBackground = true)
-//@Composable
-//fun PreviewScreen(){
-//    UserActivityScreen()
-//}
+@Composable
+fun HistoryItemPreview(
+    comicHistory: ComicHistory,
+    navigateToDetail: (String) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { navigateToDetail(comicHistory.komik_id) }
+            .padding(4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .clickable { navigateToDetail(comicHistory.komik_id) },
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = comicHistory.comicDetails.image
+                ),
+                contentDescription = "Comic Cover - ",
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(150.dp)
+            )
+            Text(
+                text = comicHistory.comicDetails.title
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+}
+
+@Composable
+fun BookmarkItemPreview(
+    comicBookmark: ComicBookmark,
+    navigateToDetail: (String) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { navigateToDetail(comicBookmark.komik_id) }
+            .padding(4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = comicBookmark.comicDetails.image
+                ),
+                contentDescription = "Comic Cover - ",
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(150.dp)
+            )
+            Text(
+                text = comicBookmark.comicDetails.title
+            )
+        }
+    }
+}

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.volatoon.model.BookmarkRequest
 import com.example.volatoon.model.apiService
 import com.example.volatoon.model.BookmarkResponseData
 import com.example.volatoon.utils.DataStoreManager
@@ -20,6 +21,10 @@ class BookmarkViewModel : ViewModel(){
     val addBookmarkstate : State<AddBookmarkState> = _addBookmarkstate
 
     fun fetchUserBookmark(dataStoreManager : DataStoreManager){
+        _bookmarkstate.value = _bookmarkstate.value.copy(
+            loading = true
+        )
+
         viewModelScope.launch {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
             if (token != null) {
@@ -55,7 +60,9 @@ class BookmarkViewModel : ViewModel(){
             if (token != null) {
                 try {
                     val bearerToken = "Bearer $token"
-                    val response = apiService.postBookmark(bearerToken, comicId)
+                    val response = apiService.postBookmark(token = bearerToken, komikId = BookmarkRequest(komikId = comicId))
+
+                    println("asd")
 
                     _addBookmarkstate.value = _addBookmarkstate.value.copy(
                         loading = false,
@@ -74,24 +81,20 @@ class BookmarkViewModel : ViewModel(){
         }
     }
 
-    fun deleteUserBookmark(dataStoreManager : DataStoreManager, comicId : String){
+    fun deleteUserBookmark(dataStoreManager : DataStoreManager, bookmarkId : String){
         viewModelScope.launch {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
             if (token != null) {
                 try {
                     val bearerToken = "Bearer $token"
-                    val response = apiService.deleteBookmark(bearerToken, comicId)
+                    val response = apiService.deleteBookmark(bearerToken, bookmarkId)
 
-//                    _bookmarkstate.value = _bookmarkstate.value.copy(
-//                        loading = false,
-//                        responseData = response,
-//                        error = null
-//                    )
+                    fetchUserBookmark(dataStoreManager)
 
                 } catch (e : Exception){
                     _bookmarkstate.value = _bookmarkstate.value.copy(
                         loading = false,
-                        error = "error fetching profile ${e.message}"
+                        error = "error fetching bookmark ${e.message}"
                     )
                 }
             }

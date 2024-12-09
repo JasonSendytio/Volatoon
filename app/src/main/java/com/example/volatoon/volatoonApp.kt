@@ -169,6 +169,8 @@ fun VolatoonApp(
                     }
 
                     BookmarkScreen (
+                        bookmarkViewModel,
+                        dataStoreManager,
                         viewState = bookmarkState,
                         navigateToDetail = { comicId ->
                             navController.navigate(route = "detailcomic/$comicId")

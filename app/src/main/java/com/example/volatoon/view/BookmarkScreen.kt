@@ -38,10 +38,13 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.volatoon.R
 import com.example.volatoon.model.ComicBookmark
+import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.viewmodel.BookmarkViewModel
 
 @Composable
 fun BookmarkScreen(
+    bookmarkViewModel: BookmarkViewModel,
+    dataStoreManager: DataStoreManager,
     viewState : BookmarkViewModel.BookmarkState,
     navigateToDetail : (String) -> Unit
 ){
@@ -85,7 +88,7 @@ fun BookmarkScreen(
                 }
                 LazyColumn ( modifier = Modifier.fillMaxSize()){
                     items(items = bookmarkList) { bookmark ->
-                        BookmarkItem(comicBookmark = bookmark, navigateToDetail)
+                        BookmarkItem(bookmarkViewModel, dataStoreManager, comicBookmark = bookmark, navigateToDetail)
                     }
                 }
             }
@@ -95,6 +98,8 @@ fun BookmarkScreen(
 
 @Composable
 fun BookmarkItem(
+    bookmarkViewModel: BookmarkViewModel,
+    dataStoreManager: DataStoreManager,
     comicBookmark: ComicBookmark,
     navigateToDetail : (String) -> Unit
     ){
@@ -102,7 +107,6 @@ fun BookmarkItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { navigateToDetail(comicBookmark.komik_id) }
             .padding(4.dp)
     ) {
         Row(
@@ -118,6 +122,7 @@ fun BookmarkItem(
                 contentDescription = "Comic Cover - ",
                 modifier = Modifier
                     .width(120.dp)
+                    .clickable { navigateToDetail(comicBookmark.komik_id) }
                     .height(150.dp)
             )
 
@@ -125,6 +130,7 @@ fun BookmarkItem(
             Column(
                 modifier = Modifier
                     .padding(start = 16.dp)
+                    .clickable { navigateToDetail(comicBookmark.komik_id) }
                     .weight(1f)
             ) {
                 Text(
@@ -156,10 +162,10 @@ fun BookmarkItem(
                 tint = Color.Black,
                 imageVector = Icons.Default.Clear,
                 contentDescription = "Clear",
-//                modifier = Modifier
-//                    .clickable {
-//                        viewModel.deleteHistory(dataStoreManager, comic.history_id)
-//                    }
+                modifier = Modifier
+                    .clickable {
+                        bookmarkViewModel.deleteUserBookmark(dataStoreManager, bookmarkId = comicBookmark.bookmark_id)
+                    }
             )
         }
     }

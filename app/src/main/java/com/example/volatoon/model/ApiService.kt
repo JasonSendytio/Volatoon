@@ -30,9 +30,9 @@ interface ApiService {
 
     @POST("api/bookmark")
     suspend fun postBookmark(
-        @Header("Authorization") token: String,
-        @Body komikId: String?
-    ): BookmarkResponseData
+        @Body komikId: BookmarkRequest?,
+        @Header("Authorization") token: String
+    ): BookmarkPostData
 
     @GET("api/bookmark")
     suspend fun fetchBookmark(@Header("Authorization") token: String): BookmarkResponseData
@@ -40,8 +40,8 @@ interface ApiService {
     @DELETE("api/bookmark/{bookmarkId}")
     suspend fun deleteBookmark(
         @Header("Authorization") token: String,
-        @Path("chapter_id") chapterId : String
-    ) : BookmarkResponseData
+        @Path("bookmarkId") bookmarkId : String
+    ) : BookmarkPostData
     // Add these new endpoints
     @Headers("Content-Type: application/json")
 

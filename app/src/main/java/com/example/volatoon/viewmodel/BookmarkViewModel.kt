@@ -71,13 +71,15 @@ class BookmarkViewModel : ViewModel(){
                         loading = false,
                         error = null
                     )
-                    Log.i("add bookmark", response.toString())
+                    Log.i("add bookmark", response.message)
                 } catch (e : Exception){
                     _addBookmarkstate.value = _addBookmarkstate.value.copy(
                         loading = false,
                         error = "error fetching profile ${e.message}"
                     )
                     Log.e("add bookmark", e.message.toString())
+                } finally {
+                    fetchUserBookmark(dataStoreManager)
                 }
             }
         }
@@ -94,23 +96,20 @@ class BookmarkViewModel : ViewModel(){
                         loading = false,
                         error = null
                     )
-                    fetchUserBookmark(dataStoreManager)
-                    Log.i("delete bookmark", response.toString())
+                    Log.i("delete bookmark", response.message)
                     _toastMessage.emit("Bookmark deleted successfully")
-                } catch (e : Exception){
+                } catch (e : Exception) {
                     _bookmarkstate.value = _bookmarkstate.value.copy(
                         loading = false,
                         error = "error fetching bookmark ${e.message}"
                     )
                     Log.e("delete bookmark", e.message.toString())
                     _toastMessage.emit("Error deleting bookmark")
+                } finally {
+                    fetchUserBookmark(dataStoreManager)
                 }
             }
         }
-    }
-
-    fun isBookmarked(comicId : String) : Boolean {
-        return _bookmarkstate.value.responseData?.data?.any { it.komik_id == comicId } ?: false
     }
 
     data class AddBookmarkState(

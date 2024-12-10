@@ -268,6 +268,11 @@ fun VolatoonApp(
                             historyViewModel.addHistory(dataStoreManager, comicId)
                         }
                         if (isComicInHistory != null && isComicInHistory) {
+                            val historyId = historyList.find { it.komik_id == comicId }?.history_id
+                            if (historyId != null) {
+                                historyViewModel.deleteHistory(dataStoreManager, historyId)
+                                historyViewModel.addHistory(dataStoreManager, comicId)
+                            }
                             Log.i("add history", "comic already exist")
                         }
                     }
@@ -292,7 +297,6 @@ fun VolatoonApp(
 
                             else -> {
                                 DetailComicScreen(
-                                    addBookmarkState,
                                     detailComicState,
                                     navigateToDetail = { chapterId ->
                                     navController.navigate(route = "detailchapter/$chapterId")
@@ -300,7 +304,6 @@ fun VolatoonApp(
                                     dataStoreManager,
                                     bookmarkViewModel,
                                     comicId,
-                                    bookmarkId = bookmarkId
                                 )
                             }
                         }

@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -222,7 +223,6 @@ fun ComicsScreen(
     }
 }
 
-
 @Composable
 fun ComicItem(
     comic : Comic,
@@ -230,7 +230,7 @@ fun ComicItem(
 ){
     Column (
         modifier = Modifier
-            .width(125.dp)
+            .width(150.dp)
             .height(200.dp)
             .padding(2.dp)
             .clickable { navigateToDetail(comic.komik_id) },
@@ -240,23 +240,17 @@ fun ComicItem(
             painter = rememberAsyncImagePainter(model = comic.image),
             contentDescription = null,
             modifier = Modifier
-                .width(125.dp).height(120.dp)
+                .fillMaxWidth()
                 .aspectRatio(1f)
         )
-//        val displayTitle = if (comic.title.length > 20) {
-//            comic.title.take(12) + "..."
-//        } else {
-//            comic.title
-//        }
-//
-//        Text(displayTitle)
         Text(
             modifier = Modifier
-                .weight(0.1f, fill = false),
+                .fillMaxWidth(),
             text = comic.title,
-            maxLines = 3,
-            fontSize = 12.sp,
-            overflow = TextOverflow.Ellipsis
+            maxLines = 2,
+            fontSize = 14.sp,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
         )
     }
 }

@@ -90,9 +90,14 @@ fun BookmarkScreen(
                 if (bookmarkList.isEmpty()) {
                     Text(text = "No bookmark")
                 }
-                LazyColumn ( modifier = Modifier.fillMaxSize()){
-                    items(items = bookmarkList) { bookmark ->
-                        BookmarkItem(bookmarkViewModel, dataStoreManager, comicBookmark = bookmark, navigateToDetail)
+                if (bookmarkList.isNotEmpty()) {
+                    LazyColumn ( modifier = Modifier.fillMaxWidth()){
+                        val sortedBookmarkList = bookmarkList.sortedByDescending {
+                            ZonedDateTime.parse(it.createdAt)
+                        }
+                        items(items = sortedBookmarkList) { bookmark ->
+                            BookmarkItem(bookmarkViewModel, dataStoreManager, comicBookmark = bookmark, navigateToDetail)
+                        }
                     }
                 }
             }

@@ -9,6 +9,8 @@ import com.example.volatoon.model.HistoryRequest
 import com.example.volatoon.model.HistoryResponseData
 import com.example.volatoon.model.apiService
 import com.example.volatoon.utils.DataStoreManager
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
@@ -21,6 +23,9 @@ class HistoryViewModel: ViewModel() {
 
     private val _historyState = mutableStateOf(HistoryState())
     val historyState : State<HistoryState> = _historyState
+
+    private val _toastMessage = MutableSharedFlow<String>()
+    val toastMessage: SharedFlow<String> = _toastMessage
 
     fun fetchHistory(dataStoreManager: DataStoreManager) {
         _historyState.value = _historyState.value.copy(
@@ -60,7 +65,7 @@ class HistoryViewModel: ViewModel() {
             if (token != null) {
                 try {
                     val response = apiService.postHistory("Bearer $token", komikId = HistoryRequest(comicId))
-                    Log.i("add history", response.toString())
+                    Log.i("add history", response.message)
                 } catch (e: Exception) {
                     Log.e("add history", e.message.toString())
                 }
@@ -74,14 +79,17 @@ class HistoryViewModel: ViewModel() {
             if (token != null) {
                 try {
                     val response = apiService.deleteHistory("Bearer $token", historyId)
-                    Log.i("delete history", response.toString())
+                    fetchHistory(dataStoreManager)
+                    _toastMessage.emit("History deleted successfully")
+                    Log.i("delete history", response.message)
                 }
                 catch (e: Exception) {
                     _historyState.value = historyState.value.copy(
                         error = e.message,
                         loading = false
                     )
-                    Log.e("delete history", e.toString())
+                    _toastMessage.emit("Error deleting history")
+                    Log.e("delete history", e.message.toString())
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.example.volatoon.view
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -44,13 +45,11 @@ import com.example.volatoon.viewmodel.ComicViewModel
 
 @Composable
 fun DetailComicScreen(
-    addBookmarkState: BookmarkViewModel.AddBookmarkState,
     viewState : ComicViewModel.DetailComicState,
     navigateToDetail : (String) -> Unit,
     dataStoreManager: DataStoreManager,
     bookmarkViewModel: BookmarkViewModel,
     comicId : String,
-    bookmarkId : String?
 ){
     Column (
         modifier = Modifier
@@ -75,13 +74,6 @@ fun DetailComicScreen(
                 Text(text = "No comic details available.")
             }
 
-            addBookmarkState.loading ->{
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
-                )
-            }
-
             else -> {
                 val comic = viewState.detailComic
 
@@ -93,7 +85,6 @@ fun DetailComicScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val isBookmarked = bookmarkViewModel.isBookmarked(comicId)
                     Text(
                         comic.title,
                         fontWeight = FontWeight.Bold,
@@ -104,8 +95,6 @@ fun DetailComicScreen(
                         bookmarkViewModel = bookmarkViewModel,
                         dataStoreManager = dataStoreManager,
                         comicId = comicId,
-                        isInitiallyBookmarked = isBookmarked,
-                        initialBookmarkId = bookmarkId
                     )
                 }
 
@@ -163,7 +152,7 @@ fun DetailComicScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            ": ${comic.score ?: "-"}",
+                            ": ${comic.score}",
                             modifier = Modifier.weight(.7f)
                         )
                     }
@@ -177,7 +166,7 @@ fun DetailComicScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            ": ${comic.status ?: "-"}",
+                            ": ${comic.status}",
                             modifier = Modifier.weight(.7f)
                         )
                     }
@@ -191,7 +180,7 @@ fun DetailComicScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            ": ${comic.released ?: "-"}",
+                            ": ${comic.released}",
                             modifier = Modifier.weight(.7f)
                         )
                     }
@@ -234,8 +223,6 @@ fun DetailComicScreen(
                         "\t\t\t ${comic.synopsis}",
                         textAlign = TextAlign.Justify
                     )
-
-
                 }
 
                 Row (
@@ -291,13 +278,15 @@ fun BookmarkIcon(
     bookmarkViewModel: BookmarkViewModel,
     dataStoreManager: DataStoreManager,
     comicId: String,
-    isInitiallyBookmarked: Boolean,
-    initialBookmarkId: String?
 ) {
-    var isBookmarked by remember { mutableStateOf(isInitiallyBookmarked) }
-    var bookmarkId by remember { mutableStateOf(initialBookmarkId) }
-
+    val bookmarkState = bookmarkViewModel.bookmarkstate.value
     val context = LocalContext.current
+
+    var isBookmarked by remember(bookmarkState.responseData) {
+        mutableStateOf(
+            bookmarkState.responseData?.data?.any { it.komik_id == comicId } == true
+        )
+    }
 
     Icon(
         tint = Color.Black,
@@ -306,27 +295,17 @@ fun BookmarkIcon(
         modifier = Modifier
             .clickable {
                 if (isBookmarked) {
-                    bookmarkId?.let {
-                        bookmarkViewModel.deleteUserBookmark(dataStoreManager, it)
-                        isBookmarked = false
-                        bookmarkId = null
+                    val bookmark = bookmarkState.responseData?.data?.find { it.komik_id == comicId }
+                    val bookmarkId = bookmark?.bookmark_id
+                    if (bookmarkId != null) {
+                        bookmarkViewModel.deleteUserBookmark(dataStoreManager, bookmarkId)
                         Toast.makeText(context, "Removed from bookmarks", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     bookmarkViewModel.addUserBookmark(dataStoreManager, comicId)
-                    isBookmarked = true
                     Toast.makeText(context, "Added to bookmarks", Toast.LENGTH_SHORT).show()
                 }
+                isBookmarked = !isBookmarked
             }
     )
-
-    // Observe changes from the ViewModel for bookmark updates
-//    LaunchedEffect(Unit) {
-//        bookmarkViewModel.bookmarkstate.collect { state ->
-//            val addedBookmark = state.responseData?.data?.find { it.komik_id == comicId }
-//            if (addedBookmark != null) {
-//                bookmarkId = addedBookmark.bookmark_id // Update the ID if available
-//            }
-//        }
-//    }
 }

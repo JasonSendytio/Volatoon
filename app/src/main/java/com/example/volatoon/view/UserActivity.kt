@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +24,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -60,11 +63,10 @@ fun UserActivityScreen(
             )
         }
         LazyColumn {
-            items(2) {
+            items(1) {
                 Text("New Notification")
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
 
         Row(
             modifier = Modifier
@@ -82,7 +84,7 @@ fun UserActivityScreen(
                     .fillMaxWidth()
             )
         }
-        Box(modifier = Modifier.height(200.dp).fillMaxWidth()) {
+        Box(modifier = Modifier.height(250.dp).fillMaxWidth()) {
             when {
                 historyViewState.loading -> {
                     CircularProgressIndicator(
@@ -97,7 +99,6 @@ fun UserActivityScreen(
                     Text(text = "No history")
                 }
                 else -> {
-                    Spacer(modifier = Modifier.height(8.dp))
                     val historyList = historyViewState.responseData.data
                     if (historyList.isEmpty()){
                         Text(
@@ -137,7 +138,7 @@ fun UserActivityScreen(
                     .fillMaxWidth()
             )
         }
-        Box(modifier = Modifier.height(200.dp).fillMaxWidth()) {
+        Box(modifier = Modifier.height(250.dp).fillMaxWidth()) {
             when {
                 bookmarkViewState.loading -> {
                     CircularProgressIndicator(
@@ -157,7 +158,6 @@ fun UserActivityScreen(
                 }
 
                 else -> {
-                    Spacer(modifier = Modifier.height(8.dp))
                     val bookmarkList = bookmarkViewState.responseData.data
                     if (bookmarkList.isEmpty()) {
                         Text(text = "No bookmark")
@@ -188,7 +188,8 @@ fun HistoryItemPreview(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
+            .width(150.dp)
+            .fillMaxHeight()
             .clickable { navigateToDetail(comicHistory.komik_id) }
             .padding(4.dp)
     ) {
@@ -203,13 +204,17 @@ fun HistoryItemPreview(
                 painter = rememberAsyncImagePainter(
                     model = comicHistory.comicDetails.image
                 ),
-                contentDescription = "Comic Cover - ",
+                contentDescription = "Comic Cover",
                 modifier = Modifier
                     .width(100.dp)
                     .height(150.dp)
             )
             Text(
-                text = comicHistory.comicDetails.title
+                text = comicHistory.comicDetails.title,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -223,7 +228,8 @@ fun BookmarkItemPreview(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
+            .width(150.dp)
+            .fillMaxHeight()
             .clickable { navigateToDetail(comicBookmark.komik_id) }
             .padding(4.dp)
     ) {
@@ -243,7 +249,11 @@ fun BookmarkItemPreview(
                     .height(150.dp)
             )
             Text(
-                text = comicBookmark.comicDetails.title
+                text = comicBookmark.comicDetails.title,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                textAlign = TextAlign.Center
             )
         }
     }

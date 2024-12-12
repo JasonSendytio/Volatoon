@@ -88,6 +88,8 @@ fun VolatoonApp(
         }
     }
 
+    var navigateOnce by remember { mutableStateOf(false) }
+
     Scaffold(
         bottomBar = { if(isLogin) BottomNavigationBar(navController = navController) }
     ) { innerPadding ->
@@ -115,7 +117,12 @@ fun VolatoonApp(
                 ) {
                     LoginScreen(
                         navigateToDashboard = {
-                        navController.navigate(route = TopLevelRoute.Dashboard.route) },
+                            if (!navigateOnce) {
+                                navController.navigate(route = TopLevelRoute.Dashboard.route)
+                                navigateOnce = true // Set the flag to prevent further navigation
+                                isLogin = true
+                            }
+                        },
                         dataStoreManager,
                         navigateToRegister = {
                             navController.navigate(route = "register")

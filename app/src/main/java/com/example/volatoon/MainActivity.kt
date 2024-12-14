@@ -15,10 +15,12 @@ import com.example.volatoon.ui.theme.VolatoonTheme
 import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.utils.preferenceDataStore
 import com.example.volatoon.view.LoginScreen
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
 
         setContent {
             val navController = rememberNavController()

@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.volatoon" />
+                  <option name="mobileSdkAppId" value="1:730808284044:android:9b5f5265ad83cbdb2adca9" />
+                  <option name="projectId" value="volatoon-login" />
+                  <option name="projectNumber" value="730808284044" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

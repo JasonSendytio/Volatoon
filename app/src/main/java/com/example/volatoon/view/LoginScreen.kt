@@ -1,5 +1,8 @@
 package com.example.volatoon.view
 
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -47,6 +51,17 @@ import com.example.volatoon.viewmodel.LoginViewModel
 import com.example.volatoon.R
 import com.example.volatoon.model.Account
 import com.example.volatoon.utils.DataStoreManager
+import com.example.volatoon.utils.GoogleAuthManager
+import com.google.android.gms.common.api.ApiException
+import android.util.Log
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.rememberCoroutineScope
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,10 +70,39 @@ fun LoginScreen(
     dataStoreManager: DataStoreManager,
     navigateToRegister : () -> Unit
 ){
-
+    val context = LocalContext.current
+    val googleAuthManager = remember { GoogleAuthManager(context) }
     val loginViewModel : LoginViewModel = viewModel()
     val viewState by loginViewModel.loginState
+   val scope = rememberCoroutineScope()
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        try {
+            if (result.resultCode == Activity.RESULT_OK) {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                val account = task.getResult(ApiException::class.java)
+                account?.idToken?.let { token ->
+                    val credential = GoogleAuthProvider.getCredential(token, null)
+                    FirebaseAuth.getInstance().signInWithCredential(credential)
+                        .addOnCompleteListener { authTask ->
+                            if (authTask.isSuccessful) {
+                                loginViewModel.handleGoogleSignInResult(token, dataStoreManager)
+                            } else {
+                                Log.e("LoginScreen", "Firebase Auth failed", authTask.exception)
+                            }
+                        }
+                }
+            }else if (result.resultCode == Activity.RESULT_CANCELED) {
+                Log.e("LoginScreen", "Google Sign-In canceled by user")
 
+            }else {
+                Log.e("LoginScreen", "Google Sign-In failed: resultCode = ${result.resultCode}")
+            }
+        } catch (e: ApiException) {
+            Log.e("LoginScreen", "Google Sign-In failed", e)
+        }
+    }
     var email by remember { mutableStateOf("") }
     var password =  remember { mutableStateOf("") }
 
@@ -139,13 +183,48 @@ fun LoginScreen(
                 ){
                     Text(text = "Login")
                 }
+                Button(
+                    onClick = {
+                        launcher.launch(googleAuthManager.getSignInIntent())
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                    border = BorderStroke(1.dp, Color.LightGray),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .height(50.dp)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
 
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.google), // Add Google icon
+
+                            contentDescription = "Google Icon",
+                            tint = Color.Unspecified,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .padding(end = 8.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Sign in with Google",
+                            color = Color.Black,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            }
             }
         }
 
 
     }
-}
+
 
 @Composable
 fun PasswordTextField(

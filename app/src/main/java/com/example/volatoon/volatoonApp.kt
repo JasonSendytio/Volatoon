@@ -118,7 +118,10 @@ fun VolatoonApp(
                     LoginScreen(
                         navigateToDashboard = {
                             if (!navigateOnce) {
-                                navController.navigate(route = TopLevelRoute.Dashboard.route)
+                                navController.navigate(TopLevelRoute.Dashboard.route) {
+                                    popUpTo("login") { inclusive = true }
+                                    launchSingleTop = true
+                                }
                                 navigateOnce = true // Set the flag to prevent further navigation
                                 isLogin = true
                             }

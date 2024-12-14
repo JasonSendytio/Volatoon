@@ -113,13 +113,55 @@ class ComicViewModel : ViewModel() {
             }
         }
     }
+    fun fetchMoreComics(type: String, page: Int = 1) {
+        viewModelScope.launch {
+            try {
+                _comicstate.value = _comicstate.value.copy(loading = true)
+                val response = when (type.lowercase()) {
+                    "manga" -> comicApiService.getAllManga(page)
+                    "manhua" -> comicApiService.getAllManhua(page)
+                    "manhwa" -> comicApiService.getAllManhwa(page)
+                    else -> throw Exception("Invalid comic type")
+                }
 
+                _comicstate.value = _comicstate.value.copy(
+                    loading = false,
+                    currentPageComics = response.data,
+                    currentPage = page,
+                    hasNextPage = response.nextPage,
+                    hasPreviousPage = response.prevPage,
+                    error = null
+                )
+            } catch (e: Exception) {
+                _comicstate.value = _comicstate.value.copy(
+                    loading = false,
+                    error = "Error fetching comics: ${e.message}"
+                )
+            }
+        }
+    }
 
+    fun refreshComics() {
+        viewModelScope.launch {
+            try {
+                fetchComics()
+            } catch (e: Exception) {
+                _comicstate.value = _comicstate.value.copy(
+                    loading = false,
+                    error = e.message
+                )
+            }
+        }
+    }
     data class ComicsState(
         val loading : Boolean = true,
         val listManga : List<Comic> = emptyList(),
         val listManhua : List<Comic> = emptyList(),
         val listManhwa : List<Comic> = emptyList(),
+        val currentPageComics: List<Comic> = emptyList(),
+        val currentPage: Int = 1,
+        val hasNextPage: Boolean = false,
+        val hasPreviousPage: Boolean = false,
         //val listGenre : List<Genre> = emptyList(),
         val error : String? = null
     )

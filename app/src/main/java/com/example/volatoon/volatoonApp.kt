@@ -47,6 +47,7 @@ import com.example.volatoon.viewmodel.ProfileViewModel
 import com.example.volatoon.viewmodel.SearchViewModel
 import com.example.volatoon.view.BookmarkScreen
 import com.example.volatoon.view.HistoryScreen
+import com.example.volatoon.view.MoreComicScreen
 import com.example.volatoon.view.VolatoonPremiumScreen
 import com.example.volatoon.viewmodel.BookmarkViewModel
 import com.example.volatoon.viewmodel.LoginViewModel
@@ -133,14 +134,35 @@ fun VolatoonApp(
                 }
 
                 composable(route = TopLevelRoute.Dashboard.route){
-                    DashboardScreen(viewState = viewState,
+                    DashboardScreen(
+                        viewState = viewState,
+                        viewModel = comicViewModel,
                         navigateToDetail = { comicId ->
                          navController.navigate(route = "detailcomic/$comicId")
                     },
                         navigateToGenre = { genreId ->
                             navController.navigate("genre/$genreId")
-                        })
+                        },
+                        navigateToMore = { type ->
+                            navController.navigate("more/${type.lowercase()}")
+                        }
+                    )
 
+
+                }
+
+                composable(
+                    route = "more/{type}",
+                    arguments = listOf(navArgument("type") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val type = backStackEntry.arguments?.getString("type") ?: ""
+                    MoreComicScreen(
+                        type = type,
+                        comicViewModel = comicViewModel,
+                        navigateToDetail = { comicId ->
+                            navController.navigate("detailcomic/$comicId")
+                        }
+                    )
                 }
 
                 composable(route = TopLevelRoute.Trending.route){

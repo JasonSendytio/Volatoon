@@ -16,13 +16,20 @@ val comicApiService = retrofit.create(ComicApiService::class.java)
 
 interface ComicApiService {
     @GET("komik/manga")
-    suspend fun getAllManga(): ComicsList
+
+    suspend fun getAllManga(
+        @Query("page") page : Int = 1,
+    ): ComicsList
 
     @GET("komik/manhua")
-    suspend fun getAllManhua(): ComicsList
+    suspend fun getAllManhua(
+        @Query("page") page : Int = 1,
+    ): ComicsList
 
     @GET("komik/manhwa")
-    suspend fun getAllManhwa(): ComicsList
+    suspend fun getAllManhwa(
+        @Query("page") page : Int = 1,
+    ): ComicsList
 
     @GET("komik/genres")
     suspend fun getAllGenres() : List<Genres>

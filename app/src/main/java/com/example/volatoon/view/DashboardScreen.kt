@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,16 +40,37 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.volatoon.R
 import com.example.volatoon.model.Comic
 import com.example.volatoon.viewmodel.ComicViewModel
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 
 
+
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DashboardScreen(
     navigateToDetail : (String) -> Unit,
     navigateToGenre: (String) -> Unit,
-    viewState : ComicViewModel.ComicsState
+    navigateToMore: (String) -> Unit, //
+    viewState : ComicViewModel.ComicsState,
+    viewModel: ComicViewModel,
+
 ){
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = viewState.loading,
+        onRefresh = {
+            viewModel.refreshComics() // Panggil fungsi refresh di viewModel
+        }
+    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState)
+    )
     Column (
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .padding(10.dp),
 
     ){
@@ -167,34 +190,45 @@ fun DashboardScreen(
                 }
                 else -> {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        state = rememberLazyListState()
+
                     ) {
                         // Manga Section
                         item {
-                            ComicsScreen(title = "Manga", comics = viewState.listManga, navigateToDetail)
+                            ComicsScreen(title = "Manga", comics = viewState.listManga, navigateToDetail,
+                                navigateToMore = navigateToMore)
                         }
 
                         // Manhua Section
                         item {
-                            ComicsScreen(title = "Manhua", comics = viewState.listManhua, navigateToDetail)
+                            ComicsScreen(title = "Manhua", comics = viewState.listManhua, navigateToDetail,
+                                navigateToMore = navigateToMore)
                         }
 
                         // Manhwa Section
                         item {
-                            ComicsScreen(title = "Manhwa", comics = viewState.listManhwa, navigateToDetail)
+                            ComicsScreen(title = "Manhwa", comics = viewState.listManhwa, navigateToDetail,
+                                navigateToMore = navigateToMore)
                         }
                     }
                 }
             }
         }
     }
+    PullRefreshIndicator(
+        refreshing = viewState.loading,
+        state = pullRefreshState,
+        modifier = Modifier
+    )
 }
 
 @Composable
 fun ComicsScreen(
     title: String,
     comics : List<Comic>,
-    navigateToDetail : (String) -> Unit
+    navigateToDetail : (String) -> Unit,
+    navigateToMore: (String) -> Unit
 ){
     Column {
         Row(
@@ -209,7 +243,10 @@ fun ComicsScreen(
 
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.clickable {
+                    navigateToMore(title.lowercase())
+                }
             )
         }
 
@@ -253,4 +290,5 @@ fun ComicItem(
             textAlign = TextAlign.Center
         )
     }
+
 }

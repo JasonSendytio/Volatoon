@@ -67,6 +67,7 @@ dependencies {
 
 //    image loading
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation ("androidx.compose.material:material:1.5.4")
 
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")

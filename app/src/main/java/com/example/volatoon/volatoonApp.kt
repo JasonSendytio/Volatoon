@@ -79,6 +79,7 @@ fun VolatoonApp(
     val loginViewModel : LoginViewModel = viewModel()
     val bookmarkViewModel : BookmarkViewModel = viewModel()
     val historyViewModel : HistoryViewModel = viewModel()
+    val commentViewModel : CommentViewModel = viewModel()
 
     val viewState by comicViewModel.comicstate
 
@@ -147,8 +148,6 @@ fun VolatoonApp(
                             navController.navigate("more/${type.lowercase()}")
                         }
                     )
-
-
                 }
 
                 composable(
@@ -285,28 +284,11 @@ fun VolatoonApp(
                     val comicId = it.arguments?.getString("comicId") ?: ""
 
                     val detailComicState by comicViewModel.detailComicState
-                    val historyState by historyViewModel.historyState
 
-                    // Use LaunchedEffect to ensure fetchDetailComic is called only once
-//                    LaunchedEffect(comicId) {
-//                        comicViewModel.fetchDetailComic(comicId)
-//                        historyViewModel.fetchHistory(dataStoreManager)
-//                        bookmarkViewModel.fetchUserBookmark(dataStoreManager)
-//
-//                        val historyList = historyState.responseData?.data
-//                        val isComicInHistory = historyList?.any { it.komik_id == comicId }
-//                        if (isComicInHistory != null && !isComicInHistory) {
-//                            historyViewModel.addHistory(dataStoreManager, comicId)
-//                        }
-//                        if (isComicInHistory != null && isComicInHistory) {
-//                            val historyId = historyList.find { it.komik_id == comicId }?.history_id
-//                            if (historyId != null) {
-//                                historyViewModel.deleteHistory(dataStoreManager, historyId)
-//                                historyViewModel.addHistory(dataStoreManager, comicId)
-//                            }
-//                            Log.i("add history", "comic already exist")
-//                        }
-//                    }
+                    LaunchedEffect(comicId) {
+                        comicViewModel.fetchDetailComic(comicId)
+                        bookmarkViewModel.fetchUserBookmark(dataStoreManager)
+                    }
 
                     Box(modifier = Modifier.fillMaxSize()){
                         when {
@@ -336,12 +318,35 @@ fun VolatoonApp(
                     }
                 }
 
-                composable("detailchapter/{chapterId}") {
+                composable("detailchapter/{chapterId}") { it ->
                     val chapterId = it.arguments?.getString("chapterId") ?: ""
                     val detailChapterState by comicViewModel.detailChapterState
+                    val comicId = detailChapterState.detailChapter?.komik_id
 
-                    LaunchedEffect(chapterId) {
+                    LaunchedEffect(chapterId, comicId) {
                         comicViewModel.fetchDetailChapter(chapterId)
+                        historyViewModel.fetchHistory(dataStoreManager)
+
+                        chapterId.let { id ->
+                            Log.i("chapter id", id)
+                            if (id.isNotEmpty()) {
+                                commentViewModel.fetchComments(id, dataStoreManager)
+                            }
+                            comicId.let { comic ->
+                                val historyList = historyViewModel.historyState.value.responseData?.data ?: emptyList()
+                                val isComicInHistory = historyList.any { it.komik_id == comic }
+                                if (isComicInHistory) {
+                                    val historyId = historyList.find { it.komik_id == comic }?.history_id
+                                    if (historyId != null) {
+                                        historyViewModel.deleteHistory(dataStoreManager, historyId)
+                                    }
+                                    Log.i("comic history", "already in history")
+                                }
+                                if (comic != null) {
+                                    historyViewModel.addHistory(dataStoreManager, comic, id)
+                                }
+                            }
+                        }
                     }
 
                     Box(modifier = Modifier.fillMaxSize()){
@@ -354,15 +359,13 @@ fun VolatoonApp(
                             }
 
                             detailChapterState.detailChapter != null -> {
-                                val commentViewModel: CommentViewModel = viewModel()
-
                                 DetailChapterScreen(
                                     viewState = detailChapterState,
                                     navigateToOtherChapter = { chapterId ->
                                         navController.navigate(route = "detailchapter/$chapterId")
                                     },
                                     commentViewModel = commentViewModel,  // Add this
-                                    dataStoreManager = dataStoreManager  // Add this
+                                    dataStoreManager = dataStoreManager,
                                 )
                             }
 

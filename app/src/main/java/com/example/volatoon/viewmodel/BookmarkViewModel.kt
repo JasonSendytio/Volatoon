@@ -66,7 +66,6 @@ class BookmarkViewModel : ViewModel(){
                 try {
                     val bearerToken = "Bearer $token"
                     val response = apiService.postBookmark(token = bearerToken, komikId = BookmarkRequest(komikId = comicId))
-
                     _addBookmarkstate.value = _addBookmarkstate.value.copy(
                         loading = false,
                         error = null
@@ -75,7 +74,7 @@ class BookmarkViewModel : ViewModel(){
                 } catch (e : Exception){
                     _addBookmarkstate.value = _addBookmarkstate.value.copy(
                         loading = false,
-                        error = "error fetching profile ${e.message}"
+                        error = "Error: ${e.message}"
                     )
                     Log.e("add bookmark", e.message.toString())
                 } finally {
@@ -85,14 +84,17 @@ class BookmarkViewModel : ViewModel(){
         }
     }
 
-    fun deleteUserBookmark(dataStoreManager : DataStoreManager, bookmarkId : String){
+    fun deleteUserBookmark(dataStoreManager : DataStoreManager, bookmarkId : String) {
+        _addBookmarkstate.value = _addBookmarkstate.value.copy(
+            loading = true
+        )
         viewModelScope.launch {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
             if (token != null) {
                 try {
                     val bearerToken = "Bearer $token"
                     val response = apiService.deleteBookmark(bearerToken, bookmarkId)
-                    _bookmarkstate.value = _bookmarkstate.value.copy(
+                    _addBookmarkstate.value = _addBookmarkstate.value.copy(
                         loading = false,
                         error = null
                     )

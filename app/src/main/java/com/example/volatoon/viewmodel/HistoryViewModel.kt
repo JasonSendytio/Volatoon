@@ -34,12 +34,12 @@ class HistoryViewModel: ViewModel() {
         viewModelScope.launch {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
             if (token != null) {
+                if (_historyState.value.error != null) {
+                    _historyState.value = _historyState.value.copy(
+                        error = null
+                    )
+                }
                 try {
-                    if (_historyState.value.error != null) {
-                        _historyState.value = _historyState.value.copy(
-                            error = null
-                        )
-                    }
                     Log.i("fetch history", "in progress")
                     val response = apiService.getHistory("Bearer $token")
                     _historyState.value = _historyState.value.copy(
@@ -59,12 +59,18 @@ class HistoryViewModel: ViewModel() {
         }
     }
 
-    fun addHistory(dataStoreManager: DataStoreManager, comicId: String) {
+    fun addHistory(dataStoreManager: DataStoreManager, comicId: String, chapterId: String) {
+        _historyState.value = historyState.value.copy(
+            loading = true
+        )
         viewModelScope.launch {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
             if (token != null) {
                 try {
-                    val response = apiService.postHistory("Bearer $token", komikId = HistoryRequest(comicId))
+                    val response = apiService.postHistory("Bearer $token", komik = HistoryRequest(comicId, chapterId))
+                    _historyState.value = historyState.value.copy(
+                        loading = false
+                    )
                     Log.i("add history", response.message)
                 } catch (e: Exception) {
                     Log.e("add history", e.message.toString())
@@ -74,12 +80,17 @@ class HistoryViewModel: ViewModel() {
     }
 
     fun deleteHistory(dataStoreManager: DataStoreManager, historyId: String) {
+        _historyState.value = historyState.value.copy(
+            loading = true
+        )
         viewModelScope.launch {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
             if (token != null) {
                 try {
                     val response = apiService.deleteHistory("Bearer $token", historyId)
-                    fetchHistory(dataStoreManager)
+                    _historyState.value = historyState.value.copy(
+                        loading = false
+                    )
                     _toastMessage.emit("History deleted successfully")
                     Log.i("delete history", response.message)
                 }
@@ -90,6 +101,8 @@ class HistoryViewModel: ViewModel() {
                     )
                     _toastMessage.emit("Error deleting history")
                     Log.e("delete history", e.message.toString())
+                } finally {
+                    fetchHistory(dataStoreManager)
                 }
             }
         }

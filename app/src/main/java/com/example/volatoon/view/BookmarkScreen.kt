@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -116,29 +117,28 @@ fun BookmarkItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp)
+            .clickable { navigateToDetail(comicBookmark.komik_id) }
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
         ) {
             // Comic Image
             Image(
                 painter = rememberAsyncImagePainter(
                     model = comicBookmark.comicDetails.image
                 ),
-                contentDescription = "Comic Cover - ",
+                contentDescription = "Comic Cover",
                 modifier = Modifier
-                    .width(120.dp)
-                    .clickable { navigateToDetail(comicBookmark.komik_id) }
-                    .height(150.dp)
+                    .padding(top = 4.dp, bottom = 4.dp)
+                    .align(Alignment.CenterVertically)
+                    .height(180.dp)
+                    .aspectRatio(1f)
             )
 
             // Comic Details
             Column(
                 modifier = Modifier
-                    .padding(start = 16.dp)
-                    .clickable { navigateToDetail(comicBookmark.komik_id) }
                     .weight(1f)
             ) {
                 Text(
@@ -147,33 +147,26 @@ fun BookmarkItem(
                     fontWeight = FontWeight.Bold,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
-                    text = "Type : ${comicBookmark.comicDetails.type}",
+                    text = "Type: ${comicBookmark.comicDetails.type}",
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(bottom = 2.dp)
                 )
                 Text(
-                    text = "Author : ${comicBookmark.comicDetails.genres.joinToString(", ")}",
+                    text = "Genres: ${comicBookmark.comicDetails.genres.joinToString(", ")}",
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(bottom = 2.dp)
                 )
                 Text(
-                    text = "Status : ${comicBookmark.comicDetails.status}",
+                    text = "Status: ${comicBookmark.comicDetails.status}",
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(bottom = 2.dp)
                 )
                 Text(
                     text = "Score: ${comicBookmark.comicDetails.score}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 2.dp)
                 )
                 Text(
                     text = "Added at: ${formatAddedAt(comicBookmark.createdAt)}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary
                 )
             }
             Icon(

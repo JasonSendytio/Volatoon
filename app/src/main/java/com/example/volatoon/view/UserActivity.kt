@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -195,9 +196,7 @@ fun HistoryItemPreview(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .clickable { navigateToDetail(comicHistory.komik_id) },
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
@@ -206,8 +205,8 @@ fun HistoryItemPreview(
                 ),
                 contentDescription = "Comic Cover",
                 modifier = Modifier
-                    .width(100.dp)
-                    .height(150.dp)
+                    .height(160.dp)
+                    .aspectRatio(1f)
             )
             Text(
                 text = comicHistory.comicDetails.title,
@@ -235,18 +234,17 @@ fun BookmarkItemPreview(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 painter = rememberAsyncImagePainter(
                     model = comicBookmark.comicDetails.image
                 ),
-                contentDescription = "Comic Cover - ",
+                contentDescription = "Comic Cover",
                 modifier = Modifier
-                    .width(100.dp)
-                    .height(150.dp)
+                    .height(160.dp)
+                    .aspectRatio(1f)
             )
             Text(
                 text = comicBookmark.comicDetails.title,

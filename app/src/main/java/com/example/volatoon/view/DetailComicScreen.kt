@@ -1,5 +1,6 @@
 package com.example.volatoon.view
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -89,12 +91,6 @@ fun DetailComicScreen(
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    BookmarkIcon(
-                        bookmarkViewModel = bookmarkViewModel,
-                        dataStoreManager = dataStoreManager,
-                        comicId = comicId,
-                    )
                 }
 
                 Image(
@@ -103,15 +99,22 @@ fun DetailComicScreen(
                     ),
                     contentDescription = null,
                     modifier = Modifier
-                        .width(162.dp)
-                        .height(198.dp)
+                        .width(300.dp)
                         .aspectRatio(1f)
+                        .padding(top = 4.dp)
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+                BookmarkIcon(
+                    bookmarkViewModel = bookmarkViewModel,
+                    dataStoreManager = dataStoreManager,
+                    comicId = comicId,
                 )
 
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
+                        .padding(8.dp, top = 4.dp)
                 ) {
                     Row(
                         modifier = Modifier.padding(5.dp)
@@ -246,7 +249,6 @@ fun DetailComicScreen(
 
 @Composable
 fun ListChaptersScreen(chapters : List<Chapter>, navigateToDetail : (String) -> Unit){
-
     Column {
         chapters.forEachIndexed { index, chapter ->
             Row {
@@ -279,32 +281,60 @@ fun BookmarkIcon(
     comicId: String,
 ) {
     val bookmarkState = bookmarkViewModel.bookmarkstate.value
+    val addBookmarkState = bookmarkViewModel.addBookmarkstate.value
     val context = LocalContext.current
 
-    var isBookmarked by remember(bookmarkState.responseData) {
+    val isBookmarked by remember(bookmarkState.responseData) {
         mutableStateOf(
             bookmarkState.responseData?.data?.any { it.komik_id == comicId } == true
         )
     }
 
-    Icon(
-        tint = Color.Black,
-        imageVector = if (isBookmarked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-        contentDescription = if (isBookmarked) "Remove from bookmark" else "Add to bookmark",
+    val lastLoadingState = remember { mutableStateOf(false) }
+
+    LaunchedEffect(addBookmarkState) {
+        if (lastLoadingState.value && !addBookmarkState.loading) {
+            if (addBookmarkState.error == null) {
+                if (isBookmarked) {
+                    Toast.makeText(context, "Removed from bookmarks", Toast.LENGTH_SHORT).show()
+                    Log.i("bookmark state", addBookmarkState.toString())
+                } else {
+                    Toast.makeText(context, "Added to bookmarks", Toast.LENGTH_SHORT).show()
+                    Log.i("add bookmark state", addBookmarkState.toString())
+                }
+            } else {
+                Toast.makeText(context, addBookmarkState.error, Toast.LENGTH_SHORT).show()
+            }
+        }
+        lastLoadingState.value = addBookmarkState.loading
+    }
+
+    Row (
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
+            .fillMaxWidth()
             .clickable {
                 if (isBookmarked) {
                     val bookmark = bookmarkState.responseData?.data?.find { it.komik_id == comicId }
                     val bookmarkId = bookmark?.bookmark_id
                     if (bookmarkId != null) {
+                        Toast.makeText(context, "Removing...", Toast.LENGTH_SHORT).show()
                         bookmarkViewModel.deleteUserBookmark(dataStoreManager, bookmarkId)
-                        Toast.makeText(context, "Removed from bookmarks", Toast.LENGTH_SHORT).show()
                     }
                 } else {
+                    Toast.makeText(context, "Adding...", Toast.LENGTH_SHORT).show()
                     bookmarkViewModel.addUserBookmark(dataStoreManager, comicId)
-                    Toast.makeText(context, "Added to bookmarks", Toast.LENGTH_SHORT).show()
                 }
-                isBookmarked = !isBookmarked
             }
-    )
+    ) {
+        Icon(
+            tint = Color.Black,
+            imageVector = if (isBookmarked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+            contentDescription = if (isBookmarked) "Remove from bookmarks" else "Add to bookmarks",
+        )
+        Text(
+            text = if (isBookmarked) "Remove from bookmarks" else "Add to bookmarks",
+        )
+    }
 }

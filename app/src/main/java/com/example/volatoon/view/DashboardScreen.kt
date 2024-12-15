@@ -49,12 +49,11 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 fun DashboardScreen(
     navigateToDetail : (String) -> Unit,
     navigateToGenre: (String) -> Unit,
-    navigateToMore: (String) -> Unit, //
+    navigateToMore: (String) -> Unit,
     viewState : ComicViewModel.ComicsState,
     viewModel: ComicViewModel,
 
 ){
-
     val pullRefreshState = rememberPullRefreshState(
         refreshing = viewState.loading,
         onRefresh = {

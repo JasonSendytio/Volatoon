@@ -72,7 +72,7 @@ data class ComicHistory(
     val userId : String,
     val komik_id: String,
     val createdAt : String,
-    val chapter : String,
+    val chapter_id : String,
     val comicDetails: DetailComic
 )
 

@@ -12,4 +12,7 @@ data class HistoryAPIData (
     val data: ComicHistory,
 )
 
-data class HistoryRequest(val komikId: String)
+data class HistoryRequest(
+    val komikId: String,
+    val chapterId: String
+)

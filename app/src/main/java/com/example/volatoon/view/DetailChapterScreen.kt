@@ -50,6 +50,7 @@
     import com.example.volatoon.model.Comment
     import com.example.volatoon.utils.DataStoreManager
     import com.example.volatoon.viewmodel.CommentViewModel
+    import com.example.volatoon.viewmodel.HistoryViewModel
 
     @Composable
     fun CommentItem(
@@ -113,25 +114,8 @@ fun DetailChapterScreen(
     commentViewModel: CommentViewModel,
     dataStoreManager: DataStoreManager,
 ) {
-// Add this near the top of the DetailChapterScreen composable function
     var expandedComments by remember { mutableStateOf(false) }
     var currentPage by remember { mutableIntStateOf(0) }
-    // Tambahkan setelah deklarasi currentPage
-    LaunchedEffect(viewState.detailChapter?.chapter_id) {
-        val chapterId = viewState.detailChapter?.chapter_id
-        Log.d("DetailChapterScreen", "Chapter ID: $chapterId")
-
-        chapterId?.let { id ->
-            if (id.isNotEmpty()) {
-                commentViewModel.fetchComments(id, dataStoreManager)
-            }
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        Log.d("DetailChapterScreen", "DetailChapter data: ${viewState.detailChapter}")
-        Log.d("DetailChapterScreen", "Chapter ID: ${viewState.detailChapter?.chapter_id}")
-    }
 
     Column(
         modifier = Modifier
@@ -238,7 +222,6 @@ fun DetailChapterScreen(
                         )
 
                         var commentText by remember { mutableStateOf("") }
-
 
                         // Comment Input
                         Row(
@@ -415,8 +398,6 @@ fun DetailChapterScreen(
                         Text("Next Ch")
                     }
                 }
-
-
             }
         }
             }

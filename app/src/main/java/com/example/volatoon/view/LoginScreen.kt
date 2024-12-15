@@ -74,32 +74,36 @@ fun LoginScreen(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         try {
-            if (result.resultCode == Activity.RESULT_OK) {
-                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                val account = task.getResult(ApiException::class.java)
-                account?.idToken?.let { token ->
-                    val credential = GoogleAuthProvider.getCredential(token, null)
-                    FirebaseAuth.getInstance().signInWithCredential(credential)
-                        .addOnCompleteListener { authTask ->
-                            if (authTask.isSuccessful) {
-                                loginViewModel.handleGoogleSignInResult(token, dataStoreManager)
-                            } else {
-                                Log.e("LoginScreen", "Firebase Auth failed", authTask.exception)
+            when (result.resultCode) {
+                Activity.RESULT_OK -> {
+                    val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                    val account = task.getResult(ApiException::class.java)
+                    account?.idToken?.let { token ->
+                        val credential = GoogleAuthProvider.getCredential(token, null)
+                        FirebaseAuth.getInstance().signInWithCredential(credential)
+                            .addOnCompleteListener { authTask ->
+                                if (authTask.isSuccessful) {
+                                    loginViewModel.handleGoogleSignInResult(token, dataStoreManager)
+                                } else {
+                                    Log.e("LoginScreen", "Firebase Auth failed", authTask.exception)
+                                }
                             }
-                        }
+                    }
                 }
-            }else if (result.resultCode == Activity.RESULT_CANCELED) {
-                Log.e("LoginScreen", "Google Sign-In canceled by user")
+                Activity.RESULT_CANCELED -> {
+                    Log.e("LoginScreen", "Google Sign-In canceled by user")
 
-            }else {
-                Log.e("LoginScreen", "Google Sign-In failed: resultCode = ${result.resultCode}")
+                }
+                else -> {
+                    Log.e("LoginScreen", "Google Sign-In failed: resultCode = ${result.resultCode}")
+                }
             }
         } catch (e: ApiException) {
             Log.e("LoginScreen", "Google Sign-In failed", e)
         }
     }
     var email by remember { mutableStateOf("") }
-    var password =  remember { mutableStateOf("") }
+    val password =  remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -113,7 +117,7 @@ fun LoginScreen(
             }
 
             viewState.loading -> {
-                CircularProgressIndicator(progress = 0.89f)
+                CircularProgressIndicator()
             }
 
             else ->{

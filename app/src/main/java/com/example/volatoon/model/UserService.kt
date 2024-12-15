@@ -14,19 +14,19 @@ class StoreUserId(private val context: Context) {
 
     // to make sure there's only one instance
     companion object {
-        private val Context.dataStoree: DataStore<Preferences> by preferencesDataStore("userId")
+        private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("userId")
         val USER_ID_KEY = stringPreferencesKey("user_id")
     }
 
     //get the saved email
-    val getIdUser: Flow<String?> = context.dataStoree.data
+    val getIdUser: Flow<String?> = context.dataStore.data
         .map { preferences ->
             preferences[USER_ID_KEY] ?: "ID_User"
         }
 
     //save email into datastore
     suspend fun saveIdUser(name: String) {
-        context.dataStoree.edit { preferences ->
+        context.dataStore.edit { preferences ->
             preferences[USER_ID_KEY] = name
         }
     }

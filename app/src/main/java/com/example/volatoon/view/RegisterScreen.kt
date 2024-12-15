@@ -1,9 +1,7 @@
 package com.example.volatoon.view
 
-import android.provider.ContactsContract.Data
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,7 +32,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.volatoon.R
 import com.example.volatoon.model.Account
 import com.example.volatoon.model.RegisterData
@@ -54,8 +51,8 @@ fun RegisterScreen(
     var userName by remember { mutableStateOf("") }
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var password = remember { mutableStateOf("") }
-    var confirmPassword = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
+    val confirmPassword = remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -77,7 +74,7 @@ fun RegisterScreen(
             }
 
             viewState.loading -> {
-                CircularProgressIndicator(progress = 0.89f)
+                CircularProgressIndicator()
             }
 
             else -> {

@@ -2,7 +2,6 @@ package com.example.volatoon.model
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -12,7 +11,7 @@ private val retrofit = Retrofit.Builder().baseUrl("https://api-otaku.vercel.app/
     .addConverterFactory(GsonConverterFactory.create())
     .build()
 
-val comicApiService = retrofit.create(ComicApiService::class.java)
+val comicApiService: ComicApiService = retrofit.create(ComicApiService::class.java)
 
 interface ComicApiService {
     @GET("komik/manga")

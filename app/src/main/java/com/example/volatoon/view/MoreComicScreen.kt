@@ -1,8 +1,5 @@
 package com.example.volatoon.view
 
-
-
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.volatoon.viewmodel.ComicViewModel
+import java.util.Locale
 
 @Composable
 fun MoreComicScreen(
@@ -42,7 +40,7 @@ fun MoreComicScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "More ${type.capitalize()}",
+            text = "More ${type.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }}",
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp,
             modifier = Modifier

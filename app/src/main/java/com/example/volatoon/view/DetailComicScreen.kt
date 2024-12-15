@@ -1,6 +1,5 @@
 package com.example.volatoon.view
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -249,7 +248,7 @@ fun DetailComicScreen(
 fun ListChaptersScreen(chapters : List<Chapter>, navigateToDetail : (String) -> Unit){
 
     Column {
-        chapters.forEachIndexed() { index, chapter ->
+        chapters.forEachIndexed { index, chapter ->
             Row {
                 ListChapter(chapter = chapter, index, navigateToDetail)
             }

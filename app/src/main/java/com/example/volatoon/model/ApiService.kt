@@ -16,7 +16,7 @@ private val retrofit = Retrofit.Builder().baseUrl("https://volatoon.vercel.app/"
     .addConverterFactory(GsonConverterFactory.create())
     .build()
 
-val apiService = retrofit.create(ApiService::class.java)
+val apiService: ApiService = retrofit.create(ApiService::class.java)
 
 interface ApiService {
     @POST("api/auth/login")

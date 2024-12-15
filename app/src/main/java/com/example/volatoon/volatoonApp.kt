@@ -68,7 +68,7 @@ fun VolatoonApp(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect (key1 = Unit){
-        checkRegisterState(preferenceDataStore){it->
+        checkRegisterState(preferenceDataStore){
             isLogin = it
         }
     }
@@ -285,34 +285,28 @@ fun VolatoonApp(
                     val comicId = it.arguments?.getString("comicId") ?: ""
 
                     val detailComicState by comicViewModel.detailComicState
-                    val addBookmarkState by bookmarkViewModel.addBookmarkstate
                     val historyState by historyViewModel.historyState
 
                     // Use LaunchedEffect to ensure fetchDetailComic is called only once
-                    LaunchedEffect(comicId) {
-                        comicViewModel.fetchDetailComic(comicId)
-                        historyViewModel.fetchHistory(dataStoreManager)
-                        bookmarkViewModel.fetchUserBookmark(dataStoreManager)
-
-                        val historyList = historyState.responseData?.data
-                        val isComicInHistory = historyList?.any { it.komik_id == comicId }
-                        if (isComicInHistory != null && !isComicInHistory) {
-                            historyViewModel.addHistory(dataStoreManager, comicId)
-                        }
-                        if (isComicInHistory != null && isComicInHistory) {
-                            val historyId = historyList.find { it.komik_id == comicId }?.history_id
-                            if (historyId != null) {
-                                historyViewModel.deleteHistory(dataStoreManager, historyId)
-                                historyViewModel.addHistory(dataStoreManager, comicId)
-                            }
-                            Log.i("add history", "comic already exist")
-                        }
-                    }
-
-                    val bookmarkId = remember(bookmarkViewModel.bookmarkstate.value) {
-                        val bookmarkList = bookmarkViewModel.bookmarkstate.value.responseData?.data
-                        bookmarkList?.find { it.komik_id == comicId }?.bookmark_id
-                    }
+//                    LaunchedEffect(comicId) {
+//                        comicViewModel.fetchDetailComic(comicId)
+//                        historyViewModel.fetchHistory(dataStoreManager)
+//                        bookmarkViewModel.fetchUserBookmark(dataStoreManager)
+//
+//                        val historyList = historyState.responseData?.data
+//                        val isComicInHistory = historyList?.any { it.komik_id == comicId }
+//                        if (isComicInHistory != null && !isComicInHistory) {
+//                            historyViewModel.addHistory(dataStoreManager, comicId)
+//                        }
+//                        if (isComicInHistory != null && isComicInHistory) {
+//                            val historyId = historyList.find { it.komik_id == comicId }?.history_id
+//                            if (historyId != null) {
+//                                historyViewModel.deleteHistory(dataStoreManager, historyId)
+//                                historyViewModel.addHistory(dataStoreManager, comicId)
+//                            }
+//                            Log.i("add history", "comic already exist")
+//                        }
+//                    }
 
                     Box(modifier = Modifier.fillMaxSize()){
                         when {
@@ -354,7 +348,6 @@ fun VolatoonApp(
                         when {
                             detailChapterState.loading -> {
                                 CircularProgressIndicator(
-                                    progress = { 0.89f },
                                     modifier = Modifier.align(Alignment.Center),
                                     trackColor = ProgressIndicatorDefaults.circularDeterminateTrackColor,
                                 )

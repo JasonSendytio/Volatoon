@@ -18,17 +18,20 @@ interface ComicApiService {
 
     suspend fun getAllManga(
         @Query("page") page : Int = 1,
+        @Query("order") order : String = "update",
     ): ComicsList
 
     @GET("komik/manhua")
     suspend fun getAllManhua(
         @Query("page") page : Int = 1,
-    ): ComicsList
+        @Query("order") order : String = "update",
+        ): ComicsList
 
     @GET("komik/manhwa")
     suspend fun getAllManhwa(
         @Query("page") page : Int = 1,
-    ): ComicsList
+        @Query("order") order : String = "update",
+        ): ComicsList
 
     @GET("komik/genres")
     suspend fun getAllGenres() : List<Genres>

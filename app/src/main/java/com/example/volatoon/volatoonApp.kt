@@ -168,7 +168,15 @@ fun VolatoonApp(
                 }
 
                 composable(route = TopLevelRoute.Trending.route){
-                    TrendingScreen()
+                    TrendingScreen(
+                        viewState = comicViewModel.trendingComicsState.value, // Use trendingComicsState
+                        navigateToDetail = { comicId ->
+                            navController.navigate(route = "detailcomic/$comicId")
+                        },
+                        navigateToMore = { type ->
+                            navController.navigate("more/${type.lowercase()}")
+                        }
+                    )
                 }
 
                 composable(route = TopLevelRoute.UserActivity.route){

@@ -22,13 +22,18 @@ class ComicViewModel : ViewModel() {
     private val _comicstate = mutableStateOf(ComicsState())
     private val _comicDetailState = mutableStateOf(DetailComicState())
     private val _chapterDetailState = mutableStateOf(DetailChapterState())
+    private val _trendingComicsState = mutableStateOf(ComicsState())
+
 
     val comicstate : State<ComicsState> = _comicstate
+    val trendingComicsState: State<ComicsState> = _trendingComicsState
+
     val detailComicState : State<DetailComicState> = _comicDetailState
     val detailChapterState : State<DetailChapterState> = _chapterDetailState
 
     init {
         fetchComics()
+        fetchTrendingComics()
     }
 
     fun fetchDetailChapter(chapterId : String){
@@ -87,12 +92,37 @@ class ComicViewModel : ViewModel() {
         }
     }
 
+    private fun fetchTrendingComics() {
+        viewModelScope.launch {
+            try {
+                val responseManga = comicApiService.getAllManga(order = "popular")
+                val responseManhua = comicApiService.getAllManhua(order = "popular")
+                val responseManhwa = comicApiService.getAllManhwa(order = "popular")
+
+                _trendingComicsState.value = _trendingComicsState.value.copy(
+                    loading = false,
+                    listManga = responseManga.data,
+                    listManhua = responseManhua.data,
+                    listManhwa = responseManhwa.data,
+                    error = null
+                )
+            } catch (e: Exception) {
+                _trendingComicsState.value = _trendingComicsState.value.copy(
+                    loading = false,
+                    error = "error fetching comic ${e.message}"
+                )
+            }
+        }
+    }
+
+
+
     private fun fetchComics(){
         viewModelScope.launch {
             try {
-                val responseManga = comicApiService.getAllManga()
-                val responseManhua = comicApiService.getAllManhua()
-                val responseManhwa = comicApiService.getAllManhwa()
+                val responseManga = comicApiService.getAllManga(order = "update")
+                val responseManhua = comicApiService.getAllManhua(order = "update")
+                val responseManhwa = comicApiService.getAllManhwa(order = "update")
               //  val responseGenre = comicApiService.getAllGenre()
 
                 _comicstate.value = _comicstate.value.copy(
@@ -113,14 +143,14 @@ class ComicViewModel : ViewModel() {
             }
         }
     }
-    fun fetchMoreComics(type: String, page: Int = 1) {
+    fun fetchMoreComics(type: String, page: Int = 1, order: String = "update") {
         viewModelScope.launch {
             try {
                 _comicstate.value = _comicstate.value.copy(loading = true)
                 val response = when (type.lowercase()) {
-                    "manga" -> comicApiService.getAllManga(page)
-                    "manhua" -> comicApiService.getAllManhua(page)
-                    "manhwa" -> comicApiService.getAllManhwa(page)
+                    "manga" -> comicApiService.getAllManga(page, order)
+                    "manhua" -> comicApiService.getAllManhua(page, order)
+                    "manhwa" -> comicApiService.getAllManhwa(page, order)
                     else -> throw Exception("Invalid comic type")
                 }
 

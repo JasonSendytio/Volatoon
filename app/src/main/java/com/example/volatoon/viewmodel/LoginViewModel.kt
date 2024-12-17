@@ -92,19 +92,21 @@ class LoginViewModel : ViewModel() {
                 val email = currentUser.email ?: throw Exception("Email not found")
                 val googlePassword = "${GOOGLE_PASSWORD_PREFIX}${currentUser.email}"
 
-                // Check if user exists
+                // First try to login directly
+                try {
+                    loginWithGoogle(email, googlePassword, dataStoreManager)
+                    return@launch
+                } catch (e: Exception) {
+                    Log.d(TAG, "Direct login failed, checking if user exists", e)
+                }
+
+                // Check if user exists in backend
                 val userExists = checkUserExists(email)
                 if (userExists) {
-                    // Attempt to login
-                    try {
-                        loginWithGoogle(email, googlePassword, dataStoreManager)
-                    } catch (e: Exception) {
-                        // If login fails, update password and try again
-                        Log.d(TAG, "Login failed, updating password and retrying", e)
-                        updatePasswordAndLogin(email, googlePassword, dataStoreManager)
-                    }
+                    // User exists but login failed, try updating password
+                    updatePasswordAndLogin(email, googlePassword, dataStoreManager)
                 } else {
-                    // Register new user
+                    // Only register if user doesn't exist
                     registerNewUser(currentUser, googlePassword, dataStoreManager)
                 }
             } catch (e: Exception) {

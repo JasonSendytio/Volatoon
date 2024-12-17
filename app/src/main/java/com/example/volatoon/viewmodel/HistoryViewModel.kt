@@ -60,7 +60,7 @@ class HistoryViewModel: ViewModel() {
     }
 
     fun addHistory(dataStoreManager: DataStoreManager, comicId: String, chapterId: String) {
-        _historyState.value = historyState.value.copy(
+        _historyState.value = _historyState.value.copy(
             loading = true
         )
         viewModelScope.launch {
@@ -68,7 +68,7 @@ class HistoryViewModel: ViewModel() {
             if (token != null) {
                 try {
                     val response = apiService.postHistory("Bearer $token", komik = HistoryRequest(comicId, chapterId))
-                    _historyState.value = historyState.value.copy(
+                    _historyState.value = _historyState.value.copy(
                         loading = false
                     )
                     Log.i("add history", response.message)
@@ -80,7 +80,7 @@ class HistoryViewModel: ViewModel() {
     }
 
     fun deleteHistory(dataStoreManager: DataStoreManager, historyId: String) {
-        _historyState.value = historyState.value.copy(
+        _historyState.value = _historyState.value.copy(
             loading = true
         )
         viewModelScope.launch {
@@ -88,14 +88,14 @@ class HistoryViewModel: ViewModel() {
             if (token != null) {
                 try {
                     val response = apiService.deleteHistory("Bearer $token", historyId)
-                    _historyState.value = historyState.value.copy(
+                    _historyState.value = _historyState.value.copy(
                         loading = false
                     )
                     _toastMessage.emit("History deleted successfully")
                     Log.i("delete history", response.message)
                 }
                 catch (e: Exception) {
-                    _historyState.value = historyState.value.copy(
+                    _historyState.value = _historyState.value.copy(
                         error = e.message,
                         loading = false
                     )

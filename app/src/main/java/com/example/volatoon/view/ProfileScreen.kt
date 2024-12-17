@@ -28,7 +28,6 @@ import com.example.volatoon.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Job
 import androidx.compose.ui.unit.sp
 
-
 @Composable
 fun ProfileScreen (
     onLogOut: () -> Job,
@@ -62,7 +61,6 @@ fun ProfileScreen (
             }
 
             else -> {
-
                 ProfileHeader(
                     fullName = viewState.profileDataRes.body()?.userData?.fullName ?: "N/A",
                     userName = viewState.profileDataRes.body()?.userData?.userName ?: "N/A"

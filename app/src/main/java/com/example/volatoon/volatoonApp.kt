@@ -48,12 +48,14 @@ import com.example.volatoon.viewmodel.SearchViewModel
 import com.example.volatoon.view.BookmarkScreen
 import com.example.volatoon.view.HistoryScreen
 import com.example.volatoon.view.MoreComicScreen
+import com.example.volatoon.view.PremiumRedemptionScreen
 import com.example.volatoon.view.VolatoonPremiumScreen
 import com.example.volatoon.viewmodel.BookmarkViewModel
 import com.example.volatoon.viewmodel.LoginViewModel
 import com.example.volatoon.viewmodel.RegisterViewModel
 import com.example.volatoon.viewmodel.CommentViewModel
 import com.example.volatoon.viewmodel.HistoryViewModel
+import com.example.volatoon.viewmodel.PremiumRedemptionViewModel
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -80,6 +82,7 @@ fun VolatoonApp(
     val bookmarkViewModel : BookmarkViewModel = viewModel()
     val historyViewModel : HistoryViewModel = viewModel()
     val commentViewModel : CommentViewModel = viewModel()
+    val premiumViewModel : PremiumRedemptionViewModel = viewModel()
 
     val viewState by comicViewModel.comicstate
 
@@ -228,7 +231,18 @@ fun VolatoonApp(
                 composable(
                     route = "premium"
                 ) {
-                    VolatoonPremiumScreen()
+                    VolatoonPremiumScreen(
+                        navigateToRedemption = {
+                            navController.navigate(route = "redemption")
+                        }
+                    )
+                }
+
+                composable(route = "redemption") {
+                    PremiumRedemptionScreen(
+                        PremiumRedemptionViewModel(),
+                        dataStoreManager
+                    )
                 }
 
                 composable(

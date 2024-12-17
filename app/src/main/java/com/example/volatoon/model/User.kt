@@ -28,3 +28,12 @@ data class ProfileResponse(
     val message : String,
     val userData : Profile
 )
+
+data class PremiumResponse(
+    val status : Int,
+    val message : String
+)
+
+data class PremiumPost (
+    val voucherCode : String
+)

@@ -90,6 +90,12 @@ interface ApiService {
         @Path("historyId") historyId: String
     ): HistoryAPIData
 
+    @POST("api/redeem")
+    suspend fun redeemPremium(
+        @Header("Authorization") token: String,
+        @Body voucherCode: PremiumPost?
+    ): PremiumResponse
+
 //    @POST("api/auth/register")
 //    suspend fun registerUser(@Body user: User?): Response<authData>
     // this code will execute the api and return the data as Categories List data in our previous data class

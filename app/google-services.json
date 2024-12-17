@@ -12,7 +12,20 @@
           "package_name": "com.example.volatoon"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "730808284044-fa9ijpp5uvk4va5s1j8sj904jjnvsb7t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.volatoon",
+            "certificate_hash": "61f875a06ba3b33d9aecb20a797dca76e1ced5fe"
+          }
+        },
+        {
+          "client_id": "730808284044-l4ogv4l3mrbs5nrfhme0rogj004ajcrp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBLSP3NACC2QsU_yuTooOLze-rAenH3T1k"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "730808284044-l4ogv4l3mrbs5nrfhme0rogj004ajcrp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -9,7 +9,9 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 
 private val retrofit = Retrofit.Builder().baseUrl("https://volatoon.vercel.app/")
@@ -96,6 +98,15 @@ interface ApiService {
         @Body voucherCode: PremiumPost?
     ): PremiumResponse
 
+    @PUT("api/auth/update-password")
+    suspend fun updatePassword(
+        @Body updatePasswordRequest: UpdatePasswordRequest
+    ): Response<authData>
+
+    @GET("api/auth/find-user")
+    suspend fun findUserByEmail(
+        @Query("email") email: String
+    ): Response<UserResponse>
 //    @POST("api/auth/register")
 //    suspend fun registerUser(@Body user: User?): Response<authData>
     // this code will execute the api and return the data as Categories List data in our previous data class

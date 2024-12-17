@@ -8,3 +8,13 @@ data class authData(
 //
 //data class CategoriesList(val categories : List<Category>)
 //
+data class UpdatePasswordRequest(
+    val email: String,
+    val newPassword: String
+)
+
+data class UserResponse(
+    val status: Int,
+    val message: String,
+    val userData: Profile?
+)

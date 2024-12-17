@@ -14,7 +14,9 @@ import com.google.gson.Gson
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import android.util.Log
+import com.example.volatoon.model.UpdatePasswordRequest
 import com.google.android.gms.common.api.Response
+import com.google.firebase.auth.FirebaseUser
 
 
 class LoginViewModel : ViewModel() {
@@ -27,7 +29,8 @@ class LoginViewModel : ViewModel() {
         val isLogin: Boolean = false,
         val loading: Boolean = false,
         val data: authData? = null,
-        val error: String? = null
+        val error: String? = null,
+        val isGoogleSignIn: Boolean = false
     )
 
     private val _loginState = mutableStateOf(LoginState())
@@ -41,9 +44,9 @@ class LoginViewModel : ViewModel() {
     fun loginUser(accountData: Account, dataStoreManager: DataStoreManager) {
         viewModelScope.launch {
             try {
-                val response = apiService.loginUser(accountData)
                 _loginState.value =
                     _loginState.value.copy(loading = true)
+                val response = apiService.loginUser(accountData)
 
                 if (response.code() != 200) {
                     val errorBody: APIError = Gson().fromJson(
@@ -89,48 +92,20 @@ class LoginViewModel : ViewModel() {
                 val email = currentUser.email ?: throw Exception("Email not found")
                 val googlePassword = "${GOOGLE_PASSWORD_PREFIX}${currentUser.email}"
 
-                // Coba login dulu dengan email yang ada
-                try {
-                    Log.d(TAG, "Attempting to login first with email: $email")
-                    loginWithGoogle(email, googlePassword, dataStoreManager)
-                } catch (e: Exception) {
-                    // Jika login gagal, berarti user belum terdaftar
-                    Log.d(TAG, "Login failed, attempting to register new user", e)
-
-                    val registerData = RegisterData(
-                        fullName = currentUser.displayName ?: "",
-                        userName = email.split("@")[0],
-                        email = email,
-                        password = googlePassword
-                    )
-
+                // Check if user exists
+                val userExists = checkUserExists(email)
+                if (userExists) {
+                    // Attempt to login
                     try {
-                        val registerResponse = apiService.registerUser(registerData)
-                        when (registerResponse.code()) {
-                            201 -> {
-                                Log.d(TAG, "Registration successful")
-                                loginWithGoogle(email, googlePassword, dataStoreManager)
-                            }
-                            else -> {
-                                val errorMessage = try {
-                                    val errorBody: APIError = Gson().fromJson(
-                                        registerResponse.errorBody()?.charStream(),
-                                        APIError::class.java
-                                    )
-                                    errorBody.message
-                                } catch (e: Exception) {
-                                    "Registration failed: ${registerResponse.code()}"
-                                }
-                                throw Exception(errorMessage)
-                            }
-                        }
+                        loginWithGoogle(email, googlePassword, dataStoreManager)
                     } catch (e: Exception) {
-                        Log.e(TAG, "Registration failed", e)
-                        _loginState.value = _loginState.value.copy(
-                            loading = false,
-                            error = "Registration failed: ${e.message}"
-                        )
+                        // If login fails, update password and try again
+                        Log.d(TAG, "Login failed, updating password and retrying", e)
+                        updatePasswordAndLogin(email, googlePassword, dataStoreManager)
                     }
+                } else {
+                    // Register new user
+                    registerNewUser(currentUser, googlePassword, dataStoreManager)
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Google Sign-In failed", e)
@@ -142,15 +117,56 @@ class LoginViewModel : ViewModel() {
         }
     }
 
+    private suspend fun checkUserExists(email: String): Boolean {
+        return try {
+            val response = apiService.findUserByEmail(email)
+            response.isSuccessful && response.body()?.userData != null
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking user existence: ${e.message}")
+            false
+        }
+    }
+
+    private suspend fun registerNewUser(currentUser: FirebaseUser, googlePassword: String, dataStoreManager: DataStoreManager) {
+        val registerData = RegisterData(
+            fullName = currentUser.displayName ?: "",
+            userName = currentUser.email?.split("@")?.get(0) ?: "",
+            email = currentUser.email ?: "",
+            password = googlePassword
+        )
+        val registerResponse = apiService.registerUser(registerData)
+        if (registerResponse.code() == 201) {
+            Log.d(TAG, "Registration successful")
+            loginWithGoogle(currentUser.email ?: "", googlePassword, dataStoreManager)
+        } else {
+            val errorMessage = Gson().fromJson(
+                registerResponse.errorBody()?.charStream(),
+                APIError::class.java
+            ).message
+            throw Exception(errorMessage)
+        }
+    }
+
+    private suspend fun updatePasswordAndLogin(email: String, newPassword: String, dataStoreManager: DataStoreManager) {
+        // Create UpdatePasswordRequest object
+        val updatePasswordRequest = UpdatePasswordRequest(
+            email = email,
+            newPassword = newPassword
+        )
+
+        // Update the password in your backend
+        val updateResponse = apiService.updatePassword(updatePasswordRequest)
+        if (updateResponse.isSuccessful) {
+            loginWithGoogle(email, newPassword, dataStoreManager)
+        } else {
+            throw Exception("Failed to update password")
+        }
+    }
 
 
 
 
-    private suspend fun loginWithGoogle(
-        email: String,
-        password: String,
-        dataStoreManager: DataStoreManager
-    ) {
+    private suspend fun loginWithGoogle(email: String, password: String, dataStoreManager: DataStoreManager) {
         try {
             Log.d(TAG, "Attempting Google login for email: $email")
 
@@ -188,6 +204,7 @@ class LoginViewModel : ViewModel() {
         }
     }
 }
+
 
 
 

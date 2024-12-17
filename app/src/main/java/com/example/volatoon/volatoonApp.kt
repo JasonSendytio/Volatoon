@@ -20,8 +20,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -29,6 +32,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.example.volatoon.model.SearchDatabase
 import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.utils.DataStoreManager.Companion.AUTH_TOKEN
 import com.example.volatoon.view.DashboardScreen
@@ -274,11 +278,19 @@ fun VolatoonApp(
                 composable(route = TopLevelRoute.Search.route) {
                     val genreViewModel: GenreViewModel = viewModel()
                     val genreState by genreViewModel.genreState
+                    val searchDatabase = SearchDatabase(LocalContext.current)
+                    val searchViewModel = viewModel<SearchViewModel>(
+                        factory = object : ViewModelProvider.Factory {
+                            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                                return SearchViewModel(searchDatabase) as T
+                            }
+                        }
+                    )
 
                     SearchScreen(
-                        viewState = SearchViewModel(),
+                        viewState = searchViewModel,
                         genres = genreState.listGenres,
-//                        context = LocalContext.current, // Add this line
+   //                    context = LocalContext.current, // Add this line
 
                         navigateToDetail = { comicId ->
                             navController.navigate(route = "detailcomic/$comicId")

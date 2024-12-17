@@ -1,9 +1,12 @@
 package com.example.volatoon.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.volatoon.model.Comic
+import com.example.volatoon.model.RecentSearch
+import com.example.volatoon.model.SearchDatabase
 import com.example.volatoon.model.comicApiService
 import com.example.volatoon.viewmodel.ComicViewModel.DetailComicState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,22 +26,35 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.debounce
 import java.lang.Exception
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel(private val searchDatabase: SearchDatabase) : ViewModel() {
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
+    private val TAG = "SearchViewModel"
+
+
+    private val _recentSearches = MutableStateFlow<List<RecentSearch>>(emptyList())
+    val recentSearches = _recentSearches.asStateFlow()
 
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
 
+    init {
+        loadRecentSearches()
+        Log.d(TAG, "ViewModel initialized")
+    }
+
+
+
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val comics = _searchText
-        .debounce(300) // add debounce for delay between user input
+        .debounce(300)
         .flatMapLatest { text ->
+            Log.d(TAG, "Search text changed: $text")
             if (text.isBlank()) {
-                // Return an empty comic list if the search text is blank
+                Log.d(TAG, "Empty search, returning empty state")
                 flowOf(ComicsState())
             } else {
-                // Perform search when text is entered
+                Log.d(TAG, "Performing search for: $text")
                 searchComic(text)
             }
         }
@@ -50,34 +66,55 @@ class SearchViewModel : ViewModel() {
 
     private fun searchComic(query: String): Flow<ComicsState> = flow {
         try {
-            // Indicate loading state while fetching data
+            Log.d(TAG, "Starting search for query: $query")
             emit(ComicsState(loading = true))
 
-            // Perform the API call to search comics
             val responseFilter = comicApiService.searchComic(query)
+            Log.d(TAG, "Search results received: ${responseFilter.data.size} items")
 
-            // Emit the result once data is fetched
             emit(ComicsState(loading = false, listComic = responseFilter.data, error = null))
         } catch (e: Exception) {
-            // Handle error state in case of an exception
+            Log.e(TAG, "Search error: ${e.message}")
             emit(ComicsState(loading = false, listComic = emptyList(), error = e.message))
         }
     }
 
     fun onSearchTextChange(text: String) {
+        Log.d(TAG, "Search text changing to: $text")
         if(text == "") _isSearching.value = false
-        else _isSearching.value = true
+        _isSearching.value = text.isNotEmpty()
+        _isSearching.value = true
 
         _searchText.value = text
     }
 
     fun onClearSearch() {
+        Log.d(TAG, "Clear text")
+
         _isSearching.value = false
         if (!_isSearching.value) {
             onSearchTextChange("")
         }
     }
+    private fun loadRecentSearches() {
+        viewModelScope.launch {
+            _recentSearches.value = searchDatabase.getRecentSearches()
+        }
+    }
 
+    fun addRecentSearch(searchText: String) {
+        viewModelScope.launch {
+            searchDatabase.addSearch(searchText)
+            loadRecentSearches()
+        }
+    }
+
+    fun deleteRecentSearch(searchText: String) {
+        viewModelScope.launch {
+            searchDatabase.deleteSearch(searchText)
+            loadRecentSearches()
+        }
+    }
     data class ComicsState(
         val loading : Boolean = false,
         val listComic : List<Comic> = emptyList(),

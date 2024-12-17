@@ -113,6 +113,8 @@ fun DetailChapterScreen(
     navigateToOtherChapter: (String) -> Unit,
     commentViewModel: CommentViewModel,
     dataStoreManager: DataStoreManager,
+    navigateToComicDetail: (String) -> Unit,
+
 ) {
     var expandedComments by remember { mutableStateOf(false) }
     var currentPage by remember { mutableIntStateOf(0) }
@@ -164,7 +166,9 @@ fun DetailChapterScreen(
                             containerColor = Color(0xFF04FFFB), // Sets the background color to #04FFFB
                             contentColor = Color.Black // Sets the text color to black
                         ),
+                        enabled = chapter.prev_chapter_id.trim().isNotEmpty(),  // Disable if prev_chapter_id is empty
                         onClick = {navigateToOtherChapter(chapter.prev_chapter_id)}
+
                     ){
                         Text("Prev Ch")
                     }
@@ -174,7 +178,7 @@ fun DetailChapterScreen(
                             containerColor = Color.Gray, // Sets the background color to #04FFFB
                             contentColor = Color.Black // Sets the text color to black
                         ),
-                        onClick = {}
+                        onClick = {viewState.detailChapter?.komik_id?.let { navigateToComicDetail(chapter.komik_id) }}
                     ){
                         Text("All Chapter")
                     }
@@ -184,6 +188,7 @@ fun DetailChapterScreen(
                             containerColor = Color(0xFF04FFFB), // Sets the background color to #04FFFB
                             contentColor = Color.Black // Sets the text color to black
                         ),
+                        enabled = chapter.next_chapter_id.trim().isNotEmpty(),  // Disable if next_chapter_id is empty
                         onClick = {navigateToOtherChapter(chapter.next_chapter_id)}
                     ){
                         Text("Next Ch")
@@ -369,6 +374,8 @@ fun DetailChapterScreen(
                             containerColor = Color(0xFF04FFFB), // Sets the background color to #04FFFB
                             contentColor = Color.Black // Sets the text color to black
                         ),
+                        enabled = chapter.prev_chapter_id.trim().isNotEmpty(),  // Disable if next_chapter_id is empty
+
                         onClick = {
                             navigateToOtherChapter(chapter.prev_chapter_id)
                         }
@@ -381,7 +388,7 @@ fun DetailChapterScreen(
                             containerColor = Color.Gray, // Sets the background color to #04FFFB
                             contentColor = Color.Black // Sets the text color to black
                         ),
-                        onClick = {}
+                        onClick = {viewState.detailChapter?.komik_id?.let { navigateToComicDetail(chapter.komik_id) }}
                     ){
                         Text("All Chapter")
                     }
@@ -391,6 +398,7 @@ fun DetailChapterScreen(
                             containerColor = Color(0xFF04FFFB), // Sets the background color to #04FFFB
                             contentColor = Color.Black // Sets the text color to black
                         ),
+                        enabled = chapter.next_chapter_id.trim().isNotEmpty(),  // Disable if next_chapter_id is empty
                         onClick = {
                             navigateToOtherChapter(chapter.next_chapter_id)
                         }

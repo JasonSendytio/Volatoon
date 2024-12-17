@@ -378,6 +378,9 @@ fun VolatoonApp(
                                     navigateToOtherChapter = { chapterId ->
                                         navController.navigate(route = "detailchapter/$chapterId")
                                     },
+                                    navigateToComicDetail = { comicId ->
+                                        navController.navigate("detailcomic/$comicId")
+                                    },
                                     commentViewModel = commentViewModel,  // Add this
                                     dataStoreManager = dataStoreManager,
                                 )

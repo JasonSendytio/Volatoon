@@ -20,8 +20,7 @@ data class UserResponse(
 )
 
 data class UpdateUserProfile(
-    val fullName: String,
-    val userName: String,
-    val email: String,
-    val status: String
+    val name: String?,
+    val username: String?,
+    val status: String?
 )

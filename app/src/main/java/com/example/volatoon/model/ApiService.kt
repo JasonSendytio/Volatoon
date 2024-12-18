@@ -108,14 +108,11 @@ interface ApiService {
         @Query("email") email: String
     ): Response<UserResponse>
 
-
     @PUT("api/profile")
     suspend fun updateUserProfile(
         @Header("Authorization") token: String,
-        @Body updateUserProfile: UpdateUserProfile
+        @Body updateUserProfile: UpdateUserProfile?
     ): Response<UserResponse>
-
-
 
 //    @POST("api/auth/register")
 //    suspend fun registerUser(@Body user: User?): Response<authData>

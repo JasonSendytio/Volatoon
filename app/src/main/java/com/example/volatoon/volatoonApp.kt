@@ -1,7 +1,5 @@
 package com.example.volatoon
 
-import UpdateProfileScreen
-import UpdateProfileViewModel
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -55,6 +53,7 @@ import com.example.volatoon.view.BookmarkScreen
 import com.example.volatoon.view.HistoryScreen
 import com.example.volatoon.view.MoreComicScreen
 import com.example.volatoon.view.PremiumRedemptionScreen
+import com.example.volatoon.view.UpdateProfileScreen
 import com.example.volatoon.view.VolatoonPremiumScreen
 import com.example.volatoon.viewmodel.BookmarkViewModel
 import com.example.volatoon.viewmodel.LoginViewModel
@@ -62,7 +61,7 @@ import com.example.volatoon.viewmodel.RegisterViewModel
 import com.example.volatoon.viewmodel.CommentViewModel
 import com.example.volatoon.viewmodel.HistoryViewModel
 import com.example.volatoon.viewmodel.PremiumRedemptionViewModel
-
+import com.example.volatoon.viewmodel.UpdateProfileViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -253,15 +252,12 @@ fun VolatoonApp(
                 ){
                     UpdateProfileScreen(
                         viewModel = updateUserProfile,
-                        token = "",
-                        onUpdateSuccess = {
+                        dataStoreManager,
+                        navigateToProfile = {
                             navController.navigate(route = "profile")
                         }
                     )
                 }
-
-
-
 
                 composable(
                     route = "premium"

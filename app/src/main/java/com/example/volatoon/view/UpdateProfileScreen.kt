@@ -1,4 +1,7 @@
-import androidx.compose.foundation.Image
+package com.example.volatoon.view
+
+import android.util.Log
+import com.example.volatoon.viewmodel.UpdateProfileViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -11,24 +14,22 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.volatoon.R
+import androidx.navigation.NavController
 import com.example.volatoon.model.UpdateUserProfile
+import com.example.volatoon.utils.DataStoreManager
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 @Composable
 fun UpdateProfileScreen(
-    viewModel: UpdateProfileViewModel = viewModel(),
-    token: String,
-    onUpdateSuccess: () -> Unit
+    viewModel: UpdateProfileViewModel,
+    dataStoreManager: DataStoreManager,
+    navigateToProfile: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val updateStatus = viewModel.updateStatus.observeAsState() // Ubah ke LiveData.observeAsState
 
     var fullName by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
@@ -38,14 +39,6 @@ fun UpdateProfileScreen(
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // Simulasi data awal (Ambil data dari server/database)
-    LaunchedEffect(Unit) {
-        fullName = "Mulyono Darsono"
-        userName = "lyono_2014"
-        email = "lyono@gmail.com"
-        status = "Belum ada status"
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,7 +46,6 @@ fun UpdateProfileScreen(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Judul
         Text(
             text = "Edit Profile",
             fontSize = 20.sp,
@@ -70,7 +62,6 @@ fun UpdateProfileScreen(
 //                .padding(bottom = 16.dp)
 //        )
 
-        // Kolom Full Name
         OutlinedTextField(
             value = fullName,
             onValueChange = { fullName = it },
@@ -80,7 +71,6 @@ fun UpdateProfileScreen(
                 .padding(bottom = 8.dp)
         )
 
-        // Kolom Username
         OutlinedTextField(
             value = userName,
             onValueChange = { userName = it },
@@ -90,18 +80,6 @@ fun UpdateProfileScreen(
                 .padding(bottom = 8.dp)
         )
 
-        // Kolom Email
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
-        )
-
-        // Kolom Status
         OutlinedTextField(
             value = status,
             onValueChange = { status = it },
@@ -113,17 +91,19 @@ fun UpdateProfileScreen(
             maxLines = 4
         )
 
-        // Tombol Update
         Button(
             onClick = {
                 isLoading = true
                 scope.launch {
-                    viewModel.updateUserProfile(
-                        token = token,
-                        updateUserProfile = UpdateUserProfile(fullName, userName, email, status)
-                    )
+                    val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
+                    if (token != null) {
+                        viewModel.updateUserProfile(
+                            token,
+                            updateUserProfile = UpdateUserProfile(fullName, userName, status)
+                        )
+                        navigateToProfile()
+                    }
                     isLoading = false
-                    onUpdateSuccess()
                 }
             },
             modifier = Modifier
@@ -137,28 +117,16 @@ fun UpdateProfileScreen(
             )
         }
 
-
-        // Loading Indicator
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
         }
 
-        // Menampilkan Error
         errorMessage?.let {
             Text(
                 text = it,
                 color = Color.Red,
                 modifier = Modifier.padding(top = 8.dp)
             )
-        }
-    }
-
-    // Observasi hasil update
-    updateStatus.value?.let { result ->
-        result.onSuccess {
-            errorMessage = null
-        }.onFailure { error ->
-            errorMessage = error.message
         }
     }
 }

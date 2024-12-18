@@ -71,7 +71,6 @@ fun ProfileScreen (
                     quote = viewState.profileDataRes.body()?.userData?.status ?: "Belum ada status"
                 )
 
-
                 ProfileActions(
                     onNavigateToBookmark = onNavigateToBookmark,
                     onLogOut = onLogOut,

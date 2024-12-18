@@ -18,3 +18,10 @@ data class UserResponse(
     val message: String,
     val userData: Profile?
 )
+
+data class UpdateUserProfile(
+    val fullName: String,
+    val userName: String,
+    val email: String,
+    val status: String
+)

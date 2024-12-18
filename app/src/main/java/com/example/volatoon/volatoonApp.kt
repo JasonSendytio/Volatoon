@@ -1,5 +1,7 @@
 package com.example.volatoon
 
+import UpdateProfileScreen
+import UpdateProfileViewModel
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -87,6 +89,7 @@ fun VolatoonApp(
     val historyViewModel : HistoryViewModel = viewModel()
     val commentViewModel : CommentViewModel = viewModel()
     val premiumViewModel : PremiumRedemptionViewModel = viewModel()
+    val updateUserProfile : UpdateProfileViewModel = viewModel()
 
     val viewState by comicViewModel.comicstate
 
@@ -146,8 +149,8 @@ fun VolatoonApp(
                         viewState = viewState,
                         viewModel = comicViewModel,
                         navigateToDetail = { comicId ->
-                         navController.navigate(route = "detailcomic/$comicId")
-                    },
+                            navController.navigate(route = "detailcomic/$comicId")
+                        },
                         navigateToGenre = { genreId ->
                             navController.navigate("genre/$genreId")
                         },
@@ -156,6 +159,7 @@ fun VolatoonApp(
                         }
                     )
                 }
+
 
                 composable(
                     route = "more/{type}",
@@ -182,6 +186,7 @@ fun VolatoonApp(
                         }
                     )
                 }
+
 
                 composable(route = TopLevelRoute.UserActivity.route){
                     val bookmarkState by bookmarkViewModel.bookmarkstate
@@ -217,6 +222,9 @@ fun VolatoonApp(
                         onNavigateToPremium = {
                             navController.navigate(route = "premium")
                         },
+                        onNavigateToUpdateProfile = {
+                           navController.navigate(route = "updateProfile")
+                        },
                         profileResState,
                     )
                 }
@@ -239,6 +247,21 @@ fun VolatoonApp(
                         }
                     )
                 }
+
+                composable(
+                    route = "updateProfile",
+                ){
+                    UpdateProfileScreen(
+                        viewModel = updateUserProfile,
+                        token = "",
+                        onUpdateSuccess = {
+                            navController.navigate(route = "profile")
+                        }
+                    )
+                }
+
+
+
 
                 composable(
                     route = "premium"

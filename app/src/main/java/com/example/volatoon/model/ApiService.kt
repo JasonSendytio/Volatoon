@@ -107,6 +107,16 @@ interface ApiService {
     suspend fun findUserByEmail(
         @Query("email") email: String
     ): Response<UserResponse>
+
+
+    @PUT("api/profile")
+    suspend fun updateUserProfile(
+        @Header("Authorization") token: String,
+        @Body updateUserProfile: UpdateUserProfile
+    ): Response<UserResponse>
+
+
+
 //    @POST("api/auth/register")
 //    suspend fun registerUser(@Body user: User?): Response<authData>
     // this code will execute the api and return the data as Categories List data in our previous data class

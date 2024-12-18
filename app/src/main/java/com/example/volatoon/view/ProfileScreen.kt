@@ -33,6 +33,7 @@ fun ProfileScreen (
     onLogOut: () -> Job,
     onNavigateToBookmark: () -> Unit,
     onNavigateToPremium: () -> Unit,
+    onNavigateToUpdateProfile: () -> Unit,
     viewState: ProfileViewModel.ProfileResState
 ) {
     Column(
@@ -74,7 +75,8 @@ fun ProfileScreen (
                 ProfileActions(
                     onNavigateToBookmark = onNavigateToBookmark,
                     onLogOut = onLogOut,
-                    onNavigateToPremium = onNavigateToPremium
+                    onNavigateToPremium = onNavigateToPremium,
+                    onNavigateToUpdateProfile = onNavigateToUpdateProfile
                 )
             }
         }
@@ -143,7 +145,8 @@ fun UserQuote(quote: String) {
 fun ProfileActions(
     onNavigateToBookmark: () -> Unit,
     onLogOut: () -> Job,
-    onNavigateToPremium: () -> Unit
+    onNavigateToPremium: () -> Unit,
+    onNavigateToUpdateProfile: () -> Unit
 ) {
     Column(
         modifier = Modifier.padding(top = 16.dp),
@@ -184,7 +187,7 @@ fun ProfileActions(
         }
 
         Button(
-            onClick = { /* Navigate to Settings */ },
+            onClick = { onNavigateToUpdateProfile() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
@@ -197,7 +200,7 @@ fun ProfileActions(
                 containerColor = Color.Cyan
             )
         ) {
-            Text("Settings", color = Color.Black)
+            Text("Update Profile", color = Color.Black)
         }
 
         Button(

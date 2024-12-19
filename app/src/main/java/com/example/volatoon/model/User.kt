@@ -22,7 +22,6 @@ data class Profile(
     val email : String,
     val status : String,
     val is_premium: String
-
 )
 
 data class ProfileResponse(

@@ -39,7 +39,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -69,7 +68,7 @@ fun LoginScreen(
     val googleAuthManager = remember { GoogleAuthManager(context) }
     val loginViewModel : LoginViewModel = viewModel()
     val viewState by loginViewModel.loginState
-   val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -261,10 +260,4 @@ fun PasswordTextField(
         visualTransformation = if (passwordVisibility) VisualTransformation.None
         else PasswordVisualTransformation()
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewLoginScreen(){
-
 }

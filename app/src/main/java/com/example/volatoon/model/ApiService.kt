@@ -114,6 +114,13 @@ interface ApiService {
         @Body updateUserProfile: UpdateUserProfile?
     ): Response<UserResponse>
 
+    @GET("api/history/{komikId}")
+    suspend fun getChapterHistory(
+        @Header("Authorization") token: String,
+        @Path("komikId") komikId: String
+    ): HistoryChapterResponse
+
+
 //    @POST("api/auth/register")
 //    suspend fun registerUser(@Body user: User?): Response<authData>
     // this code will execute the api and return the data as Categories List data in our previous data class

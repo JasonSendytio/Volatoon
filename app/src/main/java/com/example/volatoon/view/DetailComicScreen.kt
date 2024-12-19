@@ -43,6 +43,7 @@ import com.example.volatoon.model.Chapter
 import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.viewmodel.BookmarkViewModel
 import com.example.volatoon.viewmodel.ComicViewModel
+import com.example.volatoon.viewmodel.HistoryViewModel
 
 @Composable
 fun DetailComicScreen(
@@ -50,8 +51,12 @@ fun DetailComicScreen(
     navigateToDetail : (String) -> Unit,
     dataStoreManager: DataStoreManager,
     bookmarkViewModel: BookmarkViewModel,
+    historyViewModel: HistoryViewModel,
     comicId : String,
 ){
+    LaunchedEffect(comicId) {
+        historyViewModel.fetchChapterHistory(dataStoreManager, comicId)
+    }
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -241,34 +246,59 @@ fun DetailComicScreen(
                         fontSize = 15.sp
                     )
                 }
-                ListChaptersScreen(comic.chapterList, navigateToDetail)
+                ListChaptersScreen(
+                    chapters = comic.chapterList,
+                    navigateToDetail = navigateToDetail,
+                    chapterHistory = historyViewModel.chapterHistoryState.value
+                )
             }
         }
     }
 }
 
 @Composable
-fun ListChaptersScreen(chapters : List<Chapter>, navigateToDetail : (String) -> Unit){
+fun ListChaptersScreen(
+    chapters: List<Chapter>,
+    navigateToDetail: (String) -> Unit,
+    chapterHistory: Set<String>
+) {
     Column {
         chapters.forEachIndexed { index, chapter ->
             Row {
-                ListChapter(chapter = chapter, index, navigateToDetail)
+                ListChapter(
+                    chapter = chapter,
+                    index = index,
+                    navigateToDetail = navigateToDetail,
+                    isRead = chapterHistory.contains(chapter.chapter_id)
+                )
             }
         }
     }
 }
 
+
 @Composable
-fun ListChapter(chapter : Chapter, index : Int, navigateToDetail : (String) -> Unit){
-    Row (
+fun ListChapter(
+    chapter: Chapter,
+    index: Int,
+    navigateToDetail: (String) -> Unit,
+    isRead: Boolean
+) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(if (index % 2 == 0) Color(0xFFA2D7E2) else Color(0xFFD9D9D9))
+            .background(
+                when {
+                    isRead -> Color.Gray
+                    index % 2 == 0 -> Color(0xFFA2D7E2)
+                    else -> Color(0xFFD9D9D9)
+                }
+            )
             .height(30.dp)
             .clickable { navigateToDetail(chapter.chapter_id) },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         Text(chapter.title)
         Text(chapter.date)
     }

@@ -169,14 +169,12 @@ fun HistoryItem(
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
-                    text = "Last chapter read: ${getChapterNumber(comicHistory.chapter_id)}",
+                    text = "Last chapter read: ${comicHistory.chapter_id.takeLastWhile { it.isDigit() }}",
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = "Last read: ${formatCreatedAt((comicHistory.createdAt))}",
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold
                 )
             }
             Icon(
@@ -184,9 +182,8 @@ fun HistoryItem(
                 imageVector = Icons.Default.Clear,
                 contentDescription = "Clear",
                 modifier = Modifier
-                    .padding(4.dp)
                     .clickable {
-                        historyViewModel.deleteHistory(dataStoreManager, comicHistory.komik_id)
+                        historyViewModel.deleteHistory(dataStoreManager, comicHistory.history_id)
                     }
             )
         }
@@ -197,9 +194,4 @@ fun formatCreatedAt(createdAt: String): String {
     val zonedDateTime = ZonedDateTime.parse(createdAt, DateTimeFormatter.ISO_DATE_TIME)
     val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm:ss") // Example: 09 Dec 2024, 19:27:45
     return zonedDateTime.format(formatter)
-}
-
-fun getChapterNumber(chapterId: String): String? {
-    val regex = "chapter-(\\d+)".toRegex()
-    return regex.find(chapterId)?.groupValues?.get(1)
 }

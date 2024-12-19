@@ -80,12 +80,6 @@ interface ApiService {
     @GET("api/history")
     suspend fun getHistory(@Header("Authorization") token: String): HistoryResponseData
 
-    @GET("api/history/{comicId}")
-    suspend fun getHistoryByComicId(
-        @Header("Authorization") token: String,
-        @Path("comicId") comicId: String
-    ): HistoryResponseData
-
     @POST("api/history")
     suspend fun postHistory(
         @Header("Authorization") token: String,
@@ -126,13 +120,6 @@ interface ApiService {
         @Body newStatus: String
     ): Response<Any> // Use the appropriate response type
 
-
-
-    @GET("api/history/{komikId}")
-    suspend fun getChapterHistory(
-        @Header("Authorization") token: String,
-        @Path("komikId") komikId: String
-    ): HistoryChapterResponse
 
 
 //    @POST("api/auth/register")

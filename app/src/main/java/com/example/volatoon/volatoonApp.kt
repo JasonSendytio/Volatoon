@@ -89,6 +89,7 @@ fun VolatoonApp(
     val bookmarkViewModel : BookmarkViewModel = viewModel()
     val historyViewModel : HistoryViewModel = viewModel()
     val commentViewModel : CommentViewModel = viewModel()
+    val premiumViewModel : PremiumRedemptionViewModel = viewModel()
     val updateUserProfile : UpdateProfileViewModel = viewModel()
     val viewModel: ProfileViewModel = viewModel()
     val context = LocalContext.current
@@ -145,7 +146,7 @@ fun VolatoonApp(
                                     popUpTo("login") { inclusive = true }
                                     launchSingleTop = true
                                 }
-                                navigateOnce = true
+                                navigateOnce = true // Set the flag to prevent further navigation
                                 isLogin = true
                             }
                         },
@@ -188,7 +189,7 @@ fun VolatoonApp(
 
                 composable(route = TopLevelRoute.Trending.route){
                     TrendingScreen(
-                        viewState = comicViewModel.trendingComicsState.value,
+                        viewState = comicViewModel.trendingComicsState.value, // Use trendingComicsState
                         navigateToDetail = { comicId ->
                             navController.navigate(route = "detailcomic/$comicId")
                         },
@@ -219,6 +220,8 @@ fun VolatoonApp(
                 }
 
                 composable(route = TopLevelRoute.Profile.route){
+                    val profileResState by profileViewModel.profileResState
+
                     LaunchedEffect(dataStoreManager) {
                         profileViewModel.fetchUserData(dataStoreManager)
                     }
@@ -322,6 +325,7 @@ fun VolatoonApp(
                     SearchScreen(
                         viewState = searchViewModel,
                         genres = genreState.listGenres,
+   //                    context = LocalContext.current, // Add this line
 
                         navigateToDetail = { comicId ->
                             navController.navigate(route = "detailcomic/$comicId")
@@ -345,14 +349,14 @@ fun VolatoonApp(
                     )
                 }
 
-                composable("detailcomic/{comicId}") {
+                composable("detailcomic/{comicId}") { it ->
                     val comicId = it.arguments?.getString("comicId") ?: ""
+
                     val detailComicState by comicViewModel.detailComicState
 
                     LaunchedEffect(comicId) {
                         comicViewModel.fetchDetailComic(comicId)
                         bookmarkViewModel.fetchUserBookmark(dataStoreManager)
-                        historyViewModel.fetchHistoryByComic(dataStoreManager, comicId)
                     }
 
                     Box(modifier = Modifier.fillMaxSize()){
@@ -372,12 +376,10 @@ fun VolatoonApp(
                                 DetailComicScreen(
                                     detailComicState,
                                     navigateToDetail = { chapterId ->
-                                        comicViewModel.setSelectedComicId(comicId)
-                                        navController.navigate(route = "detailchapter/$chapterId")
+                                    navController.navigate(route = "detailchapter/$chapterId")
                                 },
                                     dataStoreManager,
                                     bookmarkViewModel,
-                                    historyViewModel,
                                     comicId,
                                 )
                             }
@@ -385,19 +387,30 @@ fun VolatoonApp(
                     }
                 }
 
-                composable("detailchapter/{chapterId}") {
+                composable("detailchapter/{chapterId}") { it ->
                     val chapterId = it.arguments?.getString("chapterId") ?: ""
-                    val comicId = comicViewModel.selectedComicId.value
                     val detailChapterState by comicViewModel.detailChapterState
+                    val comicId = detailChapterState.detailChapter?.komik_id
 
-                    LaunchedEffect(Unit) {
+                    LaunchedEffect(chapterId, comicId) {
                         comicViewModel.fetchDetailChapter(chapterId)
+                        historyViewModel.fetchHistory(dataStoreManager)
 
                         chapterId.let { id ->
+                            Log.i("chapter id", id)
                             if (id.isNotEmpty()) {
                                 commentViewModel.fetchComments(id, dataStoreManager)
                             }
                             comicId.let { comic ->
+                                val historyList = historyViewModel.historyState.value.responseData?.data ?: emptyList()
+                                val isComicInHistory = historyList.any { it.komik_id == comic }
+                                if (isComicInHistory) {
+                                    val historyId = historyList.find { it.komik_id == comic }?.history_id
+                                    if (historyId != null) {
+                                        historyViewModel.deleteHistory(dataStoreManager, historyId)
+                                    }
+                                    Log.i("comic history", "already in history")
+                                }
                                 if (comic != null) {
                                     historyViewModel.addHistory(dataStoreManager, comic, id)
                                 }
@@ -423,8 +436,8 @@ fun VolatoonApp(
                                     navigateToComicDetail = { comicId ->
                                         navController.navigate("detailcomic/$comicId")
                                     },
-                                    commentViewModel = commentViewModel,
-                                    dataStoreManager = dataStoreManager
+                                    commentViewModel = commentViewModel,  // Add this
+                                    dataStoreManager = dataStoreManager,
                                 )
                             }
 

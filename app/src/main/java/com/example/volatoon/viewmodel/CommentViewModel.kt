@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.volatoon.model.CommentRequest
+import com.example.volatoon.model.Comment
 import com.example.volatoon.model.CommentResponse
 import com.example.volatoon.model.apiService
 import com.example.volatoon.utils.DataStoreManager

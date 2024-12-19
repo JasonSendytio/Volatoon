@@ -43,6 +43,8 @@ class SearchViewModel(private val searchDatabase: SearchDatabase) : ViewModel() 
         Log.d(TAG, "ViewModel initialized")
     }
 
+
+
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val comics = _searchText
         .debounce(300)

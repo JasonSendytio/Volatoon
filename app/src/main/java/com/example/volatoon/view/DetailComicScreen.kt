@@ -43,7 +43,6 @@ import com.example.volatoon.model.Chapter
 import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.viewmodel.BookmarkViewModel
 import com.example.volatoon.viewmodel.ComicViewModel
-import com.example.volatoon.viewmodel.HistoryViewModel
 
 @Composable
 fun DetailComicScreen(
@@ -51,12 +50,8 @@ fun DetailComicScreen(
     navigateToDetail : (String) -> Unit,
     dataStoreManager: DataStoreManager,
     bookmarkViewModel: BookmarkViewModel,
-    historyViewModel: HistoryViewModel,
     comicId : String,
 ){
-    LaunchedEffect(comicId) {
-        historyViewModel.fetchChapterHistory(dataStoreManager, comicId)
-    }
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -121,121 +116,35 @@ fun DetailComicScreen(
                         .fillMaxWidth()
                         .padding(8.dp, top = 4.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(
-                            "Title",
-                            modifier = Modifier
-                                .weight(.3f),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            ": ${comic.title}",
-                            modifier = Modifier.weight(.7f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(
-                            "Other Title",
-                            modifier = Modifier.weight(.3f),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            ": ${comic.alternativeTitle}",
-                            modifier = Modifier.weight(.7f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(
-                            "Score",
-                            modifier = Modifier.weight(.3f),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            ": ${comic.score}",
-                            modifier = Modifier.weight(.7f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(
-                            "Status",
-                            modifier = Modifier.weight(.3f),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            ": ${comic.status}",
-                            modifier = Modifier.weight(.7f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(
-                            "Released",
-                            modifier = Modifier.weight(.3f),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            ": ${comic.released}",
-                            modifier = Modifier.weight(.7f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(
-                            "Author",
-                            modifier = Modifier.weight(.3f),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            ": ${comic.author}",
-                            modifier = Modifier.weight(.7f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(
-                            "Genre",
-                            modifier = Modifier.weight(.3f),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            ": ${comic.genres.joinToString(", ")}",
-                            modifier = Modifier.weight(.7f)
-                        )
-                    }
+                    DetailRow("Title", comic.title)
+                    DetailRow("Other Title", comic.alternativeTitle)
+                    DetailRow("Score", comic.score.toString())
+                    DetailRow("Status", comic.status)
+                    DetailRow("Released", comic.released)
+                    DetailRow("Author", comic.author)
+                    DetailRow("Genre", comic.genres.joinToString(", "))
 
                     Text(
                         "Sinopsis",
-                        modifier = Modifier.padding(5.dp),
+                        modifier = Modifier
+                            .padding(5.dp)
+                            .fillMaxWidth()
+                            .background(Color(0xFFEEEEEE)),
                         fontWeight = FontWeight.Bold
                     )
 
                     Text(
                         "\t\t\t ${comic.synopsis}",
-                        textAlign = TextAlign.Justify
+                        textAlign = TextAlign.Justify,
+                        modifier = Modifier.padding(horizontal = 5.dp)
                     )
                 }
 
                 Row (
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFFA2D7E2))
+                        .background(Color(0xFF7CB9E8))
+//                        .background(Color(0xFFA2D7E2))
                         .padding(8.dp)
                         .height(30.dp),
                     horizontalArrangement = Arrangement.Center,
@@ -246,59 +155,65 @@ fun DetailComicScreen(
                         fontSize = 15.sp
                     )
                 }
-                ListChaptersScreen(
-                    chapters = comic.chapterList,
-                    navigateToDetail = navigateToDetail,
-                    chapterHistory = historyViewModel.chapterHistoryState.value
-                )
+                ListChaptersScreen(comic.chapterList, navigateToDetail)
             }
         }
     }
 }
 
 @Composable
-fun ListChaptersScreen(
-    chapters: List<Chapter>,
-    navigateToDetail: (String) -> Unit,
-    chapterHistory: Set<String>
+private fun DetailRow(
+    label: String,
+    value: String
 ) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFEEEEEE))
+                .padding(5.dp)
+        ) {
+            Text(
+                label,
+                modifier = Modifier
+                    .weight(.3f),
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                ": $value",
+                modifier = Modifier.weight(.7f)
+            )
+        }
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(Color(0xFFDDDDDD))
+        )
+    }
+}
+@Composable
+fun ListChaptersScreen(chapters : List<Chapter>, navigateToDetail : (String) -> Unit){
     Column {
         chapters.forEachIndexed { index, chapter ->
             Row {
-                ListChapter(
-                    chapter = chapter,
-                    index = index,
-                    navigateToDetail = navigateToDetail,
-                    isRead = chapterHistory.contains(chapter.chapter_id)
-                )
+                ListChapter(chapter = chapter, index, navigateToDetail)
             }
         }
     }
 }
 
-
 @Composable
-fun ListChapter(
-    chapter: Chapter,
-    index: Int,
-    navigateToDetail: (String) -> Unit,
-    isRead: Boolean
-) {
-    Row(
+fun ListChapter(chapter : Chapter, index : Int, navigateToDetail : (String) -> Unit){
+    Row (
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                when {
-                    isRead -> Color.Gray
-                    index % 2 == 0 -> Color(0xFFA2D7E2)
-                    else -> Color(0xFFD9D9D9)
-                }
-            )
+            .background(if (index % 2 == 0) Color(0xFFA2D7E2) else Color(0xFFD9D9D9))
             .height(30.dp)
             .clickable { navigateToDetail(chapter.chapter_id) },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
-    ) {
+    ){
         Text(chapter.title)
         Text(chapter.date)
     }
@@ -327,8 +242,10 @@ fun BookmarkIcon(
             if (addBookmarkState.error == null) {
                 if (isBookmarked) {
                     Toast.makeText(context, "Removed from bookmarks", Toast.LENGTH_SHORT).show()
+                    Log.i("bookmark state", addBookmarkState.toString())
                 } else {
                     Toast.makeText(context, "Added to bookmarks", Toast.LENGTH_SHORT).show()
+                    Log.i("add bookmark state", addBookmarkState.toString())
                 }
             } else {
                 Toast.makeText(context, addBookmarkState.error, Toast.LENGTH_SHORT).show()

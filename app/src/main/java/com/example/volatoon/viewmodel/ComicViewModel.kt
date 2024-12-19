@@ -8,6 +8,12 @@ import com.example.volatoon.model.Comic
 import com.example.volatoon.model.DetailChapter
 import com.example.volatoon.model.DetailComic
 import com.example.volatoon.model.comicApiService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
@@ -18,14 +24,12 @@ class ComicViewModel : ViewModel() {
     private val _chapterDetailState = mutableStateOf(DetailChapterState())
     private val _trendingComicsState = mutableStateOf(ComicsState())
 
+
     val comicstate : State<ComicsState> = _comicstate
     val trendingComicsState: State<ComicsState> = _trendingComicsState
 
     val detailComicState : State<DetailComicState> = _comicDetailState
     val detailChapterState : State<DetailChapterState> = _chapterDetailState
-
-    private val _selectedComicId = mutableStateOf<String?>(null)
-    val selectedComicId: State<String?> = _selectedComicId
 
     init {
         fetchComics()
@@ -111,18 +115,22 @@ class ComicViewModel : ViewModel() {
         }
     }
 
+
+
     private fun fetchComics(){
         viewModelScope.launch {
             try {
                 val responseManga = comicApiService.getAllManga(order = "update")
                 val responseManhua = comicApiService.getAllManhua(order = "update")
                 val responseManhwa = comicApiService.getAllManhwa(order = "update")
+              //  val responseGenre = comicApiService.getAllGenre()
 
                 _comicstate.value = _comicstate.value.copy(
                     loading = false,
                     listManga = responseManga.data,
                     listManhua = responseManhua.data,
                     listManhwa = responseManhwa.data,
+                   // listGenre = responseGenre.data,
                     error = null
                 )
 
@@ -175,11 +183,6 @@ class ComicViewModel : ViewModel() {
             }
         }
     }
-
-    fun setSelectedComicId(comicId: String){
-        _selectedComicId.value = comicId
-    }
-
     data class ComicsState(
         val loading : Boolean = true,
         val listManga : List<Comic> = emptyList(),
@@ -189,6 +192,7 @@ class ComicViewModel : ViewModel() {
         val currentPage: Int = 1,
         val hasNextPage: Boolean = false,
         val hasPreviousPage: Boolean = false,
+        //val listGenre : List<Genre> = emptyList(),
         val error : String? = null
     )
 

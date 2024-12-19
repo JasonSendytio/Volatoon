@@ -27,9 +27,6 @@ class HistoryViewModel: ViewModel() {
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage: SharedFlow<String> = _toastMessage
 
-    private val _chapterHistoryState = mutableStateOf<Set<String>>(emptySet())
-    val chapterHistoryState: State<Set<String>> = _chapterHistoryState
-
     fun fetchHistory(dataStoreManager: DataStoreManager) {
         _historyState.value = _historyState.value.copy(
             loading = true
@@ -62,50 +59,6 @@ class HistoryViewModel: ViewModel() {
         }
     }
 
-    fun fetchChapterHistory(dataStoreManager: DataStoreManager, comicId: String) {
-        viewModelScope.launch {
-            val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
-            if (token != null) {
-                try {
-                    val response = apiService.getChapterHistory(
-                        token = "Bearer $token",
-                        komikId = comicId
-                    )
-                    // Convert the response to a Set of chapter IDs
-                    _chapterHistoryState.value = response.data.Result.map { it.chapter_id }.toSet()
-                    Log.i("fetch chapter history", "Success: ${_chapterHistoryState.value}")
-                } catch (e: Exception) {
-                    Log.e("fetch chapter history", e.message.toString())
-                }
-            }
-        }
-    }
-    fun fetchHistoryByComic(dataStoreManager: DataStoreManager, comicId: String) {
-        _historyState.value = _historyState.value.copy(
-            loading = true
-        )
-        viewModelScope.launch {
-            val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
-            if (token != null) {
-                try {
-                    Log.i("fetch history for comic", "in progress")
-                    val response = apiService.getHistoryByComicId("Bearer $token", comicId)
-                    _historyState.value = _historyState.value.copy(
-                        responseData = response,
-                        loading = false
-                    )
-                    Log.i("fetch history for comic", response.message)
-                } catch (e: Exception) {
-                    _historyState.value = _historyState.value.copy(
-                        error = e.message,
-                        loading = false
-                    )
-                    Log.i("fetch history for comic", e.message.toString())
-                }
-            }
-        }
-    }
-
     fun addHistory(dataStoreManager: DataStoreManager, comicId: String, chapterId: String) {
         _historyState.value = _historyState.value.copy(
             loading = true
@@ -126,7 +79,7 @@ class HistoryViewModel: ViewModel() {
         }
     }
 
-    fun deleteHistory(dataStoreManager: DataStoreManager, comicId: String) {
+    fun deleteHistory(dataStoreManager: DataStoreManager, historyId: String) {
         _historyState.value = _historyState.value.copy(
             loading = true
         )
@@ -134,7 +87,7 @@ class HistoryViewModel: ViewModel() {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
             if (token != null) {
                 try {
-                    val response = apiService.deleteHistory("Bearer $token", comicId)
+                    val response = apiService.deleteHistory("Bearer $token", historyId)
                     _historyState.value = _historyState.value.copy(
                         loading = false
                     )

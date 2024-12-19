@@ -52,16 +52,6 @@ fun UpdateProfileScreen(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-//        // Avatar
-//        Image(
-//            painter = painterResource(id = R.drawable.placeholder), // Ganti dengan resource valid
-//            contentDescription = "Avatar",
-//            contentScale = ContentScale.Crop,
-//            modifier = Modifier
-//                .size(100.dp)
-//                .padding(bottom = 16.dp)
-//        )
-
         OutlinedTextField(
             value = fullName,
             onValueChange = { fullName = it },

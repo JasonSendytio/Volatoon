@@ -51,23 +51,6 @@ fun UserActivityScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
-                text = "Notifications >",
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .fillMaxWidth()
-            )
-        }
-        LazyColumn {
-            items(1) {
-                Text("New Notification")
-            }
-        }
 
         Row(
             modifier = Modifier

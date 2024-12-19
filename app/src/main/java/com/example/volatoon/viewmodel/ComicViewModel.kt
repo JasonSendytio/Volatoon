@@ -135,6 +135,7 @@ class ComicViewModel : ViewModel() {
             }
         }
     }
+
     fun fetchMoreComics(type: String, page: Int = 1, order: String = "update") {
         viewModelScope.launch {
             try {

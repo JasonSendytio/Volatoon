@@ -35,6 +35,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.volatoon.model.ComicBookmark
 import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.viewmodel.BookmarkViewModel
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -185,6 +186,8 @@ fun BookmarkItem(
 
 fun formatAddedAt(createdAt: String): String {
     val zonedDateTime = ZonedDateTime.parse(createdAt, DateTimeFormatter.ISO_DATE_TIME)
+    val targetZoneId = ZoneId.of("Asia/Jakarta")
+    val convertedTime = zonedDateTime.withZoneSameInstant(targetZoneId)
     val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm:ss")
-    return zonedDateTime.format(formatter)
+    return convertedTime.format(formatter)
 }

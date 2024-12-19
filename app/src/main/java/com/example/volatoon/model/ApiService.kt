@@ -28,7 +28,7 @@ interface ApiService {
     suspend fun registerUser(@Body account: RegisterData?): Response<authData>
 
     @GET("api/profile")
-    suspend fun getProfile(@Header("Authorization") token: String) : Response<ProfileResponse>
+    suspend fun getProfile(@Header("Authorization") token: String): Response<ProfileResponse>
 
     @POST("api/bookmark")
     suspend fun postBookmark(
@@ -42,8 +42,9 @@ interface ApiService {
     @DELETE("api/bookmark/{bookmarkId}")
     suspend fun deleteBookmark(
         @Header("Authorization") token: String,
-        @Path("bookmarkId") bookmarkId : String
-    ) : BookmarkPostData
+        @Path("bookmarkId") bookmarkId: String
+    ): BookmarkPostData
+
     // Add these new endpoints
     @Headers("Content-Type: application/json")
 
@@ -87,12 +88,6 @@ interface ApiService {
     ): HistoryAPIData
 
     @GET("api/history/{comicId}")
-    suspend fun getHistoryByComicId(
-        @Header("Authorization") token: String,
-        @Path("comicId") comicId: String
-    ): HistoryResponseData
-
-    @GET("api/history/{comicId}")
     suspend fun getChapterHistoryByComicId(
         @Header("Authorization") token: String,
         @Path("comicId") comicId: String
@@ -126,15 +121,9 @@ interface ApiService {
         @Body updateUserProfile: UpdateUserProfile?
     ): Response<UserResponse>
 
-    @PUT("user/status") // Replace with your actual endpoint path
+    @PUT("user/status")
     suspend fun updateUserStatus(
         @Header("Authorization") token: String,
         @Body newStatus: String
-    ): Response<Any> // Use the appropriate response type
-
-
-
-//    @POST("api/auth/register")
-//    suspend fun registerUser(@Body user: User?): Response<authData>
-    // this code will execute the api and return the data as Categories List data in our previous data class
+    ): Response<Any>
 }

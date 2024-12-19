@@ -33,6 +33,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.volatoon.model.ComicHistory
 import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.viewmodel.HistoryViewModel
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -187,7 +188,7 @@ fun HistoryItem(
                 modifier = Modifier
                     .padding(4.dp)
                     .clickable {
-                        historyViewModel.deleteHistory(dataStoreManager, comicHistory.history_id)
+                        historyViewModel.deleteHistory(dataStoreManager, comicHistory.komik_id)
                     }
             )
         }
@@ -196,10 +197,14 @@ fun HistoryItem(
 
 fun formatCreatedAt(createdAt: String): String {
     val zonedDateTime = ZonedDateTime.parse(createdAt, DateTimeFormatter.ISO_DATE_TIME)
-    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm:ss") // Example: 09 Dec 2024, 19:27:45
-    return zonedDateTime.format(formatter)
+    val targetZoneId = ZoneId.of("Asia/Jakarta")
+    val convertedTime = zonedDateTime.withZoneSameInstant(targetZoneId)
+    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm:ss")
+    return convertedTime.format(formatter)
 }
+
 fun getChapterNumber(chapterId: String): String? {
-    val regex = "chapter-(\\d+)".toRegex()
-    return regex.find(chapterId)?.groupValues?.get(1)
+    val regex = "chapter-(\\d+(?:-\\d+)?)".toRegex()
+    val match = regex.find(chapterId)?.groupValues?.get(1)
+    return match?.replace("-", ".")
 }

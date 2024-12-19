@@ -5,9 +5,7 @@ data class authData(
     val token : String,
     val message : String,
 )
-//
-//data class CategoriesList(val categories : List<Category>)
-//
+
 data class UpdatePasswordRequest(
     val email: String,
     val newPassword: String

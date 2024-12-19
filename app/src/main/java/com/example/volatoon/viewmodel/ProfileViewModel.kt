@@ -1,6 +1,5 @@
 package com.example.volatoon.viewmodel
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -69,6 +68,7 @@ class ProfileViewModel: ViewModel() {
             }
         }
     }
+
 
 
 

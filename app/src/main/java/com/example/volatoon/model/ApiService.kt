@@ -86,6 +86,18 @@ interface ApiService {
         @Body komik: HistoryRequest?
     ): HistoryAPIData
 
+    @GET("api/history/{comicId}")
+    suspend fun getHistoryByComicId(
+        @Header("Authorization") token: String,
+        @Path("comicId") comicId: String
+    ): HistoryResponseData
+
+    @GET("api/history/{comicId}")
+    suspend fun getChapterHistoryByComicId(
+        @Header("Authorization") token: String,
+        @Path("comicId") comicId: String
+    ): HistoryChapterResponse
+
     @DELETE("api/history/{historyId}")
     suspend fun deleteHistory(
         @Header("Authorization") token: String,

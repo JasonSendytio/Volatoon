@@ -380,6 +380,7 @@ fun VolatoonApp(
                                 },
                                     dataStoreManager,
                                     bookmarkViewModel,
+                                    historyViewModel,
                                     comicId,
                                 )
                             }

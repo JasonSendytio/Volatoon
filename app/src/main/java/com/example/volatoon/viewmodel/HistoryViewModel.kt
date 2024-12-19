@@ -27,6 +27,9 @@ class HistoryViewModel: ViewModel() {
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage: SharedFlow<String> = _toastMessage
 
+    private val _chapterHistoryState = mutableStateOf<Set<String>>(emptySet())
+    val chapterHistoryState: State<Set<String>> = _chapterHistoryState
+
     fun fetchHistory(dataStoreManager: DataStoreManager) {
         _historyState.value = _historyState.value.copy(
             loading = true
@@ -59,6 +62,24 @@ class HistoryViewModel: ViewModel() {
         }
     }
 
+    fun fetchChapterHistory(dataStoreManager: DataStoreManager, comicId: String) {
+        viewModelScope.launch {
+            val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
+            if (token != null) {
+                try {
+                    val response = apiService.getChapterHistoryByComicId(
+                        token = "Bearer $token",
+                        comicId = comicId
+                    )
+                    // Convert the response to a Set of chapter IDs
+                    _chapterHistoryState.value = response.data.Result.map { it.chapter_id }.toSet()
+                    Log.i("fetch chapter history", "Success: ${_chapterHistoryState.value}")
+                } catch (e: Exception) {
+                    Log.e("fetch chapter history", e.message.toString())
+                }
+            }
+        }
+    }
     fun addHistory(dataStoreManager: DataStoreManager, comicId: String, chapterId: String) {
         _historyState.value = _historyState.value.copy(
             loading = true

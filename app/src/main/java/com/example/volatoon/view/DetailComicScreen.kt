@@ -116,121 +116,35 @@ fun DetailComicScreen(
                         .fillMaxWidth()
                         .padding(8.dp, top = 4.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(
-                            "Title",
-                            modifier = Modifier
-                                .weight(.3f),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            ": ${comic.title}",
-                            modifier = Modifier.weight(.7f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(
-                            "Other Title",
-                            modifier = Modifier.weight(.3f),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            ": ${comic.alternativeTitle}",
-                            modifier = Modifier.weight(.7f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(
-                            "Score",
-                            modifier = Modifier.weight(.3f),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            ": ${comic.score}",
-                            modifier = Modifier.weight(.7f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(
-                            "Status",
-                            modifier = Modifier.weight(.3f),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            ": ${comic.status}",
-                            modifier = Modifier.weight(.7f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(
-                            "Released",
-                            modifier = Modifier.weight(.3f),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            ": ${comic.released}",
-                            modifier = Modifier.weight(.7f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(
-                            "Author",
-                            modifier = Modifier.weight(.3f),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            ": ${comic.author}",
-                            modifier = Modifier.weight(.7f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.padding(5.dp)
-                    ) {
-                        Text(
-                            "Genre",
-                            modifier = Modifier.weight(.3f),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            ": ${comic.genres.joinToString(", ")}",
-                            modifier = Modifier.weight(.7f)
-                        )
-                    }
+                    DetailRow("Title", comic.title)
+                    DetailRow("Other Title", comic.alternativeTitle)
+                    DetailRow("Score", comic.score.toString())
+                    DetailRow("Status", comic.status)
+                    DetailRow("Released", comic.released)
+                    DetailRow("Author", comic.author)
+                    DetailRow("Genre", comic.genres.joinToString(", "))
 
                     Text(
                         "Sinopsis",
-                        modifier = Modifier.padding(5.dp),
+                        modifier = Modifier
+                            .padding(5.dp)
+                            .fillMaxWidth()
+                            .background(Color(0xFFEEEEEE)),
                         fontWeight = FontWeight.Bold
                     )
 
                     Text(
                         "\t\t\t ${comic.synopsis}",
-                        textAlign = TextAlign.Justify
+                        textAlign = TextAlign.Justify,
+                        modifier = Modifier.padding(horizontal = 5.dp)
                     )
                 }
 
                 Row (
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFFA2D7E2))
+                        .background(Color(0xFF7CB9E8))
+//                        .background(Color(0xFFA2D7E2))
                         .padding(8.dp)
                         .height(30.dp),
                     horizontalArrangement = Arrangement.Center,
@@ -247,6 +161,37 @@ fun DetailComicScreen(
     }
 }
 
+@Composable
+private fun DetailRow(
+    label: String,
+    value: String
+) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFEEEEEE))
+                .padding(5.dp)
+        ) {
+            Text(
+                label,
+                modifier = Modifier
+                    .weight(.3f),
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                ": $value",
+                modifier = Modifier.weight(.7f)
+            )
+        }
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(Color(0xFFDDDDDD))
+        )
+    }
+}
 @Composable
 fun ListChaptersScreen(chapters : List<Chapter>, navigateToDetail : (String) -> Unit){
     Column {

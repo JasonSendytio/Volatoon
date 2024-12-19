@@ -39,7 +39,7 @@ fun ProfileScreen (
     onNavigateToBookmark: () -> Unit,
     onNavigateToPremium: () -> Unit,
     onNavigateToUpdateProfile: () -> Unit,
-    onUpdateStatus: (String) -> Unit, // Add this parameter
+    onUpdateStatus: (String) -> Unit,
     viewState: ProfileViewModel.ProfileResState
 ) {
     Column(
@@ -75,10 +75,8 @@ fun ProfileScreen (
 
                 UserQuote(
                     quote = viewState.profileDataRes.body()?.userData?.status ?: "N/A",
-                    onUpdateStatus = onUpdateStatus // Pass the callback to UserQuote
+                    onUpdateStatus = onUpdateStatus
                 )
-
-
 
                 ProfileActions(
                     onNavigateToBookmark = onNavigateToBookmark,

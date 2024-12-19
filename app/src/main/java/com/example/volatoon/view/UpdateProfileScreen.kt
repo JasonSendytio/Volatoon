@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.volatoon.model.UpdateUserProfile
 import com.example.volatoon.utils.DataStoreManager
+import com.example.volatoon.viewmodel.ProfileViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
@@ -27,7 +28,6 @@ fun UpdateProfileScreen(
     navigateToProfile: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-
     var fullName by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
     var status by remember { mutableStateOf("") }

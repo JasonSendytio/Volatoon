@@ -13,18 +13,16 @@ import retrofit2.Response
 import java.lang.Exception
 
 class ProfileViewModel: ViewModel() {
-
     private val _profileResState = mutableStateOf(ProfileResState())
     val profileResState : State<ProfileResState> = _profileResState
 
     fun fetchUserData(dataStoreManager : DataStoreManager) {
-
         viewModelScope.launch {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
 
             if (token != null) {
                 try {
-                    val bearerToken = "Bearer $token" // Format the token as "Bearer <token>"
+                    val bearerToken = "Bearer $token"
                     val response = apiService.getProfile(bearerToken)
 
                     _profileResState.value = _profileResState.value.copy(
@@ -50,10 +48,9 @@ class ProfileViewModel: ViewModel() {
             if (token != null) {
                 try {
                     val bearerToken = "Bearer $token"
-                    val response = apiService.updateUserStatus(bearerToken, newStatus) // Assuming this endpoint exists
+                    val response = apiService.updateUserStatus(bearerToken, newStatus)
 
                     if (response.isSuccessful) {
-                        // Refresh the profile data after updating status
                         fetchUserData(dataStoreManager)
                     } else {
                         _profileResState.value = _profileResState.value.copy(
@@ -71,11 +68,9 @@ class ProfileViewModel: ViewModel() {
 
 
 
-
     data class ProfileResState(
         val loading : Boolean = true,
         val profileDataRes : Response<ProfileResponse>? = null,
         val error : String? = null
     )
-
 }

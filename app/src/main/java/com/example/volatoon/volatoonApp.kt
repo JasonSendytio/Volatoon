@@ -220,8 +220,6 @@ fun VolatoonApp(
                 }
 
                 composable(route = TopLevelRoute.Profile.route){
-                    val profileResState by profileViewModel.profileResState
-
                     LaunchedEffect(dataStoreManager) {
                         profileViewModel.fetchUserData(dataStoreManager)
                     }

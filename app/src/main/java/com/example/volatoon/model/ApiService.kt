@@ -98,10 +98,10 @@ interface ApiService {
         @Path("comicId") comicId: String
     ): HistoryChapterResponse
 
-    @DELETE("api/history/{historyId}")
+    @DELETE("api/history/{comicId}")
     suspend fun deleteHistory(
         @Header("Authorization") token: String,
-        @Path("historyId") historyId: String
+        @Path("comicId") comicId: String
     ): HistoryAPIData
 
     @POST("api/redeem")
@@ -117,7 +117,7 @@ interface ApiService {
 
     @GET("api/auth/find-user")
     suspend fun findUserByEmail(
-            @Query("email") email: String
+        @Query("email") email: String
     ): Response<UserResponse>
 
     @PUT("api/profile")

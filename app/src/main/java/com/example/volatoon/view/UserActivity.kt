@@ -51,7 +51,6 @@ fun UserActivityScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-
         Row(
             modifier = Modifier
                 .padding(top = 16.dp)

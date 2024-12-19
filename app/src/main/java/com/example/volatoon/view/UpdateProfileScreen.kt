@@ -1,23 +1,20 @@
 package com.example.volatoon.view
 
-import android.util.Log
 import com.example.volatoon.viewmodel.UpdateProfileViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.volatoon.model.UpdateUserProfile
 import com.example.volatoon.utils.DataStoreManager
 import kotlinx.coroutines.flow.firstOrNull
@@ -33,11 +30,9 @@ fun UpdateProfileScreen(
 
     var fullName by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
     var status by remember { mutableStateOf("") }
-
     var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    val errorMessage by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier

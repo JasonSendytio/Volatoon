@@ -105,7 +105,7 @@ interface ApiService {
 
     @GET("api/auth/find-user")
     suspend fun findUserByEmail(
-        @Query("email") email: String
+            @Query("email") email: String
     ): Response<UserResponse>
 
     @PUT("api/profile")

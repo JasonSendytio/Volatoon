@@ -16,7 +16,7 @@ data class UpdatePasswordRequest(
 data class UserResponse(
     val status: Int,
     val message: String,
-    val userData: Profile?
+    val userData: String
 )
 
 data class UpdateUserProfile(

@@ -54,6 +54,7 @@ class LoginViewModel : ViewModel() {
                         APIError::class.java
                     );
                     throw Exception(errorBody.message)
+                    Log.d(TAG, "Login failed: ${errorBody.message}")
                 }
 
                 _loginState.value = _loginState.value.copy(
@@ -88,19 +89,17 @@ class LoginViewModel : ViewModel() {
                     Log.e(TAG, "No Firebase user found after authentication")
                     throw Exception("No user signed in")
                 }
+                fun generateGooglePassword(email: String): String {
+                    // Get first part of email (before @)
+                    val username = email.split("@")[0]
+                    return "G${username}123#".take(20)
+                }
+                val googlePassword = generateGooglePassword(currentUser.email ?: "")
 
                 val email = currentUser.email ?: throw Exception("Email not found")
-                val googlePassword = "${GOOGLE_PASSWORD_PREFIX}${currentUser.email}"
-
-                // First try to login directly
-                try {
-                    loginWithGoogle(email, googlePassword, dataStoreManager)
-                    return@launch
-                } catch (e: Exception) {
-                    Log.d(TAG, "Direct login failed, checking if user exists", e)
-                }
-
-                // Check if user exists in backend
+                Log.d(TAG, "User email: $email")
+                Log.d(TAG, "DATASTORE: ${dataStoreManager.getFromDataStore().toString()}")
+                //val googlePassword = "${GOOGLE_PASSWORD_PREFIX}${currentUser.email}"
                 val userExists = checkUserExists(email)
                 if (userExists) {
                     // User exists but login failed, try updating password
@@ -109,20 +108,22 @@ class LoginViewModel : ViewModel() {
                     // Only register if user doesn't exist
                     registerNewUser(currentUser, googlePassword, dataStoreManager)
                 }
+
             } catch (e: Exception) {
                 Log.e(TAG, "Google Sign-In failed", e)
+                Log.e(TAG, "Failed to update password: ${e.message}")
                 _loginState.value = _loginState.value.copy(
                     loading = false,
                     error = "Google Sign-In failed: ${e.message}"
                 )
             }
-        }
+                        }
     }
 
     private suspend fun checkUserExists(email: String): Boolean {
         return try {
             val response = apiService.findUserByEmail(email)
-            response.isSuccessful && response.body()?.userData != null
+            response.isSuccessful && response.body()?.userData == email
         } catch (e: Exception) {
             Log.e(TAG, "Error checking user existence: ${e.message}")
             false
@@ -150,18 +151,34 @@ class LoginViewModel : ViewModel() {
     }
 
     private suspend fun updatePasswordAndLogin(email: String, newPassword: String, dataStoreManager: DataStoreManager) {
-        // Create UpdatePasswordRequest object
-        val updatePasswordRequest = UpdatePasswordRequest(
-            email = email,
-            newPassword = newPassword
-        )
+        try {
+            // Create UpdatePasswordRequest object
+            val updatePasswordRequest = UpdatePasswordRequest(
+                email = email,
+                newPassword = newPassword
+            )
+            Log.d(TAG, newPassword)
+            // Update the password in your backend
+            val updateResponse = apiService.updatePassword(updatePasswordRequest)
 
-        // Update the password in your backend
-        val updateResponse = apiService.updatePassword(updatePasswordRequest)
-        if (updateResponse.isSuccessful) {
+            if (!updateResponse.isSuccessful) {
+                val errorMessage = try {
+                    val errorBody: APIError = Gson().fromJson(
+                        updateResponse.errorBody()?.charStream(),
+                        APIError::class.java
+                    )
+                    errorBody.message
+                } catch (e: Exception) {
+                    "Update password failed: ${updateResponse.code()}"
+                }
+                throw Exception(errorMessage)
+            }
+
+            // If password update is successful, proceed with login
             loginWithGoogle(email, newPassword, dataStoreManager)
-        } else {
-            throw Exception("Failed to update password")
+        } catch (e: Exception) {
+            Log.e(TAG, "Password update failed: ${e.message}")
+            throw Exception("Failed to update password: ${e.message}")
         }
     }
 

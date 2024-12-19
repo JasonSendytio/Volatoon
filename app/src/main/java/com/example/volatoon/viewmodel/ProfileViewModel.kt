@@ -44,6 +44,34 @@ class ProfileViewModel: ViewModel() {
         }
     }
 
+    fun updateStatus(newStatus: String, dataStoreManager: DataStoreManager) {
+        viewModelScope.launch {
+            val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
+
+            if (token != null) {
+                try {
+                    val bearerToken = "Bearer $token"
+                    val response = apiService.updateUserStatus(bearerToken, newStatus) // Assuming this endpoint exists
+
+                    if (response.isSuccessful) {
+                        // Refresh the profile data after updating status
+                        fetchUserData(dataStoreManager)
+                    } else {
+                        _profileResState.value = _profileResState.value.copy(
+                            error = "Error updating status: ${response.message()}"
+                        )
+                    }
+                } catch (e: Exception) {
+                    _profileResState.value = _profileResState.value.copy(
+                        error = "Error updating status: ${e.message}"
+                    )
+                }
+            }
+        }
+    }
+
+
+
     data class ProfileResState(
         val loading : Boolean = true,
         val profileDataRes : Response<ProfileResponse>? = null,

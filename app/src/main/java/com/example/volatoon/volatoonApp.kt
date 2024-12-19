@@ -64,6 +64,8 @@ import com.example.volatoon.viewmodel.PremiumRedemptionViewModel
 import com.example.volatoon.viewmodel.UpdateProfileViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import androidx.compose.ui.platform.LocalContext
+
 
 @Composable
 fun VolatoonApp(
@@ -89,6 +91,9 @@ fun VolatoonApp(
     val commentViewModel : CommentViewModel = viewModel()
     val premiumViewModel : PremiumRedemptionViewModel = viewModel()
     val updateUserProfile : UpdateProfileViewModel = viewModel()
+    val viewModel: ProfileViewModel = viewModel()
+    val context = LocalContext.current
+
 
     val viewState by comicViewModel.comicstate
 
@@ -222,7 +227,7 @@ fun VolatoonApp(
                     }
 
                     ProfileScreen(
-                        onLogOut,
+                        onLogOut = onLogOut,
                         onNavigateToBookmark = {
                             navController.navigate(route = "bookmark")
                         },
@@ -230,9 +235,12 @@ fun VolatoonApp(
                             navController.navigate(route = "premium")
                         },
                         onNavigateToUpdateProfile = {
-                           navController.navigate(route = "updateProfile")
+                            navController.navigate(route = "updateProfile")
                         },
-                        profileResState,
+                        onUpdateStatus = { status ->
+                            viewModel.updateStatus(status, dataStoreManager)
+                        },
+                        viewState = viewModel.profileResState.value
                     )
                 }
 

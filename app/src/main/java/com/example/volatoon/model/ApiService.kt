@@ -114,6 +114,14 @@ interface ApiService {
         @Body updateUserProfile: UpdateUserProfile?
     ): Response<UserResponse>
 
+    @PUT("user/status") // Replace with your actual endpoint path
+    suspend fun updateUserStatus(
+        @Header("Authorization") token: String,
+        @Body newStatus: String
+    ): Response<Any> // Use the appropriate response type
+
+
+
 //    @POST("api/auth/register")
 //    suspend fun registerUser(@Body user: User?): Response<authData>
     // this code will execute the api and return the data as Categories List data in our previous data class

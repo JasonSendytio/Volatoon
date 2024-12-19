@@ -70,7 +70,8 @@ fun ProfileScreen (
             else -> {
                 ProfileHeader(
                     fullName = viewState.profileDataRes.body()?.userData?.fullName ?: "N/A",
-                    userName = viewState.profileDataRes.body()?.userData?.userName ?: "N/A"
+                    userName = viewState.profileDataRes.body()?.userData?.userName ?: "N/A",
+                    ispremium = viewState.profileDataRes.body()?.userData?.ispremium ?: false,
                 )
 
                 UserQuote(
@@ -90,7 +91,7 @@ fun ProfileScreen (
 }
 
 @Composable
-fun ProfileHeader(fullName: String, userName: String) {
+fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(bottom = 24.dp)
@@ -121,8 +122,32 @@ fun ProfileHeader(fullName: String, userName: String) {
                 color = Color.Gray
             )
         )
+
+        Box(
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(if (ispremium) Color(0x33FFD700) else Color(0x33FF0000))
+                .border(
+                    width = 1.dp,
+                    color = if (ispremium) Color(0xFFFFD700) else Color.Red,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = if (ispremium) "✨ PREMIUM" else "FREE USER",
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = 16.sp,
+                    color = if (ispremium) Color(0xFFFFD700) else Color.Red,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                )
+            )
+        }
     }
 }
+
+
 
 @Composable
 fun UserQuote(quote: String, onUpdateStatus: (String) -> Unit) {

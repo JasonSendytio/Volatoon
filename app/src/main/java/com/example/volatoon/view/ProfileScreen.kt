@@ -159,15 +159,17 @@ fun UserQuote(quote: String, onUpdateStatus: (String) -> Unit) {
 
         Box(
             modifier = Modifier
-                .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(4.dp))
-                .padding(8.dp) // Padding di dalam border
+                .border(width = 1.dp, color = Color.Cyan, shape = RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(4.dp))
+                .background(Color(0xFFf3ffff))
+                .padding(8.dp)
                 .fillMaxWidth()
         ) {
             // Display the existing status
             Text(
                 text = "$quote",
                 style = androidx.compose.ui.text.TextStyle(fontSize = 17.sp, color = Color.Black),
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp, start = 6.dp)
             )
         }
 

@@ -59,6 +59,32 @@ class HistoryViewModel: ViewModel() {
         }
     }
 
+    fun fetchHistoryByComic(dataStoreManager: DataStoreManager, comicId: String) {
+        _historyState.value = _historyState.value.copy(
+            loading = true
+        )
+        viewModelScope.launch {
+            val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
+            if (token != null) {
+                try {
+                    Log.i("fetch history for comic", "in progress")
+                    val response = apiService.getHistoryByComicId("Bearer $token", comicId)
+                    _historyState.value = _historyState.value.copy(
+                        responseData = response,
+                        loading = false
+                    )
+                    Log.i("fetch history for comic", response.message)
+                } catch (e: Exception) {
+                    _historyState.value = _historyState.value.copy(
+                        error = e.message,
+                        loading = false
+                    )
+                    Log.i("fetch history for comic", e.message.toString())
+                }
+            }
+        }
+    }
+
     fun addHistory(dataStoreManager: DataStoreManager, comicId: String, chapterId: String) {
         _historyState.value = _historyState.value.copy(
             loading = true
@@ -79,7 +105,7 @@ class HistoryViewModel: ViewModel() {
         }
     }
 
-    fun deleteHistory(dataStoreManager: DataStoreManager, historyId: String) {
+    fun deleteHistory(dataStoreManager: DataStoreManager, comicId: String) {
         _historyState.value = _historyState.value.copy(
             loading = true
         )
@@ -87,7 +113,7 @@ class HistoryViewModel: ViewModel() {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
             if (token != null) {
                 try {
-                    val response = apiService.deleteHistory("Bearer $token", historyId)
+                    val response = apiService.deleteHistory("Bearer $token", comicId)
                     _historyState.value = _historyState.value.copy(
                         loading = false
                     )

@@ -1,6 +1,5 @@
 package com.example.volatoon.viewmodel
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -25,7 +24,7 @@ class ProfileViewModel: ViewModel() {
 
             if (token != null) {
                 try {
-                    val bearerToken = "Bearer $token" // Format the token as "Bearer <token>"
+                    val bearerToken = "Bearer $token"
                     val response = apiService.getProfile(bearerToken)
 
                     _profileResState.value = _profileResState.value.copy(
@@ -49,5 +48,4 @@ class ProfileViewModel: ViewModel() {
         val profileDataRes : Response<ProfileResponse>? = null,
         val error : String? = null
     )
-
 }

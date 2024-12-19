@@ -18,7 +18,6 @@ import com.example.volatoon.model.UpdatePasswordRequest
 import com.google.android.gms.common.api.Response
 import com.google.firebase.auth.FirebaseUser
 
-
 class LoginViewModel : ViewModel() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -54,7 +53,6 @@ class LoginViewModel : ViewModel() {
                         APIError::class.java
                     );
                     throw Exception(errorBody.message)
-                    Log.d(TAG, "Login failed: ${errorBody.message}")
                 }
 
                 _loginState.value = _loginState.value.copy(
@@ -181,9 +179,6 @@ class LoginViewModel : ViewModel() {
             throw Exception("Failed to update password: ${e.message}")
         }
     }
-
-
-
 
     private suspend fun loginWithGoogle(email: String, password: String, dataStoreManager: DataStoreManager) {
         try {

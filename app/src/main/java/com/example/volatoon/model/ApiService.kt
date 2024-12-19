@@ -80,16 +80,22 @@ interface ApiService {
     @GET("api/history")
     suspend fun getHistory(@Header("Authorization") token: String): HistoryResponseData
 
+    @GET("api/history/{comicId}")
+    suspend fun getHistoryByComicId(
+        @Header("Authorization") token: String,
+        @Path("comicId") comicId: String
+    ): HistoryResponseData
+
     @POST("api/history")
     suspend fun postHistory(
         @Header("Authorization") token: String,
         @Body komik: HistoryRequest?
     ): HistoryAPIData
 
-    @DELETE("api/history/{historyId}")
+    @DELETE("api/history/{comicId}")
     suspend fun deleteHistory(
         @Header("Authorization") token: String,
-        @Path("historyId") historyId: String
+        @Path("comicId") comicId: String
     ): HistoryAPIData
 
     @POST("api/redeem")
@@ -105,7 +111,7 @@ interface ApiService {
 
     @GET("api/auth/find-user")
     suspend fun findUserByEmail(
-            @Query("email") email: String
+        @Query("email") email: String
     ): Response<UserResponse>
 
     @PUT("api/profile")

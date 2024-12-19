@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -39,20 +38,15 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.volatoon.model.Comic
 import com.example.volatoon.model.Genres
 import com.example.volatoon.model.RecentSearch
-import com.example.volatoon.model.SearchDatabase
 import com.example.volatoon.viewmodel.SearchViewModel
 import java.util.Locale
-
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModel
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,14 +80,16 @@ fun SearchScreen(
                     },
                     expanded = isSearching,
                     onExpandedChange = {},
-                    placeholder = { Text("Cari Komiknya!") },
+                    placeholder = { Text("Find the comic!") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                     trailingIcon = {
                         Icon(Icons.Default.Clear,
                             contentDescription = null,
                             modifier = Modifier.clickable {
                                 viewState.onClearSearch()
-                            },)},
+                            }
+                        )
+                    },
                 )
             },
             expanded = isSearching,
@@ -121,7 +117,8 @@ fun SearchScreen(
                                 onSearchClick = {
                                     viewState.onSearchTextChange(comic.title)
                                     viewState.addRecentSearch(comic.title)
-                                })
+                                }
+                            )
                         }
                     }
                 }
@@ -171,6 +168,11 @@ fun RecentSearches(
     onDeleteClick: (String) -> Unit
 ) {
     Column {
+        if (searches.isEmpty()) {
+            Text("No recent searches")
+            return
+        }
+
         searches.forEach { search ->
             Row(
                 modifier = Modifier
@@ -186,18 +188,24 @@ fun RecentSearches(
                         contentDescription = null,
                         modifier = Modifier.padding(end = 8.dp)
                     )
-                    Text(search.searchText)
+                    Text(
+                        text = search.searchText,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        Icons.Default.Clear,
+                        contentDescription = "Delete",
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .clickable { onDeleteClick(search.searchText) }
+                    )
                 }
-                Icon(
-                    Icons.Default.Clear,
-                    contentDescription = "Delete",
-                    modifier = Modifier.clickable { onDeleteClick(search.searchText) }
-                )
             }
         }
     }
 }
-
 
 @Composable
 fun ComicSearchItem(

@@ -80,6 +80,7 @@ class HistoryViewModel: ViewModel() {
             }
         }
     }
+    
     fun addHistory(dataStoreManager: DataStoreManager, comicId: String, chapterId: String) {
         _historyState.value = _historyState.value.copy(
             loading = true

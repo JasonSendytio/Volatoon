@@ -20,6 +20,10 @@ class UpdateProfileViewModel : ViewModel() {
         updateUserProfile: UpdateUserProfile
     ) {
         viewModelScope.launch {
+            _updateProfileState.value = _updateProfileState.value.copy(
+                loading = true,
+                error = null
+            )
             try {
                 val response = apiService.updateUserProfile("Bearer $token", updateUserProfile)
                 _updateProfileState.value = _updateProfileState.value.copy(

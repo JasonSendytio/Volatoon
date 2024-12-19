@@ -246,9 +246,6 @@ fun VolatoonApp(
                         onNavigateToUpdateProfile = {
                             navController.navigate(route = "updateProfile")
                         },
-                        onUpdateStatus = { status ->
-                            viewModel.updateStatus(status, dataStoreManager)
-                        },
                         viewState = viewModel.profileResState.value
                     )
                 }
@@ -277,11 +274,8 @@ fun VolatoonApp(
                 ){
                     UpdateProfileScreen(
                         viewModel = updateUserProfile,
-                        dataStoreManager,
-                        navigateToProfile = {
-                            navController.navigate(route = "profile")
-                        },
-                        profileViewModel = profileViewModel
+                        profileViewModel = profileViewModel,
+                        dataStoreManager = dataStoreManager
                     )
                 }
 

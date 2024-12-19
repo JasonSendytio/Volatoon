@@ -153,22 +153,21 @@ fun LoginScreen(
                 PasswordTextField("Password", password)
 
                 Text(
-                    color = Color(0xFFA2D7E2),
+                    color = Color.Blue,
                     modifier = Modifier
                         .padding(5.dp)
                         .clickable { navigateToRegister() },
                     text = "Don't have an account? Sign Up Here",
-
                 )
 
                 Button(
                     onClick = { loginViewModel.loginUser(Account(email, password.value), dataStoreManager)},
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFA2D7E2)
+                        containerColor = Color.Blue
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(5.dp)
+                        .padding(8.dp)
                 ){
                     Text(text = "Login")
                 }
@@ -180,7 +179,7 @@ fun LoginScreen(
                     border = BorderStroke(1.dp, Color.LightGray),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
                         .height(50.dp)
                 ) {
                     Row(

@@ -111,7 +111,7 @@ fun RegisterScreen(
                     value = fullName,
                     modifier = Modifier.padding(10.dp).fillMaxWidth(),
                     onValueChange = {fullName = it},
-                    label = { Text("Fullname") })
+                    label = { Text("Full Name") })
 
                 OutlinedTextField(
                     value = email,
@@ -122,30 +122,19 @@ fun RegisterScreen(
                 PasswordTextField("Password", password)
                 PasswordTextField("Confirm Password", confirmPassword)
 
-//                OutlinedTextField(
-//                    value = password,
-//                    onValueChange = {password = it},
-//                    modifier = Modifier.padding(10.dp).fillMaxWidth(),
-//                    label = { Text("Password") })
-//
-//                OutlinedTextField(
-//                    value = confirmPassword,
-//                    onValueChange = {confirmPassword = it},
-//                    modifier = Modifier.padding(10.dp).fillMaxWidth(),
-//                    label = { Text("Confirm Password") })
-
                 Text(
-                    color = Color(0xFFA2D7E2),
+                    color = Color.Blue,
                     modifier = Modifier.padding(5.dp)
                         .clickable { navigateToLogin() },
-                    text = "Already have an account ?")
+                    text = "Already have an account?"
+                )
 
                 Button(
                     onClick = {
                         viewModel.registerUser(RegisterData(fullName, userName, email, password.value), dataStoreManager)
                               },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFA2D7E2)
+                        containerColor = Color.Blue
                     ),
                     modifier = Modifier.fillMaxWidth().padding(5.dp)
                 ){
@@ -154,10 +143,4 @@ fun RegisterScreen(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewRegisterScreen(){
-//    RegisterScreen()
 }

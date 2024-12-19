@@ -296,5 +296,4 @@ fun ComicItem(
             textAlign = TextAlign.Center
         )
     }
-
 }

@@ -34,7 +34,6 @@ fun ProfileScreen (
     onNavigateToUserActivity: () -> Unit,
     onNavigateToPremium: () -> Unit,
     onNavigateToUpdateProfile: () -> Unit,
-    onUpdateStatus: (String) -> Unit,
     viewState: ProfileViewModel.ProfileResState
 ) {
     Column(
@@ -67,7 +66,7 @@ fun ProfileScreen (
                     fullName = viewState.profileDataRes.body()?.userData?.fullName ?: "N/A",
                     userName = viewState.profileDataRes.body()?.userData?.userName ?: "N/A",
                     ispremium = viewState.profileDataRes.body()?.userData?.ispremium ?: false,
-                    quote = viewState.profileDataRes.body()?.userData?.status ?: "N/A"
+                    status = viewState.profileDataRes.body()?.userData?.status ?: "N/A"
                 )
 
                 ProfileActions(
@@ -82,12 +81,11 @@ fun ProfileScreen (
 }
 
 @Composable
-fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, quote: String) {
+fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, status: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(bottom = 24.dp)
     ) {
-
         androidx.compose.foundation.Image(
             painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_avatar),
             contentDescription = "Profile Picture",
@@ -95,7 +93,6 @@ fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, quote:
                 .size(120.dp)
                 .padding(bottom = 8.dp)
         )
-
 
         Text(
             text = fullName,
@@ -105,9 +102,8 @@ fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, quote:
             )
         )
 
-
         Text(
-            text = "@$userName",
+            text = userName,
             style = androidx.compose.ui.text.TextStyle(
                 fontSize = 16.sp,
                 color = Color.Gray
@@ -136,14 +132,19 @@ fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, quote:
             )
         }
 
+    Column {
+        Text(
+            text = "Status:",
+            style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, color = Color.Black),
+            modifier = Modifier.padding(8.dp)
+        )
         Box(
             modifier = Modifier
                 .padding(8.dp)
-                .background(Color.White)
+                .background(Color(0xFFF3FFFF))
                 .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
                 .fillMaxWidth()
                 .height(60.dp)
-                .clip(RoundedCornerShape(16.dp))
         ) {
             Column(
                 modifier = Modifier
@@ -151,12 +152,14 @@ fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, quote:
                     .padding(16.dp)
             ) {
                 Text(
-                    text = quote,
+                    text = status,
                     style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, color = Color.Black),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
         }
+    }
+
     }
 }
 
@@ -191,7 +194,7 @@ fun ProfileActions(
                 containerColor = Color.Cyan
             )
         ) {
-            Text("Bookmarks & History", color = Color.Black)
+            Text("History and Bookmarks", color = Color.Black)
         }
 
         Button(
@@ -203,7 +206,7 @@ fun ProfileActions(
                 containerColor = Color.Cyan
             )
         ) {
-            Text("Update Profile", color = Color.Black)
+            Text("Edit Profile", color = Color.Black)
         }
 
         Button(

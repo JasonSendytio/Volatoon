@@ -25,7 +25,7 @@ class GenreViewModel : ViewModel() {
                 _genreState.value = _genreState.value.copy(
                     loading = false,
                     listGenres = response.filter { genre ->
-                        !listOf("Adult", "Yaoi", "Yuri", "Doujinshi", "Ecchi").contains(genre.name)
+                        !listOf("Adult", "Yaoi", "Yuri", "Doujinshi").contains(genre.name)
                     },
                     error = null
                 )

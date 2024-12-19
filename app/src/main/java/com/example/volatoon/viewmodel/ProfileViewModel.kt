@@ -1,6 +1,5 @@
 package com.example.volatoon.viewmodel
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -14,18 +13,16 @@ import retrofit2.Response
 import java.lang.Exception
 
 class ProfileViewModel: ViewModel() {
-
     private val _profileResState = mutableStateOf(ProfileResState())
     val profileResState : State<ProfileResState> = _profileResState
 
     fun fetchUserData(dataStoreManager : DataStoreManager) {
-
         viewModelScope.launch {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
 
             if (token != null) {
                 try {
-                    val bearerToken = "Bearer $token" // Format the token as "Bearer <token>"
+                    val bearerToken = "Bearer $token"
                     val response = apiService.getProfile(bearerToken)
 
                     _profileResState.value = _profileResState.value.copy(
@@ -44,10 +41,36 @@ class ProfileViewModel: ViewModel() {
         }
     }
 
+    fun updateStatus(newStatus: String, dataStoreManager: DataStoreManager) {
+        viewModelScope.launch {
+            val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
+
+            if (token != null) {
+                try {
+                    val bearerToken = "Bearer $token"
+                    val response = apiService.updateUserStatus(bearerToken, newStatus)
+
+                    if (response.isSuccessful) {
+                        fetchUserData(dataStoreManager)
+                    } else {
+                        _profileResState.value = _profileResState.value.copy(
+                            error = "Error updating status: ${response.message()}"
+                        )
+                    }
+                } catch (e: Exception) {
+                    _profileResState.value = _profileResState.value.copy(
+                        error = "Error updating status: ${e.message}"
+                    )
+                }
+            }
+        }
+    }
+
+
+
     data class ProfileResState(
         val loading : Boolean = true,
         val profileDataRes : Response<ProfileResponse>? = null,
         val error : String? = null
     )
-
 }

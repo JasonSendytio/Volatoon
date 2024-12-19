@@ -1,25 +1,23 @@
 package com.example.volatoon.view
 
-import android.util.Log
 import com.example.volatoon.viewmodel.UpdateProfileViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.volatoon.model.UpdateUserProfile
 import com.example.volatoon.utils.DataStoreManager
+import com.example.volatoon.viewmodel.ProfileViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
@@ -30,14 +28,11 @@ fun UpdateProfileScreen(
     navigateToProfile: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-
     var fullName by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
     var status by remember { mutableStateOf("") }
-
     var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    val errorMessage by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -51,16 +46,6 @@ fun UpdateProfileScreen(
             fontSize = 20.sp,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-
-//        // Avatar
-//        Image(
-//            painter = painterResource(id = R.drawable.placeholder), // Ganti dengan resource valid
-//            contentDescription = "Avatar",
-//            contentScale = ContentScale.Crop,
-//            modifier = Modifier
-//                .size(100.dp)
-//                .padding(bottom = 16.dp)
-//        )
 
         OutlinedTextField(
             value = fullName,

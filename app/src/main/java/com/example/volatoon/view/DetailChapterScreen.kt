@@ -113,8 +113,7 @@ fun DetailChapterScreen(
     navigateToOtherChapter: (String) -> Unit,
     commentViewModel: CommentViewModel,
     dataStoreManager: DataStoreManager,
-    navigateToComicDetail: (String) -> Unit,
-
+    navigateToComicDetail: (String) -> Unit
 ) {
     var expandedComments by remember { mutableStateOf(false) }
     var currentPage by remember { mutableIntStateOf(0) }

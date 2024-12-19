@@ -27,6 +27,11 @@ import com.example.volatoon.R
 import com.example.volatoon.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Job
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material.TextField
+import androidx.compose.runtime.MutableState
+
 
 @Composable
 fun ProfileScreen (
@@ -34,6 +39,7 @@ fun ProfileScreen (
     onNavigateToBookmark: () -> Unit,
     onNavigateToPremium: () -> Unit,
     onNavigateToUpdateProfile: () -> Unit,
+    onUpdateStatus: (String) -> Unit,
     viewState: ProfileViewModel.ProfileResState
 ) {
     Column(
@@ -68,7 +74,8 @@ fun ProfileScreen (
                 )
 
                 UserQuote(
-                    quote = viewState.profileDataRes.body()?.userData?.status ?: "Belum ada status"
+                    quote = viewState.profileDataRes.body()?.userData?.status ?: "N/A",
+                    onUpdateStatus = onUpdateStatus
                 )
 
                 ProfileActions(
@@ -118,24 +125,32 @@ fun ProfileHeader(fullName: String, userName: String) {
 }
 
 @Composable
-fun UserQuote(quote: String) {
-    Box(
+fun UserQuote(quote: String, onUpdateStatus: (String) -> Unit) {
+//    var statusText = remember { mutableStateOf(quote.value) }
+
+    Column(
         modifier = Modifier
-            .fillMaxWidth() // Mengisi seluruh lebar layar
+            .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .height(100.dp)
-            .clip(RoundedCornerShape(12.dp)) // Membuat sudut kotak membulat
-            .background(Color(0xFFE0E0E0))
-            .padding(12.dp)
     ) {
+        // Display the existing status
         Text(
-            text = quote,
-            style = androidx.compose.ui.text.TextStyle(
-                fontSize = 14.sp,
-                color = Color(0xFF424242)
-            ),
-            modifier = Modifier.fillMaxWidth()
+            text = "$quote",
+            style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, color = Color.Gray),
+            modifier = Modifier.padding(bottom = 8.dp)
         )
+
+        // TextField to edit the status
+//        TextField(
+//            value = quote,
+//            onValueChange = { quote = it },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(bottom = 8.dp)
+//        )
+
+
+
     }
 }
 

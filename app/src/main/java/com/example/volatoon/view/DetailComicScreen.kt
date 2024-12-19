@@ -327,10 +327,8 @@ fun BookmarkIcon(
             if (addBookmarkState.error == null) {
                 if (isBookmarked) {
                     Toast.makeText(context, "Removed from bookmarks", Toast.LENGTH_SHORT).show()
-                    Log.i("bookmark state", addBookmarkState.toString())
                 } else {
                     Toast.makeText(context, "Added to bookmarks", Toast.LENGTH_SHORT).show()
-                    Log.i("add bookmark state", addBookmarkState.toString())
                 }
             } else {
                 Toast.makeText(context, addBookmarkState.error, Toast.LENGTH_SHORT).show()

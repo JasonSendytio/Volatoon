@@ -214,6 +214,11 @@ fun ComicSearchItem(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.9f),
+                shape = RoundedCornerShape(4.dp)
+            )
             .padding(10.dp)
             .clickable {
                 onSearchClick()

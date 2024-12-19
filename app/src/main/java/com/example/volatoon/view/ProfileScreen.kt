@@ -151,12 +151,25 @@ fun UserQuote(quote: String, onUpdateStatus: (String) -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        // Display the existing status
-        Text(
-            text = "$quote",
-            style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, color = Color.Gray),
+       Text(
+           text = "Status:",
+           style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, color = Color.DarkGray),
             modifier = Modifier.padding(bottom = 8.dp)
-        )
+       )
+
+        Box(
+            modifier = Modifier
+                .border(width = 1.dp, color = Color.Gray, shape = RoundedCornerShape(4.dp))
+                .padding(8.dp) // Padding di dalam border
+                .fillMaxWidth()
+        ) {
+            // Display the existing status
+            Text(
+                text = "$quote",
+                style = androidx.compose.ui.text.TextStyle(fontSize = 17.sp, color = Color.Black),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
 
         // TextField to edit the status
 //        TextField(
@@ -167,12 +180,8 @@ fun UserQuote(quote: String, onUpdateStatus: (String) -> Unit) {
 //                .padding(bottom = 8.dp)
 //        )
 
-
-
     }
 }
-
-
 @Composable
 fun ProfileActions(
     onNavigateToBookmark: () -> Unit,

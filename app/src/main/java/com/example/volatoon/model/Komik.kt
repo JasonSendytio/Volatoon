@@ -76,8 +76,6 @@ data class ComicHistory(
     val comicDetails: DetailComic
 )
 
-data class GenresList(val genres: List<Genres>)// The one that matches your model
-
 data class ComicsList(
     val data : List<Comic>,
     val prevPage: Boolean,

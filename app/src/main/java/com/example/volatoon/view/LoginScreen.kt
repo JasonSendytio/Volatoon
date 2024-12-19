@@ -147,17 +147,8 @@ fun LoginScreen(
                     modifier = Modifier
                         .padding(10.dp)
                         .fillMaxWidth(),
-                    label = { Text("Email") })
-
-//                OutlinedTextField(
-//                    value = password,
-//                    onValueChange = {password = it},
-//                    modifier = Modifier
-//                        .padding(10.dp)
-//                        .fillMaxWidth(),
-//                    label = { Text("Password") },
-//
-//                )
+                    label = { Text("Email") }
+                )
 
                 PasswordTextField("Password", password)
 
@@ -242,7 +233,6 @@ fun PasswordTextField(
         modifier = Modifier
             .padding(10.dp)
             .fillMaxWidth(),
-//        placeholder = { Text(text = labelText) },
         label = { Text(text = labelText) },
         trailingIcon = {
             IconButton(onClick = {

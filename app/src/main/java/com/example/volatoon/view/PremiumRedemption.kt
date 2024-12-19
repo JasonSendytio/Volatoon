@@ -105,6 +105,7 @@ fun PremiumRedemptionScreen(
                     color = Color.White
                 )
             }
+
             if (premiumViewState.loading) {
                 Text(
                     text = "Processing...",

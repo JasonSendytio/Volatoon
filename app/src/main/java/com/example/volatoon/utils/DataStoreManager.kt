@@ -23,7 +23,7 @@ class DataStoreManager(private val context: Context){
     suspend fun saveToDataStore(token : String){
         val jwt = JWT(token)
 
-        val authToken : String =jwt.toString()
+        val authToken : String = jwt.toString()
 
         context.preferenceDataStore.edit {
             it[AUTH_TOKEN] = authToken

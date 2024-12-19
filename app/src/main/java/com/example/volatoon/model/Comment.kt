@@ -12,13 +12,13 @@ data class Comment(
     val user: Profile? = null
 )
 
-
 data class CommentRequest(
     val chapter_id: String,
     val content: String,
     @SerializedName("chapterId") // Add this to match the API expectation
     val chapterId: String
 )
+
 data class CommentResponse(
     val status: Int,
     val message: String,

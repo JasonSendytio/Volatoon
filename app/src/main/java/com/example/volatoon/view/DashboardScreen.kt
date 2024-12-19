@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -43,6 +44,8 @@ import com.example.volatoon.viewmodel.ComicViewModel
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.runtime.getValue
+import com.example.volatoon.viewmodel.ProfileViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -52,8 +55,10 @@ fun DashboardScreen(
     navigateToMore: (String) -> Unit,
     viewState : ComicViewModel.ComicsState,
     viewModel: ComicViewModel,
-
+    profileViewModel: ProfileViewModel
 ){
+    val currentUserData by profileViewModel.userData
+
     val pullRefreshState = rememberPullRefreshState(
         refreshing = viewState.loading,
         onRefresh = {
@@ -83,18 +88,20 @@ fun DashboardScreen(
                 contentDescription = "test"
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Hi, Volatile!",
+            Text("Hi, ${currentUserData?.userName ?: "User"}!",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )
         }
 
-        Image(
-            modifier = Modifier.fillMaxWidth()
-                .width(384.dp).height(120.dp),
-            painter = painterResource(id = R.drawable.banner),
-            contentDescription = "banner image"
-        )
+        if (currentUserData?.ispremium == false) {
+            Image(
+                modifier = Modifier.fillMaxWidth()
+                    .height(120.dp).aspectRatio(1f),
+                painter = painterResource(id = R.drawable.banner),
+                contentDescription = "banner image"
+            )
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -217,6 +224,8 @@ fun DashboardScreen(
         refreshing = viewState.loading,
         state = pullRefreshState,
         modifier = Modifier
+            .fillMaxSize()
+            .wrapContentSize(Alignment.TopCenter)
     )
 }
 

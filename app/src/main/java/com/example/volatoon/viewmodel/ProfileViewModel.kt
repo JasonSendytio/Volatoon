@@ -16,10 +16,12 @@ class ProfileViewModel: ViewModel() {
     private val _profileResState = mutableStateOf(ProfileResState())
     val profileResState : State<ProfileResState> = _profileResState
 
+    private val _userData = mutableStateOf<CurrentUserData?>(null)
+    val userData: State<CurrentUserData?> = _userData
+
     fun fetchUserData(dataStoreManager : DataStoreManager) {
         viewModelScope.launch {
             val token = dataStoreManager.getFromDataStore().firstOrNull()?.authToken
-
             if (token != null) {
                 try {
                     val bearerToken = "Bearer $token"
@@ -30,6 +32,17 @@ class ProfileViewModel: ViewModel() {
                         profileDataRes = response,
                         error = null
                     )
+
+                    val userData = response.body()?.userData.let {
+                        CurrentUserData(
+                            fullName = it?.fullName ?: "",
+                            userName = it?.userName ?: "",
+                            email = it?.email ?: "",
+                            status = it?.status ?: "",
+                            ispremium = it?.ispremium ?: false
+                        )
+                    }
+                    _userData.value = userData
 
                 } catch (e : Exception){
                     _profileResState.value = _profileResState.value.copy(
@@ -66,11 +79,17 @@ class ProfileViewModel: ViewModel() {
         }
     }
 
-
-
     data class ProfileResState(
         val loading : Boolean = true,
         val profileDataRes : Response<ProfileResponse>? = null,
         val error : String? = null
+    )
+
+    data class CurrentUserData(
+        val fullName : String?,
+        val userName : String?,
+        val email : String?,
+        val status : String?,
+        val ispremium: Boolean?
     )
 }

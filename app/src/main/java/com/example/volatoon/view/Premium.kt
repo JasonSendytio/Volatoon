@@ -1,5 +1,6 @@
 package com.example.volatoon.view
 
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,9 +9,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -19,11 +22,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.volatoon.R
+import com.example.volatoon.viewmodel.ProfileViewModel
 
 @Composable
 fun VolatoonPremiumScreen(
-    navigateToRedemption : (String) -> Unit
+    navigateToRedemption : (String) -> Unit,
+    profileViewModel: ProfileViewModel
 ) {
+    val currentUserData by profileViewModel.userData
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -84,12 +91,18 @@ fun VolatoonPremiumScreen(
             }
 
             Button(
-                onClick = { navigateToRedemption("premiumredemption") },
+                onClick = {
+                    if (currentUserData?.ispremium == false) {
+                        navigateToRedemption("premiumredemption")
+                    }
+                    else if (currentUserData?.ispremium == true) {
+                        Toast.makeText(context, "You already have a premium account", Toast.LENGTH_SHORT).show()
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp),
                 shape = RoundedCornerShape(16.dp),
-//                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF5D5FEF))
             ) {
                 Text(
                     text = "Subscribe",
@@ -98,12 +111,6 @@ fun VolatoonPremiumScreen(
             }
         }
     }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun VolatoonPremiumScreenPreview() {
-    VolatoonPremiumScreen(navigateToRedemption = {})
 }
 
 @Composable
@@ -117,20 +124,11 @@ fun FeatureItem(
     ) {
         Image(
             painter = painterResource(id = icon),
-            contentDescription = null,
+            contentDescription = "Features",
             modifier = Modifier
                 .size(24.dp)
                 .padding(end = 8.dp)
         )
         Text(text)
     }
-}
-
-@Composable
-@Preview
-fun FeatureItemPreview() {
-    FeatureItem(
-        icon = R.drawable.ic_check,
-        text = "Access to Exclusive Comics"
-    )
 }

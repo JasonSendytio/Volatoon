@@ -55,11 +55,11 @@ dependencies {
     implementation("com.auth0.android:jwtdecode:2.0.2")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation ("androidx.navigation:navigation-compose:2.8.5")
-    implementation ("androidx.compose.ui:ui:1.5.0")
-    implementation ("androidx.compose.material:material:1.5.0")
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
-    implementation ("androidx.compose.material3:material3:1.1.2")
+    implementation ("androidx.compose.ui:ui:1.7.6")
+    implementation ("androidx.compose.material:material:1.7.6")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation ("androidx.compose.material3:material3:1.3.1")
 
 //    compose view model
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
@@ -97,6 +97,7 @@ dependencies {
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation ("androidx.credentials:credentials:1.3.0")
     implementation ("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
 
     // Add Google Identity Services
     testImplementation("junit:junit:4.13.2")

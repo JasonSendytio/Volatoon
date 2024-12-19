@@ -161,9 +161,6 @@ fun SearchScreen(
                 )
             }
         }
-
-
-
     }
 }
 
@@ -174,8 +171,6 @@ fun RecentSearches(
     onDeleteClick: (String) -> Unit
 ) {
     Column {
-
-
         searches.forEach { search ->
             Row(
                 modifier = Modifier
@@ -245,12 +240,6 @@ fun ComicSearchItem(
 
         Text(comic.score)
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewSearchScreen(){
-    //SearchScreen()
 }
 
 @Composable

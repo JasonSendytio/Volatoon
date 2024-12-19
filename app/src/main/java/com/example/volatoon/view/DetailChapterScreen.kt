@@ -1,15 +1,18 @@
 package com.example.volatoon.view
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -47,65 +50,13 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.res.painterResource
+import com.example.volatoon.R
 import com.example.volatoon.model.Comment
 import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.viewmodel.CommentViewModel
 import com.example.volatoon.viewmodel.HistoryViewModel
-
-@Composable
-fun CommentItem(
-    comment: Comment,
-    currentUserId: String?,
-    onLike: () -> Unit,
-    onDelete: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = comment.user?.userName ?: "Unknown User",
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp
-            )
-
-            if (currentUserId == comment.userId) {
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        Icons.Default.Delete,
-                        contentDescription = "Delete comment",
-                        tint = Color.Red
-                    )
-                }
-            }
-        }
-
-        Text(
-            text = comment.content,
-            fontSize = 14.sp,
-            modifier = Modifier.padding(vertical = 2.dp)
-        )
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable { onLike() }
-        ) {
-            Text(
-                text = "❤️ ${comment.likes}",
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-        }
-
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-    }
-}
+import com.example.volatoon.viewmodel.ProfileViewModel
 
 @Composable
 fun DetailChapterScreen(
@@ -114,10 +65,11 @@ fun DetailChapterScreen(
     commentViewModel: CommentViewModel,
     dataStoreManager: DataStoreManager,
     navigateToComicDetail: (String) -> Unit,
-
+    profileViewModel: ProfileViewModel
 ) {
     var expandedComments by remember { mutableStateOf(false) }
     var currentPage by remember { mutableIntStateOf(0) }
+    val currentUserData by profileViewModel.userData
 
     Column(
         modifier = Modifier
@@ -178,7 +130,7 @@ fun DetailChapterScreen(
                             containerColor = Color.Gray, // Sets the background color to #04FFFB
                             contentColor = Color.Black // Sets the text color to black
                         ),
-                        onClick = {viewState.detailChapter?.komik_id?.let { navigateToComicDetail(chapter.komik_id) }}
+                        onClick = { viewState.detailChapter.komik_id.let { navigateToComicDetail(chapter.komik_id) } }
                     ){
                         Text("All Chapter")
                     }
@@ -196,6 +148,16 @@ fun DetailChapterScreen(
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
+
+                if (currentUserData?.ispremium == false) {
+                    Image(
+                        modifier = Modifier.fillMaxWidth()
+                            .height(120.dp).aspectRatio(1f),
+                        painter = painterResource(id = R.drawable.banner),
+                        contentDescription = "banner image"
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
 
                 chapter.images.forEachIndexed { index, chapterImg ->
                     SubcomposeAsyncImage(
@@ -388,7 +350,7 @@ fun DetailChapterScreen(
                             containerColor = Color.Gray, // Sets the background color to #04FFFB
                             contentColor = Color.Black // Sets the text color to black
                         ),
-                        onClick = {viewState.detailChapter?.komik_id?.let { navigateToComicDetail(chapter.komik_id) }}
+                        onClick = { viewState.detailChapter.komik_id.let { navigateToComicDetail(chapter.komik_id) } }
                     ){
                         Text("All Chapter")
                     }
@@ -410,5 +372,60 @@ fun DetailChapterScreen(
         }
             }
         }
+    }
+}
+
+@Composable
+fun CommentItem(
+    comment: Comment,
+    currentUserId: String?,
+    onLike: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = comment.user?.userName ?: "Unknown User",
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp
+            )
+
+            if (currentUserId == comment.userId) {
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Delete comment",
+                        tint = Color.Red
+                    )
+                }
+            }
+        }
+
+        Text(
+            text = comment.content,
+            fontSize = 14.sp,
+            modifier = Modifier.padding(vertical = 2.dp)
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable { onLike() }
+        ) {
+            Text(
+                text = "❤️ ${comment.likes}",
+                fontSize = 12.sp,
+                color = Color.Gray
+            )
+        }
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
     }
 }

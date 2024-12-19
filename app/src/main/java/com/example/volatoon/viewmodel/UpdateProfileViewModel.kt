@@ -6,16 +6,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.LiveData
-import com.example.volatoon.model.ApiService
 import com.example.volatoon.model.UpdateUserProfile
 import com.example.volatoon.model.UserResponse
 import com.example.volatoon.model.apiService
-import com.example.volatoon.utils.DataStoreManager
 import retrofit2.Response
 
 class UpdateProfileViewModel : ViewModel() {
+    private val _updateProfileState = mutableStateOf(UpdateProfileState())
+    val updateProfileState : State<UpdateProfileState> = _updateProfileState
+
     fun updateUserProfile(
         token: String,
         updateUserProfile: UpdateUserProfile
@@ -23,11 +22,24 @@ class UpdateProfileViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = apiService.updateUserProfile("Bearer $token", updateUserProfile)
+                _updateProfileState.value = _updateProfileState.value.copy(
+                    loading = false,
+                    data = response
+                )
                 Log.i("update profile", response.toString())
-
             } catch (e: Exception) {
                 Log.e("update profile", e.toString())
+                _updateProfileState.value = _updateProfileState.value.copy(
+                    loading = false,
+                    error = e.message
+                )
             }
         }
     }
+
+    data class UpdateProfileState(
+        val loading: Boolean? = false,
+        val data: Response<UserResponse>? = null,
+        val error: String? = null
+    )
 }

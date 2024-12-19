@@ -1,6 +1,5 @@
 package com.example.volatoon
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,7 +20,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
@@ -62,10 +65,9 @@ import com.example.volatoon.viewmodel.CommentViewModel
 import com.example.volatoon.viewmodel.HistoryViewModel
 import com.example.volatoon.viewmodel.PremiumRedemptionViewModel
 import com.example.volatoon.viewmodel.UpdateProfileViewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import androidx.compose.ui.platform.LocalContext
-
 
 @Composable
 fun VolatoonApp(
@@ -73,6 +75,15 @@ fun VolatoonApp(
     preferenceDataStore : DataStore<Preferences>,
     dataStoreManager: DataStoreManager
 ){
+    val systemUiController = rememberSystemUiController()
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = Color.Transparent,
+            darkIcons = true // Makes the icons and text black
+        )
+    }
+
     var isLogin by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
@@ -89,12 +100,8 @@ fun VolatoonApp(
     val bookmarkViewModel : BookmarkViewModel = viewModel()
     val historyViewModel : HistoryViewModel = viewModel()
     val commentViewModel : CommentViewModel = viewModel()
-    val premiumViewModel : PremiumRedemptionViewModel = viewModel()
     val updateUserProfile : UpdateProfileViewModel = viewModel()
     val viewModel: ProfileViewModel = viewModel()
-    val context = LocalContext.current
-
-
     val viewState by comicViewModel.comicstate
 
     val onLogOut = {
@@ -157,9 +164,13 @@ fun VolatoonApp(
                 }
 
                 composable(route = TopLevelRoute.Dashboard.route){
+                    LaunchedEffect(Unit) {
+                        profileViewModel.fetchUserData(dataStoreManager)
+                    }
                     DashboardScreen(
                         viewState = viewState,
                         viewModel = comicViewModel,
+                        profileViewModel = profileViewModel,
                         navigateToDetail = { comicId ->
                             navController.navigate(route = "detailcomic/$comicId")
                         },
@@ -226,8 +237,8 @@ fun VolatoonApp(
 
                     ProfileScreen(
                         onLogOut = onLogOut,
-                        onNavigateToBookmark = {
-                            navController.navigate(route = "bookmark")
+                        onNavigateToUserActivity = {
+                            navController.navigate(route = TopLevelRoute.UserActivity.route)
                         },
                         onNavigateToPremium = {
                             navController.navigate(route = "premium")
@@ -269,7 +280,8 @@ fun VolatoonApp(
                         dataStoreManager,
                         navigateToProfile = {
                             navController.navigate(route = "profile")
-                        }
+                        },
+                        profileViewModel = profileViewModel
                     )
                 }
 
@@ -277,6 +289,7 @@ fun VolatoonApp(
                     route = "premium"
                 ) {
                     VolatoonPremiumScreen(
+                        profileViewModel = profileViewModel,
                         navigateToRedemption = {
                             navController.navigate(route = "redemption")
                         }
@@ -425,6 +438,7 @@ fun VolatoonApp(
                                     },
                                     commentViewModel = commentViewModel,
                                     dataStoreManager = dataStoreManager,
+                                    profileViewModel = profileViewModel
                                 )
                             }
 

@@ -22,3 +22,9 @@ data class UpdateUserProfile(
     val username: String?,
     val status: String?
 )
+
+data class UpdateUserProfileResponse(
+    val status: Int,
+    val message: String,
+    val data: Profile
+)

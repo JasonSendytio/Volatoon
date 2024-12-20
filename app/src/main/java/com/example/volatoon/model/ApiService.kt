@@ -119,7 +119,7 @@ interface ApiService {
     suspend fun updateUserProfile(
         @Header("Authorization") token: String,
         @Body updateUserProfile: UpdateUserProfile?
-    ): Response<UserResponse>
+    ): Response<UpdateUserProfileResponse>
 
     @PUT("user/status")
     suspend fun updateUserStatus(

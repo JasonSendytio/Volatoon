@@ -31,8 +31,10 @@ import kotlinx.coroutines.launch
 fun UpdateProfileScreen(
     viewModel: UpdateProfileViewModel,
     dataStoreManager: DataStoreManager,
-    profileViewModel: ProfileViewModel
-) {
+    profileViewModel: ProfileViewModel,
+    navigateToProfile: () -> Unit
+)
+{
     val scope = rememberCoroutineScope()
     val currentUserData by profileViewModel.userData
     var fullName by remember { mutableStateOf("") }
@@ -97,6 +99,7 @@ fun UpdateProfileScreen(
                             token,
                             updateUserProfile = UpdateUserProfile(fullName, userName, status)
                         )
+                        navigateToProfile()
                     }
                 }
             },

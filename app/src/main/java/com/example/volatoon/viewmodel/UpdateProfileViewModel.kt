@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import com.example.volatoon.model.UpdateUserProfile
+import com.example.volatoon.model.UpdateUserProfileResponse
 import com.example.volatoon.model.UserResponse
 import com.example.volatoon.model.apiService
 import retrofit2.Response
@@ -43,7 +44,7 @@ class UpdateProfileViewModel : ViewModel() {
 
     data class UpdateProfileState(
         val loading: Boolean? = false,
-        val data: Response<UserResponse>? = null,
+        val data: Response<UpdateUserProfileResponse>? = null,
         val error: String? = null
     )
 }

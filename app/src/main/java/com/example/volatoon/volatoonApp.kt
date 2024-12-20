@@ -22,8 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
@@ -210,7 +208,6 @@ fun VolatoonApp(
                     )
                 }
 
-
                 composable(route = TopLevelRoute.UserActivity.route){
                     val bookmarkState by bookmarkViewModel.bookmarkstate
                     val historyState by historyViewModel.historyState
@@ -275,7 +272,10 @@ fun VolatoonApp(
                     UpdateProfileScreen(
                         viewModel = updateUserProfile,
                         profileViewModel = profileViewModel,
-                        dataStoreManager = dataStoreManager
+                        dataStoreManager = dataStoreManager,
+                        navigateToProfile = {
+                            navController.navigate(route = "profile")
+                        }
                     )
                 }
 

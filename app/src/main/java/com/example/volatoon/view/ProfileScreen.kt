@@ -27,6 +27,8 @@ import com.example.volatoon.R
 import com.example.volatoon.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Job
 import androidx.compose.ui.unit.sp
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun ProfileScreen (
@@ -135,9 +137,11 @@ fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, status
             )
 
         }
-        if (ispremium && !premiumUntil.isNullOrEmpty()) {
+        if (ispremium && premiumUntil.isNotEmpty()) {
+            val zonedDateTime = ZonedDateTime.parse(premiumUntil) // Parse ISO 8601
+            val convertedTime = zonedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm"))
             Text(
-                text = "Valid until: $premiumUntil",
+                text = "Valid until: $convertedTime",
                 style = androidx.compose.ui.text.TextStyle(
                     fontSize = 14.sp,
                     color = Color.Gray

@@ -26,6 +26,8 @@
   - **Retrofit**: Untuk koneksi API
   - **Glide**: Untuk pemuatan gambar
   - **Room**: Database lokal
+  - **sqllite** : Database lokal
+  - **Firebase** : Autentikasi Google Login
   - **RecyclerView**: Untuk menampilkan daftar komik
   - **Coroutines**: Untuk operasi asynchronous
   - **Jetpack Compose**: UI modern dan responsif
@@ -96,7 +98,7 @@
 
 #### Clone Repository
 ```bash
-git clone https://github.com/volatile-team/volatoon.git
+git clone https://github.com/Rafaellsimarmata/volatoon.git
 cd volatoon
 ```
 

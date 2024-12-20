@@ -21,7 +21,8 @@ data class Profile(
     val userName : String,
     val email : String,
     val status : String,
-    val ispremium: Boolean
+    val ispremium: Boolean,
+    val premiumUntil: String?
 )
 
 data class ProfileResponse(

@@ -66,7 +66,8 @@ fun ProfileScreen (
                     fullName = viewState.profileDataRes.body()?.userData?.fullName ?: "N/A",
                     userName = viewState.profileDataRes.body()?.userData?.userName ?: "N/A",
                     ispremium = viewState.profileDataRes.body()?.userData?.ispremium ?: false,
-                    status = viewState.profileDataRes.body()?.userData?.status ?: "N/A"
+                    status = viewState.profileDataRes.body()?.userData?.status ?: "N/A",
+                    premiumUntil = viewState.profileDataRes.body()?.userData?.premiumUntil ?: "N/A"
                 )
 
                 ProfileActions(
@@ -81,7 +82,7 @@ fun ProfileScreen (
 }
 
 @Composable
-fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, status: String) {
+fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, status: String, premiumUntil: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(bottom = 24.dp)
@@ -99,15 +100,17 @@ fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, status
             style = androidx.compose.ui.text.TextStyle(
                 fontSize = 20.sp,
                 color = Color.Black
-            )
+            ),
+            modifier = Modifier.padding(top = 5.dp)
         )
 
         Text(
-            text = userName,
+            text = "@"+userName,
             style = androidx.compose.ui.text.TextStyle(
                 fontSize = 16.sp,
-                color = Color.Gray
-            )
+                color = Color.DarkGray
+            ),
+            modifier = Modifier.padding(top = 3.dp, bottom = 8.dp)
         )
 
         Box(
@@ -129,6 +132,17 @@ fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, status
                     color = if (ispremium) Color(0xFFFF9900) else Color.Red,
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                 )
+            )
+
+        }
+        if (ispremium && !premiumUntil.isNullOrEmpty()) {
+            Text(
+                text = "Valid until: $premiumUntil",
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                ),
+                modifier = Modifier.padding(top = 10.dp, bottom = 16.dp)
             )
         }
 

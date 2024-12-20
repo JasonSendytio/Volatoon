@@ -131,6 +131,7 @@ fun RegisterScreen(
 
                 Button(
                     onClick = {
+                        println("Password: ${password.value}")
                         viewModel.registerUser(RegisterData(fullName, userName, email, password.value), dataStoreManager)
                               },
                     colors = ButtonDefaults.buttonColors(

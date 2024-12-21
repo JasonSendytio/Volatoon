@@ -2,7 +2,6 @@ package com.example.volatoon.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.datastore.dataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.volatoon.model.Account
@@ -15,7 +14,6 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import android.util.Log
 import com.example.volatoon.model.UpdatePasswordRequest
-import com.google.android.gms.common.api.Response
 import com.google.firebase.auth.FirebaseUser
 
 
@@ -23,7 +21,6 @@ class LoginViewModel : ViewModel() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val TAG = "LoginViewModel"
-    private val GOOGLE_PASSWORD_PREFIX = "GOOGLE_AUTH_"
 
     data class LoginState(
         val isLogin: Boolean = false,
@@ -44,33 +41,37 @@ class LoginViewModel : ViewModel() {
     fun loginUser(accountData: Account, dataStoreManager: DataStoreManager) {
         viewModelScope.launch {
             try {
-                _loginState.value =
-                    _loginState.value.copy(loading = true)
+                _loginState.value = _loginState.value.copy(
+                    loading = true,
+                    error = null
+                )
                 val response = apiService.loginUser(accountData)
 
                 if (response.code() != 200) {
-                    val errorBody: APIError = Gson().fromJson(
-                        response.errorBody()!!.charStream(),
-                        APIError::class.java
-                    );
-                    throw Exception(errorBody.message)
-                    Log.d(TAG, "Login failed: ${errorBody.message}")
+                    val errorBodyString = response.errorBody()?.string() ?: "No error body received."
+                    val errorMessage = try {
+                        val apiError = Gson().fromJson(errorBodyString, APIError::class.java)
+                        apiError.message
+                    } catch (e: Exception) {
+                        errorBodyString.ifEmpty {
+                            "Unknown error occurred"
+                        }
+                    }
+                    throw Exception(errorMessage)
                 }
-
-                _loginState.value = _loginState.value.copy(
+                    _loginState.value = _loginState.value.copy(
                     isLogin = true,
                     loading = false,
                     data = response.body(),
                     error = null
                 )
-
                 dataStoreManager.saveToDataStore(response.body()!!.token)
-
             } catch (e: Exception) {
                 _loginState.value = _loginState.value.copy(
                     loading = false,
-                    error = "${e.message}"
+                    error = e.message
                 )
+                Log.e(TAG, "Login failed: ${e.message}")
             }
         }
     }
@@ -98,7 +99,7 @@ class LoginViewModel : ViewModel() {
 
                 val email = currentUser.email ?: throw Exception("Email not found")
                 Log.d(TAG, "User email: $email")
-                Log.d(TAG, "DATASTORE: ${dataStoreManager.getFromDataStore().toString()}")
+                Log.d(TAG, "DATASTORE: ${dataStoreManager.getFromDataStore()}")
                 //val googlePassword = "${GOOGLE_PASSWORD_PREFIX}${currentUser.email}"
                 val userExists = checkUserExists(email)
                 if (userExists) {
@@ -117,7 +118,7 @@ class LoginViewModel : ViewModel() {
                     error = "Google Sign-In failed: ${e.message}"
                 )
             }
-                        }
+        }
     }
 
     private suspend fun checkUserExists(email: String): Boolean {
@@ -181,9 +182,6 @@ class LoginViewModel : ViewModel() {
             throw Exception("Failed to update password: ${e.message}")
         }
     }
-
-
-
 
     private suspend fun loginWithGoogle(email: String, password: String, dataStoreManager: DataStoreManager) {
         try {

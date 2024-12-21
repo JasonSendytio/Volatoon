@@ -99,11 +99,11 @@ fun VolatoonApp(
     val historyViewModel : HistoryViewModel = viewModel()
     val commentViewModel : CommentViewModel = viewModel()
     val updateUserProfile : UpdateProfileViewModel = viewModel()
-    val viewModel: ProfileViewModel = viewModel()
     val viewState by comicViewModel.comicstate
 
     val onLogOut = {
         isLogin = false
+        profileViewModel.clearUserData()
         scope.launch{
             dataStoreManager.clearDataStore()
         }
@@ -243,7 +243,7 @@ fun VolatoonApp(
                         onNavigateToUpdateProfile = {
                             navController.navigate(route = "updateProfile")
                         },
-                        viewState = viewModel.profileResState.value
+                        viewState = profileViewModel.profileResState.value
                     )
                 }
 

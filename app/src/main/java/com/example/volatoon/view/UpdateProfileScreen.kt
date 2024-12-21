@@ -86,9 +86,8 @@ fun UpdateProfileScreen(
             value = status,
             onValueChange = { status = it },
             label = "Status",
-            height = 120.dp
+            height = 125.dp
         )
-
 
         Button(
             onClick = {
@@ -123,14 +122,12 @@ fun UpdateProfileScreen(
             )
         }
 
-        viewModel.updateProfileState.value.data?.message().let {
-            if (it != null) {
-                Text(
-                    text = it,
-                    modifier = Modifier
-                        .padding(16.dp)
-                )
-            }
+        viewModel.updateProfileState.value.data?.message()?.let {
+            Text(
+                text = it,
+                modifier = Modifier
+                    .padding(16.dp)
+            )
         }
 
         viewModel.updateProfileState.value.error?.let {
@@ -169,8 +166,8 @@ fun CustomOutlinedTextField(
         textStyle = LocalTextStyle.current.copy(
             fontSize = 16.sp
         ),
-        singleLine = true,
-        maxLines = 1,
+        singleLine = false,
+        maxLines = 5,
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Next
         )

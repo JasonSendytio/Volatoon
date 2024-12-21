@@ -149,7 +149,7 @@ fun DetailChapterScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                if (currentUserData?.ispremium == false) {
+                if (currentUserData?.isPremium == false) {
                     Image(
                         modifier = Modifier.fillMaxWidth()
                             .height(120.dp).aspectRatio(1f),

@@ -1,8 +1,10 @@
 package com.example.volatoon.viewmodel
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
@@ -31,7 +33,7 @@ class UpdateProfileViewModel : ViewModel() {
                     loading = false,
                     data = response
                 )
-                Log.i("update profile", response.toString())
+                Log.i("update profile", response.body().toString())
             } catch (e: Exception) {
                 Log.e("update profile", e.toString())
                 _updateProfileState.value = _updateProfileState.value.copy(

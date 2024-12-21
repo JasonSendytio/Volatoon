@@ -44,7 +44,7 @@ class ProfileViewModel: ViewModel() {
                             userName = it?.userName ?: "",
                             email = it?.email ?: "",
                             status = it?.status ?: "",
-                            ispremium = it?.ispremium ?: false,
+                            isPremium = it?.ispremium ?: false,
                             premiumUntil = it?.premiumUntil?.let { isoDate ->
                                 try {
                                     val zonedDateTime = ZonedDateTime.parse(isoDate) // Parse ISO 8601
@@ -53,9 +53,7 @@ class ProfileViewModel: ViewModel() {
                                     println("Error parsing premiumUntil: ${e.message}")
                                     null
                                 }
-
                             }
-
                         )
                     }
                     _userData.value = userData
@@ -70,6 +68,10 @@ class ProfileViewModel: ViewModel() {
         }
     }
 
+    fun clearUserData() {
+        _userData.value = null
+    }
+
     data class ProfileResState(
         val loading : Boolean = true,
         val profileDataRes : Response<ProfileResponse>? = null,
@@ -81,7 +83,7 @@ class ProfileViewModel: ViewModel() {
         val userName : String?,
         val email : String?,
         val status : String?,
-        val ispremium: Boolean?,
+        val isPremium: Boolean?,
         val premiumUntil: String?
     )
 }

@@ -57,6 +57,7 @@ import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.viewmodel.CommentViewModel
 import com.example.volatoon.viewmodel.HistoryViewModel
 import com.example.volatoon.viewmodel.ProfileViewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun DetailChapterScreen(
@@ -67,6 +68,7 @@ fun DetailChapterScreen(
     navigateToComicDetail: (String) -> Unit,
     profileViewModel: ProfileViewModel
 ) {
+    val systemUiController = rememberSystemUiController()
     var expandedComments by remember { mutableStateOf(false) }
     var currentPage by remember { mutableIntStateOf(0) }
     val currentUserData by profileViewModel.userData
@@ -159,16 +161,29 @@ fun DetailChapterScreen(
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
+                // D:\Kuliah\Semester 5\Pemrograman Mobile\volatoon\app\src\main\java\com\example\volatoon\view\DetailChapterScreen.kt
                 chapter.images.forEachIndexed { index, chapterImg ->
+                    Log.d("DetailChapterScreen", "Loading image: $chapterImg") // Debug URL
                     SubcomposeAsyncImage(
                         model = chapterImg,
                         contentDescription = "Chapter Image $index",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight(), // Ensures it respects its intrinsic height
-                        contentScale = ContentScale.FillWidth // Ensures it fills the width without cropping
+                            .wrapContentHeight(),
+                        contentScale = ContentScale.FillWidth,
+                        loading = {
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        },
+                        error = {
+                            Log.e("DetailChapterScreen", "Error loading image: $chapterImg", it.result.throwable) // Debug error
+                        }
                     )
                 }
+
+
+
 
                 Spacer(modifier = Modifier.height(10.dp))
                 Card(
@@ -258,6 +273,7 @@ fun DetailChapterScreen(
                                         LaunchedEffect(Unit) {
                                             val userId = comment.userId
                                             currentUserId.value = userId
+
                                         }
                                         CommentItem(
                                                 comment = comment,
@@ -374,6 +390,7 @@ fun DetailChapterScreen(
         }
     }
 }
+
 
 @Composable
 fun CommentItem(

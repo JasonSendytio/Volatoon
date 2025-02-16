@@ -7,7 +7,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 
-private val retrofit = Retrofit.Builder().baseUrl("https://api-otaku.vercel.app/api/")
+private val retrofit = Retrofit.Builder().baseUrl("https://api-xi-taupe-74.vercel.app/api/")
     .addConverterFactory(GsonConverterFactory.create())
     .build()
 

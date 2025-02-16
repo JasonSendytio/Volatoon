@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -90,6 +92,7 @@ fun DetailComicScreen(
                         .height(30.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
+
                 ) {
                     Text(
                         comic.title,
@@ -134,7 +137,7 @@ fun DetailComicScreen(
                         modifier = Modifier
                             .padding(5.dp)
                             .fillMaxWidth()
-                            .background(Color(0xFFEEEEEE)),
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
                         fontWeight = FontWeight.Bold
                     )
 
@@ -178,7 +181,7 @@ private fun DetailRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFEEEEEE))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(5.dp)
         ) {
             Text(
@@ -226,22 +229,40 @@ fun ListChapter(
     index: Int,
     navigateToDetail: (String) -> Unit,
     isRead: Boolean
-){    Row (
+){
+    val isDarkTheme = isSystemInDarkTheme()
+    val backgroundColor = when {
+        isRead -> if (isDarkTheme) MaterialTheme.colorScheme.surfaceVariant else Color.LightGray
+        index % 2 == 0 -> if (isDarkTheme) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary
+        else -> if (isDarkTheme) MaterialTheme.colorScheme.surface else Color(0xFFD9D9D9)
+    }
+    val textColor = if (isDarkTheme) MaterialTheme.colorScheme.onSurface else Color.Black
+
+    Row (
         modifier = Modifier
             .fillMaxWidth()
-            .background( when {
-                isRead -> Color.Gray
-                index % 2 == 0 -> Color(0xFFA2D7E2)
-                else -> Color(0xFFD9D9D9)
-            }
-            )
-            .height(30.dp)
-            .clickable { navigateToDetail(chapter.chapter_id) },
+            .background(backgroundColor)
+
+
+            .height(48.dp)
+            .clickable { navigateToDetail(chapter.chapter_id) }
+            .padding(horizontal = 16.dp),
+
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ){
-        Text(chapter.title)
-        Text(chapter.date)
+        Text(
+            text = chapter.title,
+            fontSize = 16.sp,
+            color = textColor,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = chapter.date,
+            fontSize = 14.sp,
+            color = textColor,
+            textAlign = TextAlign.End
+        )
     }
 }
 
@@ -290,11 +311,15 @@ fun BookmarkIcon(
                     val bookmark = bookmarkState.responseData?.data?.find { it.komik_id == comicId }
                     val bookmarkId = bookmark?.bookmark_id
                     if (bookmarkId != null) {
-                        Toast.makeText(context, "Removing...", Toast.LENGTH_SHORT).show()
+                        Toast
+                            .makeText(context, "Removing...", Toast.LENGTH_SHORT)
+                            .show()
                         bookmarkViewModel.deleteUserBookmark(dataStoreManager, bookmarkId)
                     }
                 } else {
-                    Toast.makeText(context, "Adding...", Toast.LENGTH_SHORT).show()
+                    Toast
+                        .makeText(context, "Adding...", Toast.LENGTH_SHORT)
+                        .show()
                     bookmarkViewModel.addUserBookmark(dataStoreManager, comicId)
                 }
             }

@@ -101,7 +101,7 @@ fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, status
             text = fullName,
             style = androidx.compose.ui.text.TextStyle(
                 fontSize = 20.sp,
-                color = Color.Black
+                color = Color.LightGray
             ),
             modifier = Modifier.padding(top = 5.dp)
         )
@@ -110,7 +110,7 @@ fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, status
             text = "@"+userName,
             style = androidx.compose.ui.text.TextStyle(
                 fontSize = 16.sp,
-                color = Color.DarkGray
+                color = Color.LightGray
             ),
             modifier = Modifier.padding(top = 3.dp, bottom = 8.dp)
         )
@@ -154,12 +154,11 @@ fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, status
         Text(
             text = "Status:",
             style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, color = Color.Black),
-            modifier = Modifier.padding(8.dp)
-        )
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)        )
         Box(
             modifier = Modifier
                 .padding(8.dp)
-                .background(Color(0xFFF3FFFF))
+                .background(color = Color.LightGray, shape = RoundedCornerShape(16.dp))
                 .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
                 .fillMaxWidth()
                 .height(60.dp)

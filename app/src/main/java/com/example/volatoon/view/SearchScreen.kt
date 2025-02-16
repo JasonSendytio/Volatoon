@@ -130,16 +130,46 @@ fun SearchScreen(
 
         val recentSearches by viewState.recentSearches.collectAsState()
 
-        RecentSearches(
-            searches = recentSearches,
-            onSearchClick = { searchText ->
-                viewState.onSearchTextChange(searchText)
-                viewState.addRecentSearch(searchText)
-            },
-            onDeleteClick = { searchText ->
-                viewState.deleteRecentSearch(searchText)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp) // Adjust the height as needed
+        ) {
+            items(recentSearches) { search ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                        .clickable {
+                            viewState.onSearchTextChange(search.searchText)
+                            viewState.addRecentSearch(search.searchText)
+                        },
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        Text(
+                            text = search.searchText,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Icon(
+                            Icons.Default.Clear,
+                            contentDescription = "Delete",
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .clickable { viewState.deleteRecentSearch(search.searchText) }
+                        )
+                    }
+                }
             }
-        )
+        }
 
         Spacer(modifier = Modifier.height(20.dp))
         Text("Favourite Genres", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
@@ -147,7 +177,8 @@ fun SearchScreen(
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .height(480.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -209,10 +240,10 @@ fun RecentSearches(
 
 @Composable
 fun ComicSearchItem(
-    comic : Comic,
-    navigateToDetail : (String) -> Unit,
+    comic: Comic,
+    navigateToDetail: (String) -> Unit,
     onSearchClick: () -> Unit
-){
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -227,28 +258,53 @@ fun ComicSearchItem(
                 onSearchClick()
                 navigateToDetail(comic.komik_id)
             },
-        horizontalArrangement = Arrangement.Start,
-    ){
+        horizontalArrangement = Arrangement.Start
+    ) {
         Image(
             painter = rememberAsyncImagePainter(model = comic.image),
             contentDescription = null,
             modifier = Modifier
-                .width(71.dp).height(90.dp)
+                .width(71.dp)
+                .height(90.dp)
                 .aspectRatio(1f)
         )
 
+        Spacer(modifier = Modifier.width(8.dp)) // Space between image and text
+
         Column(
-            horizontalAlignment = Alignment.Start
-        ){
-            Text(comic.title)
-            Text(comic.type)
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(comic.chapter)
+            modifier = Modifier.weight(1f) // Allow title to take available space
+        ) {
+            Text(
+                text = comic.title,
+                fontWeight = FontWeight.Bold,
+                maxLines = 2,             // Limit title to 2 lines
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = "Score: ${comic.score}",
+                fontWeight = FontWeight.Medium,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.secondary
+            )
         }
 
-        Text(comic.score)
+        // Type in a separate column for better alignment
+        Column(
+            horizontalAlignment = Alignment.End
+        ) {
+            Text(
+                text = "Type: ${comic.type ?: "Unknown"}", // Display "Unknown" if type is null
+                fontSize = 12.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Chapter: ${comic.chapter}",
+                fontSize = 12.sp
+            )
+        }
     }
 }
+
 
 @Composable
 private fun GenreItem(

@@ -10,6 +10,7 @@ import com.example.volatoon.model.DetailComic
 import com.example.volatoon.model.comicApiService
 import kotlinx.coroutines.launch
 import java.lang.Exception
+import android.util.Log
 
 class ComicViewModel : ViewModel() {
 
@@ -53,6 +54,8 @@ class ComicViewModel : ViewModel() {
                     detailChapter = detailChapter,
                     error = null
                 )
+
+                    Log.d("ComicViewModel", "Detail Chapter: $detailChapter")
 
 
             }catch (e : Exception){

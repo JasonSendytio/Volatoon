@@ -92,10 +92,10 @@ fun VolatoonPremiumScreen(
 
             Button(
                 onClick = {
-                    if (currentUserData?.ispremium == false) {
+                    if (currentUserData?.isPremium == false) {
                         navigateToRedemption("premiumredemption")
                     }
-                    else if (currentUserData?.ispremium == true) {
+                    else if (currentUserData?.isPremium == true) {
                         Toast.makeText(context, "You already have a premium account", Toast.LENGTH_SHORT).show()
                     }
                 },

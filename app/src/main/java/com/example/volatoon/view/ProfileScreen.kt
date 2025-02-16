@@ -16,7 +16,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +35,7 @@ fun ProfileScreen (
     onNavigateToUserActivity: () -> Unit,
     onNavigateToPremium: () -> Unit,
     onNavigateToUpdateProfile: () -> Unit,
-    viewState: ProfileViewModel.ProfileResState
+    viewState: ProfileViewModel.ProfileResState,
 ) {
     Column(
         modifier = Modifier
@@ -67,7 +66,7 @@ fun ProfileScreen (
                 ProfileHeader(
                     fullName = viewState.profileDataRes.body()?.userData?.fullName ?: "N/A",
                     userName = viewState.profileDataRes.body()?.userData?.userName ?: "N/A",
-                    ispremium = viewState.profileDataRes.body()?.userData?.ispremium ?: false,
+                    isPremium = viewState.profileDataRes.body()?.userData?.ispremium ?: false,
                     status = viewState.profileDataRes.body()?.userData?.status ?: "N/A",
                     premiumUntil = viewState.profileDataRes.body()?.userData?.premiumUntil ?: "N/A"
                 )
@@ -84,7 +83,7 @@ fun ProfileScreen (
 }
 
 @Composable
-fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, status: String, premiumUntil: String) {
+fun ProfileHeader(fullName: String, userName: String, isPremium: Boolean, status: String, premiumUntil: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(bottom = 24.dp)
@@ -101,16 +100,16 @@ fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, status
             text = fullName,
             style = androidx.compose.ui.text.TextStyle(
                 fontSize = 20.sp,
-                color = Color.LightGray
+                color = Color.Black
             ),
             modifier = Modifier.padding(top = 5.dp)
         )
 
         Text(
-            text = "@"+userName,
+            text = "@$userName",
             style = androidx.compose.ui.text.TextStyle(
                 fontSize = 16.sp,
-                color = Color.LightGray
+                color = Color.DarkGray
             ),
             modifier = Modifier.padding(top = 3.dp, bottom = 8.dp)
         )
@@ -119,26 +118,26 @@ fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, status
             modifier = Modifier
                 .padding(top = 8.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(if (ispremium) Color(0x33FFD700) else Color(0x33FF0000))
+                .background(if (isPremium) Color(0x33FFD700) else Color(0x33FF0000))
                 .border(
                     width = 1.dp,
-                    color = if (ispremium) Color(0xFFFF9900) else Color.Red,
+                    color = if (isPremium) Color(0xFFFF9900) else Color.Red,
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Text(
-                text = if (ispremium) "✨ PREMIUM" else "FREE USER",
+                text = if (isPremium) "✨ PREMIUM" else "FREE USER",
                 style = androidx.compose.ui.text.TextStyle(
                     fontSize = 16.sp,
-                    color = if (ispremium) Color(0xFFFF9900) else Color.Red,
+                    color = if (isPremium) Color(0xFFFF9900) else Color.Red,
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                 )
             )
-
         }
-        if (ispremium && premiumUntil.isNotEmpty()) {
-            val zonedDateTime = ZonedDateTime.parse(premiumUntil) // Parse ISO 8601
+
+        if (isPremium && premiumUntil.isNotEmpty()) {
+            val zonedDateTime = ZonedDateTime.parse(premiumUntil)
             val convertedTime = zonedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm"))
             Text(
                 text = "Valid until: $convertedTime",
@@ -150,33 +149,32 @@ fun ProfileHeader(fullName: String, userName: String, ispremium: Boolean, status
             )
         }
 
-    Column {
-        Text(
-            text = "Status:",
-            style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, color = Color.Black),
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)        )
-        Box(
-            modifier = Modifier
-                .padding(8.dp)
-                .background(color = Color.LightGray, shape = RoundedCornerShape(16.dp))
-                .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
-                .fillMaxWidth()
-                .height(60.dp)
-        ) {
-            Column(
+        Column {
+            Text(
+                text = "Status:",
+                style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, color = Color.Black),
+                modifier = Modifier.padding(8.dp)
+            )
+            Box(
                 modifier = Modifier
+                    .padding(8.dp)
+                    .background(Color(0xFFF3FFFF))
+                    .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .height(125.dp)
             ) {
-                Text(
-                    text = status,
-                    style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, color = Color.Black),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = status,
+                        style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, color = Color.Black),
+                    )
+                }
             }
         }
-    }
-
     }
 }
 

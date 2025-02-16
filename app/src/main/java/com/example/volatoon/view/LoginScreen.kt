@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -52,23 +50,22 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.runtime.rememberCoroutineScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     navigateToDashboard : () -> Unit,
     dataStoreManager: DataStoreManager,
     navigateToRegister : () -> Unit
 ){
+    var email by remember { mutableStateOf("") }
+    val password =  remember { mutableStateOf("") }
     val context = LocalContext.current
     val googleAuthManager = remember { GoogleAuthManager(context) }
     val loginViewModel : LoginViewModel = viewModel()
     val viewState by loginViewModel.loginState
-    val scope = rememberCoroutineScope()
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -101,8 +98,6 @@ fun LoginScreen(
             Log.e("LoginScreen", "Google Sign-In failed", e)
         }
     }
-    var email by remember { mutableStateOf("") }
-    val password =  remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -110,13 +105,9 @@ fun LoginScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        when{
+        when {
             viewState.isLogin ->{
                 navigateToDashboard()
-            }
-
-            viewState.loading -> {
-                CircularProgressIndicator()
             }
 
             else ->{
@@ -125,20 +116,32 @@ fun LoginScreen(
                     modifier = Modifier
                         .height(220.dp)
                         .width(220.dp),
-                    contentDescription = null)
+                    contentDescription = null
+                )
                 Text(
                     style = TextStyle(fontWeight = FontWeight.Bold),
                     color = Color.Black,
                     fontSize = 35.sp,
-                    text = "Login")
+                    text = "Login"
+                )
                 Spacer(modifier = Modifier.height(10.dp))
 
-                if(viewState.error != null) {
+                if (viewState.loading) {
+                    Text(
+                        style = TextStyle(fontWeight = FontWeight.Normal, fontStyle = FontStyle.Italic),
+                        color = Color.Black,
+                        fontSize = 20.sp,
+                        text = "Logging in..."
+                    )
+                }
+
+                if (viewState.error != null) {
                     Text(
                         style = TextStyle(fontWeight = FontWeight.SemiBold, fontStyle = FontStyle.Italic),
                         color = Color.Red,
                         fontSize = 20.sp,
-                        text = "${viewState.error}")
+                        text = "${viewState.error}"
+                    )
                 }
 
                 OutlinedTextField(
@@ -171,6 +174,7 @@ fun LoginScreen(
                 ){
                     Text(text = "Login")
                 }
+
                 Button(
                     onClick = {
                         launcher.launch(googleAuthManager.getSignInIntent())
@@ -189,8 +193,7 @@ fun LoginScreen(
 
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.google), // Add Google icon
-
+                            painter = painterResource(id = R.drawable.google),
                             contentDescription = "Google Icon",
                             tint = Color.Unspecified,
                             modifier = Modifier
@@ -207,10 +210,9 @@ fun LoginScreen(
                     }
                 }
             }
-            }
         }
     }
-
+}
 
 @Composable
 fun PasswordTextField(

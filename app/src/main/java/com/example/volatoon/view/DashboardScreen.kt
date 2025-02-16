@@ -94,7 +94,7 @@ fun DashboardScreen(
             )
         }
 
-        if (currentUserData?.ispremium == false) {
+        if (currentUserData?.isPremium == false) {
             Image(
                 modifier = Modifier.fillMaxWidth()
                     .height(120.dp).aspectRatio(1f),

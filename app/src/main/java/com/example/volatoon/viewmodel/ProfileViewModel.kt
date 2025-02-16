@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.lang.Exception
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -38,13 +39,12 @@ class ProfileViewModel: ViewModel() {
                     )
 
                     val userData = response.body()?.userData.let {
-
                         CurrentUserData(
-                            fullName = it?.fullName ?: "user",
-                            userName = it?.userName ?: "user",
+                            fullName = it?.fullName ?: "",
+                            userName = it?.userName ?: "",
                             email = it?.email ?: "",
                             status = it?.status ?: "",
-                            ispremium = it?.ispremium ?: false,
+                            isPremium = it?.ispremium ?: false,
                             premiumUntil = it?.premiumUntil?.let { isoDate ->
                                 try {
                                     val zonedDateTime = ZonedDateTime.parse(isoDate) // Parse ISO 8601
@@ -53,9 +53,7 @@ class ProfileViewModel: ViewModel() {
                                     println("Error parsing premiumUntil: ${e.message}")
                                     null
                                 }
-
                             }
-
                         )
                     }
                     _userData.value = userData
@@ -70,6 +68,10 @@ class ProfileViewModel: ViewModel() {
         }
     }
 
+    fun clearUserData() {
+        _userData.value = null
+    }
+
     data class ProfileResState(
         val loading : Boolean = true,
         val profileDataRes : Response<ProfileResponse>? = null,
@@ -77,11 +79,11 @@ class ProfileViewModel: ViewModel() {
     )
 
     data class CurrentUserData(
-        val fullName: String?,
-        val userName: String?,
-        val email: String?,
-        val status: String?,
-        val premiumUntil: String?,
-        val ispremium: Boolean,
+        val fullName : String?,
+        val userName : String?,
+        val email : String?,
+        val status : String?,
+        val isPremium: Boolean?,
+        val premiumUntil: String?
     )
 }

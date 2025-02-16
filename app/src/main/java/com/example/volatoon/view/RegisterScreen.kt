@@ -1,5 +1,7 @@
 package com.example.volatoon.view
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -13,8 +15,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,11 +25,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.volatoon.R
@@ -39,7 +39,6 @@ import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.viewmodel.LoginViewModel
 import com.example.volatoon.viewmodel.RegisterViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     navigateToLogin : () -> Unit,
@@ -53,6 +52,8 @@ fun RegisterScreen(
     var email by remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val confirmPassword = remember { mutableStateOf("") }
+    val viewState = viewModel.registerState.value
+    val loginState = loginViewModel.loginState.value
 
     Column(
         modifier = Modifier
@@ -61,9 +62,6 @@ fun RegisterScreen(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        val viewState = viewModel.registerState.value
-        val loginState = loginViewModel.loginState.value
-
         when {
             viewState.isRegister -> {
                 loginViewModel.loginUser(Account(email, password.value), dataStoreManager)
@@ -73,30 +71,38 @@ fun RegisterScreen(
                 }
             }
 
-            viewState.loading -> {
-                CircularProgressIndicator()
-            }
-
             else -> {
                 Image(
                     painter = painterResource(id = R.drawable.logo),
                     modifier = Modifier
                         .height(220.dp)
                         .width(220.dp),
-                    contentDescription = null)
+                    contentDescription = null
+                )
                 Text(
                     style = TextStyle(fontWeight = FontWeight.Bold),
                     color = Color.Black,
                     fontSize = 35.sp,
-                    text = "Register")
+                    text = "Register"
+                )
+                Spacer(modifier = Modifier.height(10.dp))
 
-                if(viewState.error != null) {
-                    Spacer(modifier = Modifier.height(10.dp))
+                if (viewState.loading) {
+                    Text(
+                        style = TextStyle(fontWeight = FontWeight.Normal, fontStyle = FontStyle.Italic),
+                        color = Color.Black,
+                        fontSize = 20.sp,
+                        text = "Registering..."
+                    )
+                }
+
+                if (viewState.error != null) {
                     Text(
                         style = TextStyle(fontWeight = FontWeight.SemiBold, fontStyle = FontStyle.Italic),
                         color = Color.Red,
                         fontSize = 20.sp,
-                        text = "${viewState.error}")
+                        text = "${viewState.error}"
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -105,19 +111,22 @@ fun RegisterScreen(
                     value = userName,
                     modifier = Modifier.padding(10.dp).fillMaxWidth(),
                     onValueChange = {userName = it},
-                    label = { Text("Username") })
+                    label = { Text("Username") }
+                )
 
                 OutlinedTextField(
                     value = fullName,
                     modifier = Modifier.padding(10.dp).fillMaxWidth(),
                     onValueChange = {fullName = it},
-                    label = { Text("Full Name") })
+                    label = { Text("Full Name") }
+                )
 
                 OutlinedTextField(
                     value = email,
                     onValueChange = {email = it},
                     modifier = Modifier.padding(10.dp).fillMaxWidth(),
-                    label = { Text("Email") })
+                    label = { Text("Email") }
+                )
 
                 PasswordTextField("Password", password)
                 PasswordTextField("Confirm Password", confirmPassword)
@@ -131,9 +140,14 @@ fun RegisterScreen(
 
                 Button(
                     onClick = {
-                        println("Password: ${password.value}")
-                        viewModel.registerUser(RegisterData(fullName, userName, email, password.value), dataStoreManager)
-                              },
+                        if (password.value == confirmPassword.value) {
+                            viewModel.registerUser(RegisterData(fullName, userName, email, password.value))
+                        }
+                        else {
+                            viewModel.setMessage("Passwords do not match")
+                            Log.i("Register else", "else if")
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Blue
                     ),

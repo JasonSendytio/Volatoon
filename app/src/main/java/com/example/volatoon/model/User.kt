@@ -12,6 +12,14 @@ data class RegisterData(
     val password : String
 )
 
+data class ClientRegisterData(
+    val fullName : String,
+    val userName : String,
+    val email : String,
+    val password : String,
+    val confirmPassword : String
+)
+
 data class Auth(
     val authToken : String
 )

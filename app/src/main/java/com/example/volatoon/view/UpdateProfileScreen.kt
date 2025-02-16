@@ -1,8 +1,5 @@
 package com.example.volatoon.view
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import com.example.volatoon.viewmodel.UpdateProfileViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -11,7 +8,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
@@ -20,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -31,7 +26,6 @@ import com.example.volatoon.utils.DataStoreManager
 import com.example.volatoon.viewmodel.ProfileViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-
 
 @Composable
 fun UpdateProfileScreen(
@@ -58,10 +52,8 @@ fun UpdateProfileScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .background(MaterialTheme.colorScheme.background),
-        horizontalAlignment = Alignment.CenterHorizontally,
-
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Avatar
         Box(
@@ -69,15 +61,11 @@ fun UpdateProfileScreen(
                 .size(120.dp) // Ukuran avatar sesuai halaman profil
                 .padding(top = 20.dp, bottom = 10.dp)
         ) {
-            Surface(
-                shape = MaterialTheme.shapes.medium, // Rounded corners for the avatar
-                shadowElevation = 4.dp,
-                color = MaterialTheme.colorScheme.surfaceVariant
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_avatar),
+            Surface {
+                androidx.compose.foundation.Image(
+                    painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_avatar),
                     contentDescription = "Profile Picture",
-                    modifier = Modifier.size(120.dp)
+                    modifier = Modifier.size(120.dp) // Sesuaikan ukuran dengan Surface
                 )
             }
         }
@@ -98,9 +86,8 @@ fun UpdateProfileScreen(
             value = status,
             onValueChange = { status = it },
             label = "Status",
-            height = 120.dp
+            height = 125.dp
         )
-
 
         Button(
             onClick = {
@@ -135,14 +122,12 @@ fun UpdateProfileScreen(
             )
         }
 
-        viewModel.updateProfileState.value.data?.message().let {
-            if (it != null) {
-                Text(
-                    text = it,
-                    modifier = Modifier
-                        .padding(16.dp)
-                )
-            }
+        viewModel.updateProfileState.value.data?.message()?.let {
+            Text(
+                text = it,
+                modifier = Modifier
+                    .padding(16.dp)
+            )
         }
 
         viewModel.updateProfileState.value.error?.let {
@@ -163,38 +148,28 @@ fun CustomOutlinedTextField(
     label: String,
     height: Dp = 64.dp
 ) {
-    val isDarkTheme = isSystemInDarkTheme()
-    val borderColor = if (isDarkTheme) {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    } else {
-        MaterialTheme.colorScheme.outline // Use outline for light theme border
-    }
-    val textColor = if (isDarkTheme) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onBackground
-
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label, color = textColor) },
+        label = { Text(label) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .height(height),
-        colors = OutlinedTextFieldDefaults.colors( // Use colors() here
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = borderColor,
-            focusedTextColor = textColor,
-            unfocusedTextColor = textColor,
-            cursorColor = textColor
-            // containerColor is not available in colors()
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Color.Cyan,
+            unfocusedBorderColor = Color.Black,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
+            cursorColor = Color.Black
         ),
         textStyle = LocalTextStyle.current.copy(
             fontSize = 16.sp
         ),
         singleLine = false,
-        maxLines = if (height > 64.dp) Int.MAX_VALUE else 1,
+        maxLines = 5,
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Next
         )
     )
 }
-
